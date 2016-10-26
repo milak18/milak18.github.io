@@ -1,0 +1,145 @@
+<rt-require dependency="wix-ui-react/ui" as="UI"/>
+
+<div>
+    <header class="header">
+        <div class="icon">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFYAAABWCAYAAABVVmH3AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYxIDY0LjE0MDk0OSwgMjAxMC8xMi8wNy0xMDo1NzowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpFRUY1NzQ5OUU1OTlFMTExOTY4MkI4OEY5NjI5RDM4MiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo4QzgyNThEODY1MzcxMUUyOEMzRkE1OUVDNjM3NEMwOCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo4QzgyNThENzY1MzcxMUUyOEMzRkE1OUVDNjM3NEMwOCIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1LjEgTWFjaW50b3NoIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6OEEzMDczNDA2MTIwNjgxMTkyQjBBQ0E5RDg0NjFGNjciIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6RUVGNTc0OTlFNTk5RTExMTk2ODJCODhGOTYyOUQzODIiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6ba8dSAAATJklEQVR42uxdCXRUVZr+XtWrpLIU2UkCCdlIggKRRRppFo1RW7rppod1lEZcmBEQsOEwfWZg8My49PHQyugRRadhtLXB8ahMjzYjLTKgAzSyDyIEQtLsS8IWSCokqXpv/v++90IRKql6r6oybVP3nEteVb3tfve737/c+x7S/PnzYRRFUdDa2oqioiJcunQJdrsd9fX1yMvLK0lPT887d+7cI/R3ZGZmZrLL5Yrh/f+Si81mQ0NDQwu1u/78+fNf5ebmvkfbR6kcTk5OFr9nZGRgz549iImJEZ+NInd0UlVV0dTUVNSnT5/HU1NTn+jZs2cmnRjXrl2DLMtobGzErVAcDkdcVlZWUmFh4c9o+2dOp7M2MTHx3w4fPrwyPj7+SEfHyf4A9Xg8oB6ZX1pa+hSBWsgspp4TjJYkSbD6ViktLS2izVevXhWMJFy6U/n7Xr16Ta6qqlpOWPzK38i9AViv18vDvxuVN0tKSh7i765cuSLA5sIXMLZvpWK0mfFhPBgHYm7B4MGDl9TU1AwhJv8NkbGe5eAmYA1Qy8rK1pCmVvCQNxja/gK3emEc3G43SyXy8/MnxsbGZmzatOmnxO56tksCWB72vCOxlI3WCgaVD4qCGFw5e/YsSBruKS8vZ8M2lqRBZTLKhieQkpLyC9KNiaylUVDNg0sG7sfE3Odqa2v/kbVYZgtPVq5f79695zFTWRKixXwhtiItLe1vCcvfEVl3yowuuRJPkvBmMVujxVrhkU+GLYNkYS55EI/J5IsV04dH2C9tb6yixVxhl4zkYHJxcfESmeh7F7G2W3NzcxTUMLCWPIUYArhCzs7OftzX+Y+W0NwwTgGQyzVFpn/6sM8aLeEpbPxJAfJlQjmBfdloCR9rKVBwcoBgZ5SjMhA+YMkRsMuErhQFNrzAkiMgyRx1sRREgQ0fsIypzGw1y1gzEe93ob+CbU8wbWFgGU/TwPJNeCjqtdtou6Mb8N3PDsh2k/6gytZV+xtUg6Fdx24z63cCrR6eKQjcHt6XIbLbTQAbrBQwWHFO4K5+QKyj44bzqbx0I5evAjUngfP1gDMmOEZwQx0ykJWqXQtqYFT5mLpLQGOTdmwwpaUVSIgDiguAtGStPWon7WG/qbIaOHO+c6JYYiyzKJ4aO7CU/qbwF4F6AqitA/ZWArupslfXWY8zQL1zgWFlQAY1Ni42KFzFcecbgP2HgZ0HNCBsUscsZUKU9qLr3AHk9oCWle7sQjwS6BonT/OMAp0/Jghgma1mjFfdReDDL4BJ91PD4wKD2z0deGA40CsTWLtZY3GM4+aR0ErnGVAMjBlF7EnUGoIgpcBOwOQkUE0DXHRPG76m25Ju1kRDmsoHA98fQNsx+nU8AXqOgP18C3XcEY2tnbn9xtSWKSkwWFhZA2zZA9w3LIjGt2g316cISIwHPv0KOH7mRnB5Cq0oh0C9m0DlxloJBL0aAMMHAQ2NwMZd2vD2HQ3dCPwfjgDKSvX7bgmm14BDNXZs3qMxyKNGyHiJkSFpwPYrJC3sHpwkgIZgTjbw0APAqs+Ao6c1EJmtbDgqhtDnWEYglHhS68ThNMQPUuefPq91IDM1gSRsQgVJTaF+jWBGA91XM3XyF9vIN21RgtJvA1ibIQVmqtfrQX2jB59tIRpIHp/xFKASbZJTPJgy2kMa6oG7yYNrzR7cXuhBfq72e9Dn6qjS/SUmefC9fjzl5CFnnb6jv5Me8KB3AW23aJ+DOleMB9v2eFB9okV8NoOReSnwYeHBPwEHyGDcXmKCaXSPyUmk0fcB//ofNGzdGsPamG3Thl/b50BpDFnXQYOxinaNIbcB6/8IXCCPZCJdq9QMU7kQ0y+cVbFln42IpMIuBXdoSFJglIZmYNNOoKCn7hoFO6tDYOWTVR5LhqrqBJCZcn0Y1xMQJ85p22yI8np0AIZ+u0ePa51DbRcGMiVJA9fh0NzCpmbNUIkOCnbhjnBcJWzeF48TZxrgjJWEnMAMsGa9gvZeyD5i7IEqYPAAE8DqTBzaHxjUR/c9Fa1B7GL96RSwh84r0wV+MY3++nOHaN8m8lv/i6z1mTrtPMU5vn4VGdehulG3mQCVLySpqLt6B/5ndzXpP+NjJir18QpCScKwb/vfO4A7SA5kh4kGqBo4Dt9j6LsYArZvoST0NylRInBt/s+paIapHzn4LmcrBpY4EN/O/WuLxLwmQFVIL7rdi/Vfqqi/XE/3Zy6cCwtjjVHDWruLHPOhg8w0wg8LqQ0XyU/+l9/S/TiykZPhxt2DGkhmJL/7uomxW/dJuOAuwI4DNVj0mA2ZWT56r5o0GiqJc1IFqmoH4evtv6ZgghNUdtPAMp6WvAJ/9eMNHly5xIG3bnWtVNKHqmPNuNYai4kTRsORWISte0kk7X72lT3438pmKI5CTJ7wIC43OHG6rkXzUsxeV6EeUlqgdPsJmhMm47N1G1F37nQbSFaqda+gXTlGfuk6iqwmjTHJ2nakcToUGsISjhypQvWRargU73Wr346x5y+p2Le/Brk535KBISFWW31cimAzMQSqPQ2tromQUyuwd/su7NzxR9goRLMysxI2KfDNSH2xXXNzCgqDjGr86GaPDC9Ki/PJO2jC0WMnUTHIobP55k7gJMrVK5dwgLRoxLC+SIj9A3VqTBASoEcsqgKvcxC8rnHUo6ViIvCT/1wj1mXxAjcr63/bjBcfHA5g+fCzFOl8sB5YME3PACnmGZuRrKK8/yEcPiFh5njaHuIRmnnhkuYdiAwYfU6lfYeXadsXrtagf49TKMzVU11qhz6UpqPEatXRAx7XeHjj76LPcWDC/2HdOnz77bcCVKvzgAwsYyrzijnjQ6jFQWBuplB3aF+gfCR90QT/wzhAGVB8CQN667GuqukKdxr7t5yOZH81jfxV9gJ+OIql54ruJnWUVGVrf03ohxLTG96Ee6Ek3ANVcgld51C6+sgRfPLJJ7qn4w2BYJJYhSgfPHgQOTk5YpV2WNZtURveWwv0ITnI7h5C7M8d4lHagOpbTLX0umS0RWRKu5zgDcPdCN0cUJ0DiJ3D4Y0bBlVOFcaK2cvt5nUVq1atwoULF3gli2W28hJOnpaprq6GlJyc7HY6nXF9+5JGJSSE3GNcONq5m1yvRdO1lB66bJ2dquuxV0ua2lwE5PfhTSwnp7cQqj1RB1+TC2ZXDDnDq1avxjtvvy0kwKwk8v7Gswe8TGv//v08/d0kFsXxMsTLly/zQxzIzs6+AWArSzp5BG+kULdPHnkJP9aBjejKUEUf6kzOTBruJVBIO5W4ocLiq5Im+JLScgOfGdRdu3bhfQJWI7wSdHsZUGYoH8Nrts6cOYPjx4+LZzRSU1MhGz3EXxw6dAgnTpwQT4JwTUlJEb1h5oK+I/k3vycPgWL9IQPpQ3OYMJSMTlK1HmNjZEuCmjCCLDzF1bF9ocTeBlVEbDp7dZ1WfVBlUE+ePIlly5YJKXBQCBiMBBgM5WcTWDqMyrrqu4+Ulpbmph/ibkoakfbEx8fzmk+kp6eLbaOXDOtn1I68hGbS1+x04MU5eh60JQyICqvO49gJNbYUiusH9Lc/WfksGuoJurR2Mv2gg8oj9Nlnn8XWrVsRFxfnF0CjGsad/3In1NbWise1eOj7az9h1tQhsO0vQjosltMzixlk1iMWel9G+wO6iUbo4NuBX86mC2ZYYa4BaLPwO9WYfKjxg6AkPkgG6Q762X5dDtTAYm7XjfTSpUvx0Ycfijb4gmgwkvfhFZjMTAaQO4If7AhmnVvQwN4U9NCFWYcTExMF4L7V0B2D1VzcdC/f66eBm56uXs+LSoFtkTaUWwlEGt6uB8lNupvAzdN/89w4voOw2gzYK6+8gvfff1/cL7eFwWQZYNB8K7OzI1ZGBFh/QLNGsXzwzTKjeXgxG7Qn9iQCV8LQfhL+eZaEnFzdDfN0AgoPeWIoYvOhJE8hhpJld2T4DPUAeR3V9/40CWMj8+qrrwpQDZ1kbWTwmJ3GqqBQffqwARtI6BlsEc0osbi9yIl/eNyBH91rhxxHBqbRpjn2kj4dyjRWGknkyZonTyBQpxKg6TpYXj/AqZ1GQQ6HNqO4Y8cOLFq0COvXr29zqSL1EAsDy/+4fbzpLqsT74O64dd2Vf0mVlV3x6vqHpeq7k2mbaeqHBmneq9sVz2Kqno8XD1qq15529PaSn+N6mmr/HsL/dbSolX+rrKyUp01a5bqcrm6rG2MqYz/p8JrEzjhcu9Ir2bQdPKo3edCyVqssVTxtp+Jue5y+B3+qrafdF1Tv/nmG7zxxhtd30BypQRjaXh0WeW5j2SXpB5aIxFLqe4kSHbFqcrZpSqRVKuK0la9RvV6TVU+tr6+Xh05cqTaVW3k6zCmtq7uSINsMycAJSWStgLC3g0ofA/InKftw8zzdX+MSnrdvkq+tZ3bxK1kF5FfHcDs7coHA6Xu3bu76+rq4nyftY9k4TQEr8/6aiUFD1m85qcIyF0GkCsVyTJ27FiRvbLb7RG9DnsUFLU22dr3ciQrix/PDsyeJCE7j0B19AbyV0UcVC6LFy9ui7C6oq02wyWK+IUIUK+XfNn+NjwyjuesSoC8fwfih3bJSBk8eDBmzJjRNiMduXZqWMq+HyI7RLT1A0+MbUZKfjGQQqDGDexCbZcwdepUfPDBByIT5ftugbAmLnX7YPNnECJRvYoNIwe04tEJyUDysi4F1SgDBw7EtGnTbgheIla7Sl9t5IksnEHhbfFyGv4PWAJm27ZtIhwNpcyZM4df3tAVkhB5trqbJIwrb8Y9f7UIcP61RW/Ci6effhozZ84UeWOrhRP5Tz31lPEEYSRrZEH1kARkpjTh5z8fD3vqAsuALF++HHv37hWpu+effz4k1k6fPh133nmnSMJ8R6XAhtaWJvzoBwMx7L5fUZOcloDgsHTJkiXihtnh/+ijj/Duu+9aBjYpKUl4CL4vEfpOSQHfeHZmNyxcTKDG5FsCgdN5DOqpU6eEH2p4MC+99JKYY7Jaxo0bh4qKCpE25KDhOyMFfLPNzdfw6GMzUHRbuWUANmzYgE8//VSwzDg3A3z48GGsWLHCcpjK52Ot5dwxnyPc7ZdKS0tFPjbcfiwnjLOysrBp0yZ+y4+lc/C8ErPq6NGjIq/qC6JYHyXLWLNmDYYPH275PidMmCBytLHiAYjw+LGcj40YY3mIzZs3zzKoXF5//XWx+MGY7/c9P3/HMsGSEErG/5lnnmmbu/uzlwKeLxoyZAjGjBljucHbt2/H2/oiCr9DjYDmYfzll19i5cqVlq9TVlaG8ePHi4VwYdXacEcgXJgBTz75pPAZrRTuGGYrTzMbE36daTknsk+fPm0Z3NmzZ4tlVjznFRZ9jYRXwNo3YsQIoV1WC+vm559/zi9oDBh6siHjRSYvv/yy5TVXvLxqypQpvnF+6OBS/Oy+ePFi2IwXO90MzNCh1rJWdC+4//77xQvCjInAYKIy1tnVq1dj1KhRlq87evRo4dYFe92OjFdqamr4jJcxvTxp0iSRorNaXnjhBZF9CiQB7Q0ZE+O5554TBs1K4fVWc+fOFXIQJq0ND7B8QwUFBZg1a5Zwg6yUzZs3Y+3atW2rU8xoGncEL0l96623LHfqww8/LGQsHKGubLAt5KXyNBQ5mikuLrZ0/O7du7FgwQLBOKs+Jevta6+9JtabsWZaydly0MC5BKs5aiPYsPfq1WsRNcYRyiwCaxxbVQ492QUyG0isW7cOCxcubPMCrN6HMWHIC924cHrQWJIabOFRV1lZiQMHDvhd1xVMJQw8su9wslq4QTx8OPxkCxtolQlfr6qqCjU1NSI05ciHDQaDGmphveVrv/jii9i4caPIYvG7xfm+WKI6uy9uB0d57GUYGm+VsRJZUTeFjnHhkAI+B2efghlybOiMV//x4rpITA1x9McjgkcR5wYCXYN/53tiP5rZaiUPwcekpKQ08Sv4vOHQWGOVIedLg+1Vl8sV0bk27jBjaSl3ZLD35W+9rBlgGVOZeqaZNhLD0ZCuWpvw514YU35/bC0BmxZ9G2d4MltMLsZUJqu5jwT/NsN3i5bQ7AwbT8aU38b5MVnAyX/p/71JVxQe8brR+5iB/ZoQPkWM7RmVg9BkgLEjg3matrfLRN3jBOxqt9v9d9HXSYcGLLOVsFxFmB4Tb+OkL98i1+chYmxOVBKse0SE4UnGsu1tnMTSavIMfkk0fsN4SiTKXHMSwKEzY8hYivk4n+ezlhOFOd/3hO9TdtESXPKHsFvJGBojXjY2dFfradKJNEL+pxzWRf9rlMBeAOcUZFn+HWPHn9uAbUfrRvphKoH7Gu38KINrTHdEpQE3JJeMZ9qIhO+QRzWHiNnoi5G//yitgcB9jN0w0tz5BGwxBw/Gk+C3KsBG2zknwkEAAVtFRmopYfWmv5Etd0RxAvRNOuj3dJLpFKI9Qt8VXH+3ofeWkQkDTGaonnY8RvUdck1XED4nO0rKywFOepL8238i5v6GPhbRCScSyMPpQvx2q/hbhKxuItJZAnILbX9ImNSQ51QTaMLx/wQYAAGxc9TKFox/AAAAAElFTkSuQmCC" alt=""/>
+        </div>
+        <div class="right">
+            <div class="container">
+                <div class="text">
+                    This is a sample Settings view for widgets and pages created with <a href="http://dev.wix.com"
+                                                                                         target="#">Wix's 3rd Party SDK</a>,
+                    compatible with Wix's product requirements.
+                    This boilerplate is aimed at saving time for developing the UI of your apps, and let the
+                    developer focus on developing logic.
+                </div>
+                <div class="button">
+                    <UI.button label="connect account" className="btn-primary"></UI.button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <UI.tabs.holder defaultTab="first" class="top" onChange="(newVal)=>console.log(newVal + ' selected')">
+        <UI.tabs.header>
+            <UI.tabs.label for="first" class="first">General Settings</UI.tabs.label>
+            <UI.tabs.label for="second" class="second">Color Settings</UI.tabs.label>
+            <UI.tabs.label for="third" class="third">Sync Options</UI.tabs.label>
+        </UI.tabs.header>
+        <UI.tabs.content>
+            <UI.tabs.tab name="first" class="my-custom-tab">
+                <div>
+                    <UI.dropDownSelect
+                            wix-param="imageVisibility"
+                            style="{{width: 240}}"
+                            defaultValue="1"
+                            onChange="(newVal)=>console.log(newVal + 'selected')"
+                            label="Image visibility"
+                            options="{[
+                            { value: '1', label: 'Show Images', className: 'firstOne'},
+                            { value: '2', label: 'Hide Images', className: 'differentOne'},
+                            { value: '3', label: 'Show Images on Hover'}
+                            ]}"
+                            infoTitle="image visibility"
+                            infoText="image visibility">
+                    </UI.dropDownSelect>
+                </div>
+                <div style="margin-bottom: 50px;">
+                    <UI.dock
+                        defaultValue="TOP_LEFT"
+                        label="Fixed Position"
+                        onPreviewHover="(newVal)=>console.log(newVal + 'hovered')"
+                        onChange="(newVal)=>console.log(newVal)"
+                    />
+                </div>
+                <UI.sectionDividerLabeled
+                     label="Language Picker"
+                     />
+                <div style="margin-bottom: 50px; width: 200px">
+                    <UI.languagePicker
+                            label="Language Picker"
+                            infoTitle="info title"
+                            infoText="info text"
+                            onChange="{function(a){console.log(a);}}"
+                            />
+                </div>
+                <div style="margin-bottom: 50px; width: 400px">
+                    <UI.slider
+                        style="{{width: 300}}"
+                        defaultValue="{100}"
+                        label="Number of images"
+                        min="{0}"
+                        max="{500}"
+                        wix-param="sliderValue"
+                        onSlideEnd="(newVal)=>console.log('slide end ' + newVal)"
+                        onChange="(newVal)=>console.log('slide change ' + newVal)"
+                    />
+                </div>
+                <div style="margin-bottom: 50px; width: 200px">
+                    <UI.fontPicker
+                            label="Fonts"
+                            wix-param="myBodyFont"
+                            startWithTheme="Site Title"
+                            infoTitle="font picker"
+                            infoText="font picker"
+                            onChange="(newVal)=>console.log(newVal)"
+                            ></UI.fontPicker>
+                </div>
+                <div style="margin: 50px 0; width: 200px">
+                    <UI.textInput
+                            validator="{function(val) {return val.length < 15}}"
+                            label="Email address"
+                            placeholder="john@doe.com"
+                            infoText="Knowledge is power, this is just a text info"
+                            invalidMessage="Invalid Input."
+                            focus="{false}"
+                            onChange="(newVal)=>console.log(newVal)"
+                            />
+                </div>
+            </UI.tabs.tab>
+
+            <UI.tabs.tab name="second">
+                <div style="margin: 50px 0">
+                    <UI.colorPickerSlider label="Text Color" wix-param="myTextColor" startWithColor="color-22" startWithOpacity={1} onChange="(newVal)=>console.log('myTextColor new value: ' + newVal.color)"></UI.colorPickerSlider>
+                    <UI.colorPickerSlider label="Background Color" wix-param="myBgColor" startWithOpacity={0.5} onChange="(newVal)=>console.log('myBgColor new value: ' + newVal.color)"></UI.colorPickerSlider>
+                </div>
+            </UI.tabs.tab>
+
+            <UI.tabs.tab name="third">
+                <div style="margin: 50px 0">
+                    <UI.teaserPopup
+                        text="some text",
+                        title="some title",
+                        gotItText="Got it",
+                        linkText="Learn more",
+                        learnMore="{this.learnMore}"
+                    />
+                    <UI.radioButtons
+                        label="How many images to sync?"
+                        wix-param="myRadioButtonsValue"
+                        defaultValue="3"
+                        onClickPreview="(newVal)=>console.log(newVal, 'clicked')"
+                        onMouseOverPreview="(newVal)=>console.log(newVal, 'over')"
+                        options="{[
+                            { value: '1', label: 'Sync 10 images', className: 'firstOne'},
+                            { value: '2', label: 'Sync 25 images', className: 'differentOne'},
+                            { value: '3', label: 'Sync 50 images'}
+                        ]}"
+                    />
+                </div>
+                <div style="margin: 50px 0">
+                    <UI.toggleButtonsGroup
+                        title="Sync Meta Data?"
+                        defaultValue="{[1, 2]}"
+                        onChange="(newVal)=>console.log(newVal)"
+                        options="{[
+                            { value: 1, label: 'Image Meta', className: 'firstOne'},
+                            { value: 2, label: 'Image Alt', className: 'differentOne'},
+                            { value: 3, label: 'Image Link'}
+                        ]}"
+                    />
+                </div>
+            </UI.tabs.tab>
+        </UI.tabs.content>
+    </UI.tabs.holder>
+</div>

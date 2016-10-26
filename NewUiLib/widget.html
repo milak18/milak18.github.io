@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Widget example</title>
+    <script src="//static.parastorage.com/services/js-sdk/1.61.0/js/wix.min.js"></script>
+</head>
+<style wix-style>
+    body {
+        {{Title}}
+        color: {{style.myTextColor color-22}}; /* style parameter */
+        background-color: {{style.myBgColor}}; /* style parameter */
+    }
+    .container {
+        display: flex;
+        flex-direction: column;
+    }
+    h1 {
+        {{style.myBodyFont Title}}
+		
+		
+    }
+    footer {
+        color: {{color-5}}; /* style from the template */
+        display: flex;
+        justify-content: center;
+    }
+</style>
+<body>
+<div class="container">
+    <h1>Hello title</h1>
+    <br/>
+    <br/>
+    <br/>
+    <footer>My Footer</footer>
+    <div>
+</body>
+</html>
