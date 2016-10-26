@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Wedget Test</title>
+	<!-- Wix JS SDK -->
+	<script type="text/javascript" src="https://dl.dropboxusercontent.com/u/262669197/Wix.js"></script>
+	<script>
+	function myFunction()
+	{
+	document.getElementById("demo").innerHTML="Hello World";
+	}
+	</script>
+</head>
+<body style="border:3px solid red; background-color: transparent;">
+
+	<p>Click the button to trigger a function.</p>
+
+	<button onclick="Wix.SuperApps.Settings.openBillingPage()">Click me</button>
+
+	<p id="demo"></p>
+
+</body>
+</html>
