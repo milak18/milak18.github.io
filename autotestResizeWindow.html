@@ -1,0 +1,106 @@
+<!doctype html>
+
+<html>
+
+<head>
+
+	
+
+<script type="text/javascript" src="https://sslstatic.wix.com/services/js-sdk/1.33.0/js/Wix.js"></script>
+
+<script type="text/javascript">
+
+
+function valueChange(e)
+
+{
+
+ var myselect = document.getElementById("selectOpt");
+
+  var valueSelected = myselect.options[myselect.selectedIndex].value;
+
+var newStyle = "width: " + valueSelected + "px;" + " height: " + valueSelected + "px";
+
+document.getElementById('main').setAttribute("style", newStyle);
+  Wix.resizeWindow(valueSelected,valueSelected);
+
+}
+
+
+
+</script>
+
+
+
+		<meta charset="utf-8" />
+
+		<title></title>
+
+		<style>
+
+			.my-div { 
+
+				background-color:red;
+
+				height:400px;
+
+				width:400px;
+
+				left:50px;
+
+                        position: absolute;
+			}
+
+		</style>
+
+	</head>
+
+	<body>
+
+		<div id="main" class="my-div">
+
+		<br>
+
+			</br>
+
+			<h1>
+
+			Resize App
+
+			</h1>
+
+			
+
+			<h3>
+
+			Select a number from the combobox
+
+			</h3>		
+
+			<select onchange="valueChange()" id="selectOpt">
+
+				 
+				  <option value="250">250</option>
+				 
+				  <option value="300">300</option>
+
+				  <option value="400" selected>400</option>
+
+				  <option value="450">450</option>
+
+                                 
+
+
+			</select>
+			
+
+		</div>
+
+		
+
+		
+
+	</body>
+
+
+</html>
