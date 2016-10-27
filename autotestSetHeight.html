@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<h1>TPA sample</h1>
+<h3>by Albert Elrom</h3>
+	<script type="text/javascript" src="https://sslstatic.wix.com/services/js-sdk/1.32.0/js/Wix.js"> </script>
+	<script type="text/javascript">
+			Wix.setHeight(200);
+			function getvalue(list)
+
+{
+Wix.setHeight(Number(list.value));
+}
+	</script>
+</head>
+<body bgColor="red" >
+		<h2>Select a number from the combobox</h2>
+		<select name="list1" onchange="getvalue(this)">
+
+				<option value="200">200</option>
+				<option value="300">300</option>
+				<option value="400">400</option>
+				<option value="500">500</option>
+
+		</select>
+
+</body>
+</html>
+
