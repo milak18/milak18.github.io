@@ -69,9 +69,9 @@
   \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/core */ 4), __webpack_require__(/*! Base */ 23), __webpack_require__(/*! Billing */ 13), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! Activities */ 18), __webpack_require__(/*! Settings */ 21),
-	        __webpack_require__(/*! Contacts */ 26), __webpack_require__(/*! Utils */ 19), __webpack_require__(/*! Styles */ 22), __webpack_require__(/*! Events */ 5), __webpack_require__(/*! Error */ 15), __webpack_require__(/*! Media */ 20), __webpack_require__(/*! WindowOrigin */ 3),
-	        __webpack_require__(/*! WindowPlacement */ 25), __webpack_require__(/*! Worker */ 27), __webpack_require__(/*! PubSub */ 28), __webpack_require__(/*! Preview */ 30), __webpack_require__(/*! Dashboard */ 31), __webpack_require__(/*! Theme */ 24), __webpack_require__(/*! Counters */ 32), __webpack_require__(/*! Features */ 33), __webpack_require__(/*! privates/urlUtils */ 8), __webpack_require__(/*! Data */ 29)], __WEBPACK_AMD_DEFINE_RESULT__ = function (core, Base, Billing, utils, Activities, Settings,
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/core */ 4), __webpack_require__(/*! Base */ 22), __webpack_require__(/*! Billing */ 13), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! Activities */ 17), __webpack_require__(/*! Settings */ 20),
+	        __webpack_require__(/*! Contacts */ 26), __webpack_require__(/*! Utils */ 18), __webpack_require__(/*! Styles */ 21), __webpack_require__(/*! Events */ 5), __webpack_require__(/*! Error */ 15), __webpack_require__(/*! Media */ 19), __webpack_require__(/*! WindowOrigin */ 3),
+	        __webpack_require__(/*! WindowPlacement */ 24), __webpack_require__(/*! Worker */ 27), __webpack_require__(/*! PubSub */ 28), __webpack_require__(/*! Preview */ 30), __webpack_require__(/*! Dashboard */ 31), __webpack_require__(/*! Theme */ 23), __webpack_require__(/*! Counters */ 32), __webpack_require__(/*! Features */ 33), __webpack_require__(/*! privates/urlUtils */ 8), __webpack_require__(/*! Data */ 29)], __WEBPACK_AMD_DEFINE_RESULT__ = function (core, Base, Billing, utils, Activities, Settings,
 	              Contacts, Utils, Styles, Events, Error, Media, WindowOrigin,
 	              WindowPlacement, Worker, PubSub, Preview, Dashboard, Theme, Counters, Features, urlUtils, Data) {
 
@@ -614,7 +614,7 @@
 	    GET_STYLE_BY_COMP_ID: 'getStyleByCompId',
 	    OPEN_REVIEW_INFO: 'openReviewInfo',
 	    SET_HELP_ARTICLE: 'setHelpArticle',
-	    GET_PRODUCTS: 'getProducts'
+	    GET_CT_TOKEN: 'getCtToken'
 	};
 
 	var callId = 1;
@@ -1341,7 +1341,7 @@
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/responseHandlers */ 14), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/sharedAPI */ 17)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage, utils, responseHandlers, reporter, sharedAPI) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/responseHandlers */ 14), __webpack_require__(/*! privates/reporter */ 10)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage, utils, responseHandlers, reporter) {
 
 	    var openBillingPageForProduct = function openBillingPageForProduct(vendorProductId, cycle, onError) {
 	        if (!utils.isString(vendorProductId)) {
@@ -1421,10 +1421,6 @@
 	        };
 
 	        postMessage.sendMessage(postMessage.MessageTypes.GET_ACTIVE_BILLING_PACKAGE, undefined, onComplete);
-	    };
-
-	    var getProducts = function getProducts(onSuccess, onError) {
-	        sharedAPI.getProducts({}, onSuccess, onError);
 	    };
 
 	    return {
@@ -1528,7 +1524,7 @@
 	         * Wix.Billing.getBillingPackages(onSuccess, onError);
 	         *
 	         */
-	        getBillingPackages: getBillingPackages,
+	        getBillingPackages: getBillingPackages
 
 	        /**
 	         * Gets the current billing package information. This includes productId and cycle.
@@ -1551,51 +1547,6 @@
 	         *
 	         */
 	        //getActiveBillingPackage: getActiveBillingPackage
-
-	        /* Returns an Array of objects containing product and pricing info.
-	         *
-	         * @function
-	         * @memberof Wix.Billing
-	         * @since 1.66.0
-	         * @param {Function} onSuccess A callback function to receive the products.
-	         * @param {Function} onError A callback error function.
-	         *
-	         * @example
-	         * var onError = function () {
-	         *  //handle the error
-	         * };
-	         * var onSuccess = function (data) {
-	         *  //handle onSuccess
-	         *  //sample data schema:
-	         *  [{
-	         *     "id": <vendorProductId>,
-	         *     "name": "App Premium Package",
-	         *     "price": "4.95",
-	         *     "is_active": true,
-	         *     "freeMonth": true,
-	         *     "currencyCode": "USD",
-	         *     "currencySymbol": "US$"
-	         *     "monthly": {
-	         *          "price": "4.95",
-	         *          "url": "https://premium.wix.com/wix/api/tpaPriceQuote?appInstanceId=aaa-bbb&appDefinitionId=aa-bb&paymentCycle=MONTHLY&vendorProductId=1234"
-	         *     },
-	         *     "yearly:: {
-	         *          "price": "3.97",
-	         *          "url": "https://premium.wix.com/wix/api/tpaPriceQuote?appInstanceId=aaa-bbb&appDefinitionId=aa-bb&paymentCycle=YEARLY&vendorProductId=1234"
-	         *     },
-	         *     "oneTime": {
-	         *          "price": "5.99",
-	         *          "url": "https://premium.wix.com/wix/api/tpaPriceQuote?appInstanceId=aaa-bbb&appDefinitionId=aa-bb&paymentCycle=ONE_TIME&vendorProductId=1234"
-	         *     },
-	         *     "bestSellingFeature": "",
-	         *      "discountPercent": 20
-	         *     ]
-	         *  }]
-	         *
-	         * };
-	         * Wix.Billing.getProducts(onSuccess, onError);
-	         */
-	        getProducts: getProducts
 	    };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -1871,204 +1822,6 @@
 
 /***/ },
 /* 17 */
-/*!******************************************!*\
-  !*** ./js/modules/privates/sharedAPI.js ***!
-  \******************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
-
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/responseHandlers */ 14)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, postMessage, reporter, responseHandlers) {
-	    'use strict';
-
-	    var resizeComponent = function resizeComponent(options, onSuccess, onFailure) {
-	        if (!options || !options.width && !options.height) {
-	            reporter.reportSdkError('Mandatory arguments - width or height must be supplied');
-	            return;
-	        }
-
-	        var args = {};
-
-	        if (options.width) {
-	            args.width = options.width;
-	        }
-
-	        if (options.height) {
-	            args.height = options.height;
-	        }
-
-	        var callback = function callback(data) {
-	            if (data.onError) {
-	                if (onFailure) {
-	                    onFailure(data);
-	                }
-	            } else {
-	                if (onSuccess) {
-	                    onSuccess(data);
-	                }
-	            }
-	        };
-
-	        postMessage.sendMessage(postMessage.MessageTypes.RESIZE_COMPONENT, args, callback);
-	    };
-
-	    var openMediaDialog = function openMediaDialog(messageType, supportedMediaTypes, mediaType, multipleSelection, onSuccess, onCancel) {
-	        if (!utils.isString(mediaType) || !isValidMediaType(supportedMediaTypes, mediaType)) {
-	            reporter.reportSdkError('Missing mandatory argument - mediaType must be one of Wix.Settings.MediaType');
-	            return;
-	        }
-
-	        if (!utils.isBoolean(multipleSelection)) {
-	            reporter.reportSdkError('Missing mandatory argument - multipleSelection must be true or false');
-	            return;
-	        }
-
-	        if (!utils.isFunction(onSuccess)) {
-	            reporter.reportSdkError('Missing mandatory argument - onSuccess must be a function');
-	            return;
-	        }
-
-	        var callOnCancel = utils.isFunction(onCancel);
-
-	        var callback = function callback(data) {
-	            if (data.wasCancelled) {
-	                if (callOnCancel) {
-	                    onCancel(data);
-	                }
-	            } else {
-	                onSuccess(data);
-	            }
-	        };
-
-	        var args = {
-	            mediaType: mediaType,
-	            multiSelection: multipleSelection,
-	            callOnCancel: callOnCancel
-	        };
-
-	        postMessage.sendMessage(messageType, args, callback);
-	    };
-
-	    var openModal = function openModal(url, width, height, title, onClose, bareUI, options) {
-	        if (!url || !width || !height) {
-	            reporter.reportSdkError('Mandatory arguments - url & width & height must be specified');
-	            return;
-	        }
-	        if (!utils.isString(url)) {
-	            reporter.reportSdkError('Invalid argument - a Url must be of type string');
-	            return;
-	        }
-	        if (!utils.isNumber(width) && !utils.isPercentValue(width)) {
-	            reporter.reportSdkError('Invalid argument - a width must be of type Number or Percentage');
-	            return;
-	        }
-	        if (!utils.isNumber(height) && !utils.isPercentValue(height)) {
-	            reporter.reportSdkError('Invalid argument - a height must be of type Number or Percentage');
-	            return;
-	        }
-
-	        var args = {
-	            url: url,
-	            width: width,
-	            height: height,
-	            isBareMode: bareUI,
-	            options: options
-	        };
-
-	        if (utils.isFunction(title)) {
-	            onClose = title;
-	        } else {
-	            args.title = title;
-	        }
-
-	        postMessage.sendMessage(postMessage.MessageTypes.SETTINGS_OPEN_MODAL, args, onClose);
-	    };
-
-	    var isValidMediaType = function isValidMediaType(MediaType, value) {
-	        for (var key in MediaType) {
-	            if (MediaType[key] === value) {
-	                return true;
-	            }
-	        }
-	        return false;
-	    };
-
-	    var revalidateSession = function revalidateSession(onSuccess, onError) {
-	        if (onSuccess) {
-	            if (utils.isFunction(onSuccess)) {
-	                var callback = function callback(response) {
-	                    if (response && response.onError) {
-	                        var wixErrorMessage = responseHandlers.getWixError(response.error.errorCode);
-	                        if (onError) {
-	                            onError.call(this, wixErrorMessage);
-	                        }
-	                    } else {
-	                        onSuccess.apply(this, arguments);
-	                    }
-	                };
-	                postMessage.sendMessage(postMessage.MessageTypes.REVALIDATE_SESSION, {}, callback);
-	            } else {
-	                reporter.reportSdkError('Mandatory argument - onSuccess - should be of type Function');
-	            }
-	        } else {
-	            reporter.reportSdkError('Missing Mandatory argument - onSuccess');
-	        }
-	    };
-
-	    var getCurrentPageAnchors = function getCurrentPageAnchors(callback) {
-	        if (!callback || !utils.isFunction(callback)) {
-	            reporter.reportSdkError('Mandatory arguments - a callback function must be specified');
-	            return;
-	        }
-
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_CURRENT_PAGE_ANCHORS, {}, callback);
-	    };
-
-	    var getProducts = function getProducts(options, onSuccess, onError) {
-	        if (!utils.isObject(options)) {
-	            reporter.reportSdkError('Missing mandatory argument - options must be an object');
-	            return;
-	        }
-	        if (!utils.isFunction(onSuccess)) {
-	            reporter.reportSdkError('Missing mandatory argument - onSuccess must be a function');
-	            return;
-	        }
-	        if (onError && !utils.isFunction(onError)) {
-	            reporter.reportSdkError('Invalid argument - onError must be a function');
-	            return;
-	        }
-
-	        var callback = function callback(data) {
-	            if (data && data.error) {
-	                if (onError) {
-	                    onError(data);
-	                }
-	            } else {
-	                if (onSuccess) {
-	                    onSuccess(data);
-	                }
-	            }
-	        };
-
-	        var args = {};
-	        if (options.appDefinitionId) {
-	            args.appDefinitionId = options.appDefinitionId;
-	        }
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_PRODUCTS, args, callback);
-	    };
-
-	    return {
-	        resizeComponent: resizeComponent,
-	        openMediaDialog: openMediaDialog,
-	        revalidateSession: revalidateSession,
-	        getCurrentPageAnchors: getCurrentPageAnchors,
-	        openModal: openModal,
-	        getProducts: getProducts
-	    };
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 18 */
 /*!**********************************!*\
   !*** ./js/modules/Activities.js ***!
   \**********************************/
@@ -2080,7 +1833,7 @@
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/responseHandlers */ 14), __webpack_require__(/*! Utils */ 19), __webpack_require__(/*! privates/reporter */ 10)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage, responseHandlers, utils, reporter) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/responseHandlers */ 14), __webpack_require__(/*! Utils */ 18), __webpack_require__(/*! privates/reporter */ 10)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage, responseHandlers, utils, reporter) {
 
 	  var postActivity = function postActivity(activity, onSuccess, onFailure) {
 	    if (utils.getViewMode() !== "site") {
@@ -2437,7 +2190,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 19 */
+/* 18 */
 /*!*****************************!*\
   !*** ./js/modules/Utils.js ***!
   \*****************************/
@@ -2450,7 +2203,7 @@
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/core */ 4), __webpack_require__(/*! Media */ 20), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/urlUtils */ 8), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/viewMode */ 6)], __WEBPACK_AMD_DEFINE_RESULT__ = function (core, Media, utils, reporter, urlUtils, postMessage, viewMode) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/core */ 4), __webpack_require__(/*! Media */ 19), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/urlUtils */ 8), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/viewMode */ 6)], __WEBPACK_AMD_DEFINE_RESULT__ = function (core, Media, utils, reporter, urlUtils, postMessage, viewMode) {
 
 	    var getViewMode = function getViewMode() {
 	        return window.top === window ? 'standalone' : viewMode.getViewMode();
@@ -2835,7 +2588,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 20 */
+/* 19 */
 /*!*****************************!*\
   !*** ./js/modules/Media.js ***!
   \*****************************/
@@ -3048,7 +2801,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 21 */
+/* 20 */
 /*!********************************!*\
   !*** ./js/modules/Settings.js ***!
   \********************************/
@@ -3061,7 +2814,7 @@
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Styles */ 22), __webpack_require__(/*! Base */ 23), __webpack_require__(/*! WindowPlacement */ 25), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/sharedAPI */ 17)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Styles, Base, WindowPlacement, utils, reporter, postMessage, sharedAPI) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Styles */ 21), __webpack_require__(/*! Base */ 22), __webpack_require__(/*! WindowPlacement */ 24), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/sharedAPI */ 25)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Styles, Base, WindowPlacement, utils, reporter, postMessage, sharedAPI) {
 
 	    var getStyleParams = function getStyleParams(callback) {
 	        reporter.reportSdkMsg('Wix.Settings.getStyleParams is DEPRECATED use Wix.Styles.getStyleParams');
@@ -3194,8 +2947,8 @@
 	        });
 	    };
 
-	    var getSitePages = function getSitePages(callback) {
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_SITE_PAGES, null, callback);
+	    var getSitePages = function getSitePages(options, callback) {
+	        Base.getSitePages(options, callback);
 	    };
 
 	    var setWindowPlacement = function setWindowPlacement(compId, placement, verticalMargin, horizontalMargin) {
@@ -3437,7 +3190,7 @@
 	         * The getSitePages method is used to retrieve the site structure from the hosting Wix Platform. The site structure includes visible and hidden pages as well as sub pages.
 	         * @function
 	         * @memberof Wix.Settings
-	         * @since 1.17.0
+	         * @since 1.68.0
 	         * @see Wix.getSitePages
 	         *
 	         * @example
@@ -3744,7 +3497,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 22 */
+/* 21 */
 /*!******************************!*\
   !*** ./js/modules/Styles.js ***!
   \******************************/
@@ -4257,7 +4010,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 23 */
+/* 22 */
 /*!****************************!*\
   !*** ./js/modules/Base.js ***!
   \****************************/
@@ -4269,7 +4022,7 @@
 	*/
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Utils */ 19), __webpack_require__(/*! Styles */ 22), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! Theme */ 24), __webpack_require__(/*! WindowOrigin */ 3), __webpack_require__(/*! WindowPlacement */ 25), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/sharedAPI */ 17)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Utils, Styles, utils, Theme, WindowOrigin, WindowPlacement, reporter, postMessage, sharedAPI) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Utils */ 18), __webpack_require__(/*! Styles */ 21), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! Theme */ 23), __webpack_require__(/*! WindowOrigin */ 3), __webpack_require__(/*! WindowPlacement */ 24), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/sharedAPI */ 25)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Utils, Styles, utils, Theme, WindowOrigin, WindowPlacement, reporter, postMessage, sharedAPI) {
 
 	    var openModal = function openModal(url, width, height, onClose, theme) {
 	        if (Utils.getViewMode() === "editor") {
@@ -4379,8 +4132,33 @@
 	        postMessage.sendMessage(postMessage.MessageTypes.SITE_INFO, null, onSuccess);
 	    };
 
-	    var getSitePages = function getSitePages(callback) {
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_SITE_PAGES, null, callback);
+	    var getSitePages = function getSitePages(options, callback) {
+	        var args = {};
+
+	        if (utils.isFunction(options)) {
+	            callback = options;
+	        } else if (options) {
+	            if (utils.isObject(options)) {
+	                if (options.includePagesUrl) {
+	                    if (utils.isBoolean(options.includePagesUrl)) {
+	                        args.includePagesUrl = options.includePagesUrl;
+	                    } else {
+	                        reporter.reportSdkError('Invalid argument - includePagesUrl should be of type boolean');
+	                        return;
+	                    }
+	                }
+	            } else {
+	                reporter.reportSdkError('Invalid argument - options should be of type Object');
+	                return;
+	            }
+
+	            if (callback && !utils.isFunction(callback)) {
+	                reporter.reportSdkError('Invalid argument - callback should be of type Function');
+	                return;
+	            }
+	        }
+
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_SITE_PAGES, args, callback);
 	    };
 
 	    var setPageMetadata = function setPageMetadata(options) {
@@ -4464,28 +4242,40 @@
 	        postMessage.sendMessage(postMessage.MessageTypes.GET_COMPONENT_INFO, null, callback);
 	    };
 
-	    var navigateToPage = function navigateToPage(pageId, options) {
+	    var navigateToPage = function navigateToPage(pageId, options, onFailure) {
 	        if (!pageId) {
-	            reporter.reportSdkError('Missing mandatory argument - pageId');
+	            reporter.reportSdkError('Missing mandatory argument - pageId of type string');
+	            return;
+	        }
+	        if (options && !utils.isObject(options)) {
+	            reporter.reportSdkError('Invalid argument - options must be of type Object');
+	            return;
+	        }
+	        if (onFailure && !utils.isFunction(onFailure)) {
+	            reporter.reportSdkError('Invalid argument - onFailure must be of type Function');
 	            return;
 	        }
 
-	        var args = {
-	            pageId: pageId
-	        };
+	        var args = { pageId: pageId };
 
 	        if (options) {
+	            if (options.anchorId) {
+	                if (Utils.getViewMode() === 'editor') {
+	                    reporter.reportSdkError('Invalid view mode. This function cannot be called with anchorId in editor mode. Supported view modes are: [preview, site]');
+	                    return;
+	                }
+	                args.anchorId = options.anchorId;
+	            }
+
 	            if (options.noTransition) {
-	                if (utils.isBoolean(options.noTransition)) {
-	                    args.noTransition = options.noTransition;
-	                } else {
+	                if (!utils.isBoolean(options.noTransition)) {
 	                    reporter.reportSdkError('Invalid argument - noTransition should be of type boolean');
 	                    return;
 	                }
+	                args.noTransition = options.noTransition;
 	            }
 	        }
-
-	        postMessage.sendMessage(postMessage.MessageTypes.NAVIGATE_TO_PAGE, args);
+	        postMessage.sendMessage(postMessage.MessageTypes.NAVIGATE_TO_PAGE, args, onFailure);
 	    };
 
 	    var currentMember = function currentMember(onSuccess) {
@@ -4496,13 +4286,61 @@
 	        postMessage.sendMessage(postMessage.MessageTypes.SM_CURRENT_MEMBER, null, onSuccess);
 	    };
 
-	    var requestLogin = function requestLogin(onSuccess) {
+	    var requestLogin = function requestLogin(options, onSuccess, onCancel) {
+
 	        if (Utils.getViewMode() !== 'site') {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor/preview mode. Supported view mode is: [site]');
 	            return;
 	        }
 
-	        postMessage.sendMessage(postMessage.MessageTypes.SM_REQUEST_LOGIN, null, onSuccess);
+	        var args = {},
+	            callback = function callback() {};
+	        var isCallOnSuccess = false;
+
+	        //backwards - support when onSuccess was the first argument
+	        if (utils.isFunction(options)) {
+	            if (utils.isFunction(onSuccess)) {
+	                onCancel = onSuccess;
+	            } else if (onSuccess) {
+	                reporter.reportSdkError("Invalid argument - onSuccess must be of type Function");
+	                return;
+	            }
+	            onSuccess = options;
+	            isCallOnSuccess = true;
+	        } else if (utils.isObject(options)) {
+	            if (options.mode === 'login' || options.mode === 'signup') {
+	                args.mode = options.mode;
+	            } else if (options.mode) {
+	                reporter.reportSdkError("Invalid argument - mode can only be 'login' or 'signup'");
+	                return;
+	            }
+	            if (options.language) {
+	                args.language = options.language;
+	            }
+	            if (utils.isFunction(onSuccess)) {
+	                isCallOnSuccess = true;
+	            } else if (onSuccess) {
+	                reporter.reportSdkError("Invalid argument - onSuccess must be of type Function");
+	                return;
+	            }
+	        }
+
+	        if (isCallOnSuccess) {
+	            var callOnCancel = utils.isFunction(onCancel);
+	            args.callOnCancel = callOnCancel;
+
+	            callback = function (data) {
+	                if (data.wasCancelled) {
+	                    if (callOnCancel) {
+	                        onCancel(data);
+	                    }
+	                } else {
+	                    onSuccess(data);
+	                }
+	            };
+	        }
+
+	        postMessage.sendMessage(postMessage.MessageTypes.SM_REQUEST_LOGIN, args, callback);
 	    };
 
 	    var logOutCurrentMember = function logOutCurrentMember(options, onError) {
@@ -4867,7 +4705,8 @@
 	         * The getSitePages method is used to retrieve the site structure from the hosting Wix Platform. The site structure includes visible and hidden pages as well as sub pages.
 	         * @function
 	         * @memberof Wix
-	         * @since 1.17.0
+	         * @since 1.68.0
+	         * @param  [options] may contain a 'includePagesUrl' property that indicates if to add to the single page description object the property url
 	         * @param {Function} callback A callback function to receive the site pages.
 	         * @return {Array} Array containing an ordered set of the site pages. A single page description contains the following properties:
 	         *
@@ -4877,9 +4716,14 @@
 	         * title             | `String`  | The page title.
 	         * hide              | `Boolean` | A flag indicating if the page is hidden.
 	         * subPages(optional)| `Array`   | An ordered set of sub pages.
+	         * url               | `String`  | Url of the page (will be added only if includePagesUrl is given and it's true)
 	         * @example
 	         *
 	         * Wix.getSitePages(function(sitePages) {
+	         *    // do something with the site pages
+	         * });
+	         *
+	         * Wix.getSitePages({ includePagesUrl: true }, function(sitePages) {
 	         *    // do something with the site pages
 	         * });
 	         */
@@ -4989,13 +4833,17 @@
 	         *
 	         * @function
 	         * @memberof Wix
-	         * @since 1.6.0
-	         * @param {Function} callback A callback function to receive the current member details.
+	         * @since 1.68.0
+	         * @param {Object} [options] An Object that may contain a 'mode' property with possible values: 'login' or 'signup', and may contain a 'language' property (default is 'en')
+	         * @param {Function} [onSuccess] A callback function to receive the current member details.
+	         * @param {Function} [onCancel] A callback function called when user cancels and closes the log-in/sign-up dialog.
 	         * @example
 	         *
-	         * Wix.requestLogin(function (data) {
+	         * Wix.requestLogin({mode: 'login', language: 'es'}, function (data) {
 	         *    //do something with data
-	         * }
+	         * }, function(){
+	         *    //handle user cancellation
+	         * });
 	         */
 	        requestLogin: requestLogin,
 
@@ -5055,9 +4903,13 @@
 	         *
 	         * @function
 	         * @memberof Wix
-	         * @since 1.66.0
+	         * @since 1.68.0
 	         * @param {String} pageId A string representing the page id target.
-	         * @param {Object} [Options] options may contain noTransition for removing the transition when navigate to the page
+	         * @param {Object} [Options] options may contain:
+	         *                           noTransition for removing the transition when navigate to the page
+	         *                           anchorId of the anchor to navigate to in the page
+	         * @param {function} [onFailure] - onFailure message when options is provided but the anchorId is not valid
+	         *
 	         *
 	         * @example
 	         *
@@ -5249,7 +5101,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 24 */
+/* 23 */
 /*!*****************************!*\
   !*** ./js/modules/Theme.js ***!
   \*****************************/
@@ -5281,7 +5133,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 25 */
+/* 24 */
 /*!***************************************!*\
   !*** ./js/modules/WindowPlacement.js ***!
   \***************************************/
@@ -5363,6 +5215,170 @@
 	    CENTER: 'CENTER'
 	  };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 25 */
+/*!******************************************!*\
+  !*** ./js/modules/privates/sharedAPI.js ***!
+  \******************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/responseHandlers */ 14)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, postMessage, reporter, responseHandlers) {
+	    'use strict';
+
+	    var resizeComponent = function resizeComponent(options, onSuccess, onFailure) {
+	        if (!options || !options.width && !options.height) {
+	            reporter.reportSdkError('Mandatory arguments - width or height must be supplied');
+	            return;
+	        }
+
+	        var args = {};
+
+	        if (options.width) {
+	            args.width = options.width;
+	        }
+
+	        if (options.height) {
+	            args.height = options.height;
+	        }
+
+	        var callback = function callback(data) {
+	            if (data.onError) {
+	                if (onFailure) {
+	                    onFailure(data);
+	                }
+	            } else {
+	                if (onSuccess) {
+	                    onSuccess(data);
+	                }
+	            }
+	        };
+
+	        postMessage.sendMessage(postMessage.MessageTypes.RESIZE_COMPONENT, args, callback);
+	    };
+
+	    var openMediaDialog = function openMediaDialog(messageType, supportedMediaTypes, mediaType, multipleSelection, onSuccess, onCancel) {
+	        if (!utils.isString(mediaType) || !isValidMediaType(supportedMediaTypes, mediaType)) {
+	            reporter.reportSdkError('Missing mandatory argument - mediaType must be one of Wix.Settings.MediaType');
+	            return;
+	        }
+
+	        if (!utils.isBoolean(multipleSelection)) {
+	            reporter.reportSdkError('Missing mandatory argument - multipleSelection must be true or false');
+	            return;
+	        }
+
+	        if (!utils.isFunction(onSuccess)) {
+	            reporter.reportSdkError('Missing mandatory argument - onSuccess must be a function');
+	            return;
+	        }
+
+	        var callOnCancel = utils.isFunction(onCancel);
+
+	        var callback = function callback(data) {
+	            if (data.wasCancelled) {
+	                if (callOnCancel) {
+	                    onCancel(data);
+	                }
+	            } else {
+	                onSuccess(data);
+	            }
+	        };
+
+	        var args = {
+	            mediaType: mediaType,
+	            multiSelection: multipleSelection,
+	            callOnCancel: callOnCancel
+	        };
+
+	        postMessage.sendMessage(messageType, args, callback);
+	    };
+
+	    var openModal = function openModal(url, width, height, title, onClose, bareUI, options) {
+	        if (!url || !width || !height) {
+	            reporter.reportSdkError('Mandatory arguments - url & width & height must be specified');
+	            return;
+	        }
+	        if (!utils.isString(url)) {
+	            reporter.reportSdkError('Invalid argument - a Url must be of type string');
+	            return;
+	        }
+	        if (!utils.isNumber(width) && !utils.isPercentValue(width)) {
+	            reporter.reportSdkError('Invalid argument - a width must be of type Number or Percentage');
+	            return;
+	        }
+	        if (!utils.isNumber(height) && !utils.isPercentValue(height)) {
+	            reporter.reportSdkError('Invalid argument - a height must be of type Number or Percentage');
+	            return;
+	        }
+
+	        var args = {
+	            url: url,
+	            width: width,
+	            height: height,
+	            isBareMode: bareUI,
+	            options: options
+	        };
+
+	        if (utils.isFunction(title)) {
+	            onClose = title;
+	        } else {
+	            args.title = title;
+	        }
+
+	        postMessage.sendMessage(postMessage.MessageTypes.SETTINGS_OPEN_MODAL, args, onClose);
+	    };
+
+	    var isValidMediaType = function isValidMediaType(MediaType, value) {
+	        for (var key in MediaType) {
+	            if (MediaType[key] === value) {
+	                return true;
+	            }
+	        }
+	        return false;
+	    };
+
+	    var revalidateSession = function revalidateSession(onSuccess, onError) {
+	        if (onSuccess) {
+	            if (utils.isFunction(onSuccess)) {
+	                var callback = function callback(response) {
+	                    if (response && response.onError) {
+	                        var wixErrorMessage = responseHandlers.getWixError(response.error.errorCode);
+	                        if (onError) {
+	                            onError.call(this, wixErrorMessage);
+	                        }
+	                    } else {
+	                        onSuccess.apply(this, arguments);
+	                    }
+	                };
+	                postMessage.sendMessage(postMessage.MessageTypes.REVALIDATE_SESSION, {}, callback);
+	            } else {
+	                reporter.reportSdkError('Mandatory argument - onSuccess - should be of type Function');
+	            }
+	        } else {
+	            reporter.reportSdkError('Missing Mandatory argument - onSuccess');
+	        }
+	    };
+
+	    var getCurrentPageAnchors = function getCurrentPageAnchors(callback) {
+	        if (!callback || !utils.isFunction(callback)) {
+	            reporter.reportSdkError('Mandatory arguments - a callback function must be specified');
+	            return;
+	        }
+
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_CURRENT_PAGE_ANCHORS, {}, callback);
+	    };
+
+	    return {
+	        resizeComponent: resizeComponent,
+	        openMediaDialog: openMediaDialog,
+	        revalidateSession: revalidateSession,
+	        getCurrentPageAnchors: getCurrentPageAnchors,
+	        openModal: openModal
+	    };
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
 /* 26 */
@@ -5535,14 +5551,14 @@
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Base */ 23), __webpack_require__(/*! PubSub */ 28), __webpack_require__(/*! Utils */ 19), __webpack_require__(/*! Data */ 29)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Base, PubSub, Utils, Data) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Base */ 22), __webpack_require__(/*! PubSub */ 28), __webpack_require__(/*! Utils */ 18), __webpack_require__(/*! Data */ 29)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Base, PubSub, Utils, Data) {
 
 	    var getSiteInfo = function getSiteInfo(onSuccess) {
 	        Base.getSiteInfo(onSuccess);
 	    };
 
-	    var getSitePages = function getSitePages(callback) {
-	        Base.getSitePages(callback);
+	    var getSitePages = function getSitePages(options, callback) {
+	        Base.getSitePages(options, callback);
 	    };
 
 	    var addEventListener = function addEventListener(eventName, callBack) {
@@ -5611,7 +5627,7 @@
 
 	        /**
 	         * @memberof Wix.Worker
-	         * @since 1.30.0
+	         * @since 1.68.0
 	         * @see Wix.getSitePages
 	         */
 	        getSitePages: getSitePages,
@@ -5861,7 +5877,7 @@
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Utils */ 19), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/reporter */ 10)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Utils, utils, postMessage, reporter) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Utils */ 18), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/reporter */ 10)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Utils, utils, postMessage, reporter) {
 
 	    var SCOPE = {
 	        // Data set with scope = APP are accessible across all components
@@ -6167,7 +6183,7 @@
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Base */ 23), __webpack_require__(/*! Settings */ 21), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Base, Settings, reporter, postMessage) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Base */ 22), __webpack_require__(/*! Settings */ 20), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Base, Settings, reporter, postMessage) {
 
 	    var setHeight = function setHeight(height) {
 	        Base.setHeight(height);
