@@ -69,11 +69,11 @@
   \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/core */ 4), __webpack_require__(/*! Base */ 22), __webpack_require__(/*! Billing */ 13), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! Activities */ 17), __webpack_require__(/*! Settings */ 20),
-	        __webpack_require__(/*! Contacts */ 26), __webpack_require__(/*! Utils */ 18), __webpack_require__(/*! Styles */ 21), __webpack_require__(/*! Events */ 5), __webpack_require__(/*! Error */ 15), __webpack_require__(/*! Media */ 19), __webpack_require__(/*! WindowOrigin */ 3),
-	        __webpack_require__(/*! WindowPlacement */ 24), __webpack_require__(/*! Worker */ 27), __webpack_require__(/*! PubSub */ 28), __webpack_require__(/*! Preview */ 30), __webpack_require__(/*! Dashboard */ 31), __webpack_require__(/*! Theme */ 23), __webpack_require__(/*! Counters */ 32), __webpack_require__(/*! Features */ 33), __webpack_require__(/*! privates/urlUtils */ 8), __webpack_require__(/*! Data */ 29)], __WEBPACK_AMD_DEFINE_RESULT__ = function (core, Base, Billing, utils, Activities, Settings,
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/core */ 4), __webpack_require__(/*! Base */ 25), __webpack_require__(/*! Billing */ 13), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! Activities */ 18), __webpack_require__(/*! Settings */ 19),
+	        __webpack_require__(/*! Contacts */ 21), __webpack_require__(/*! Utils */ 22), __webpack_require__(/*! Styles */ 24), __webpack_require__(/*! Events */ 5), __webpack_require__(/*! Error */ 15), __webpack_require__(/*! Media */ 23), __webpack_require__(/*! WindowOrigin */ 3),
+	        __webpack_require__(/*! WindowPlacement */ 20), __webpack_require__(/*! Worker */ 27), __webpack_require__(/*! PubSub */ 32), __webpack_require__(/*! Preview */ 33), __webpack_require__(/*! Dashboard */ 34), __webpack_require__(/*! Theme */ 26), __webpack_require__(/*! Features */ 35), __webpack_require__(/*! privates/urlUtils */ 8), __webpack_require__(/*! Data */ 28), __webpack_require__(/*! Performance */ 36)], __WEBPACK_AMD_DEFINE_RESULT__ = function (core, Base, Billing, utils, Activities, Settings,
 	              Contacts, Utils, Styles, Events, Error, Media, WindowOrigin,
-	              WindowPlacement, Worker, PubSub, Preview, Dashboard, Theme, Counters, Features, urlUtils, Data) {
+	              WindowPlacement, Worker, PubSub, Preview, Dashboard, Theme, Features, urlUtils, Data, Performance) {
 
 	    core.init({});
 
@@ -93,7 +93,6 @@
 	            Activities: Activities,
 	            Billing: Billing,
 	            Contacts: Contacts,
-	            Counters: Counters,
 	            Dashboard: Dashboard,
 	            Error: Error,
 	            Events: Events,
@@ -130,12 +129,15 @@
 	            getExternalId: Base.getExternalId,
 	            navigateToComponent: Base.navigateToComponent,
 	            resizeComponent: Base.resizeComponent,
+	            revalidateSession: Base.revalidateSession,
 	            getCurrentPageAnchors: Base.getCurrentPageAnchors,
 	            navigateToAnchor: Base.navigateToAnchor,
 	            Data: Data,
 	            getComponentInfo: Base.getComponentInfo,
 	            replaceSectionState: Base.replaceSectionState,
-	            setPageMetadata: Base.setPageMetadata
+	            setPageMetadata: Base.setPageMetadata,
+	            getStateUrl: Base.getStateUrl,
+	            Performance: Performance
 	        };
 	    };
 
@@ -155,7 +157,7 @@
 	 * Represents a Wix popup window origin. A window can be positioned where it is origin is the view port (0,0) or
 	 * where the origin is another widget (x,y).
 	 * @memberof Wix
-	 * @namespace WindowOrigin
+	 * @namespace Wix.WindowOrigin
 	 */
 	'use strict';
 
@@ -214,7 +216,7 @@
 	        postMessage.init(getVersion());
 	        if (opts && opts.endpointType !== 'worker') {
 	            // report ready to Wix
-	            postMessage.sendMessage(postMessage.MessageTypes.APP_IS_ALIVE, { version: getVersion() }, styles.init.bind(null, setReady));
+	            postMessage.sendMessage(postMessage.MessageTypes.APP_IS_ALIVE, undefined, { version: getVersion() }, styles.init.bind(null, setReady));
 	        }
 	        viewMode.init();
 	    };
@@ -240,7 +242,7 @@
 	    var setReady = function setReady(styles) {
 	        isReady = true;
 	        callReadyQ(styles);
-	        postMessage.sendMessage(postMessage.MessageTypes.STYLE_PARAMS_READY, { version: getVersion() });
+	        postMessage.sendMessage(postMessage.MessageTypes.STYLE_PARAMS_READY, undefined, { version: getVersion() });
 	    };
 
 	    var callReadyQ = function callReadyQ(styles) {
@@ -281,7 +283,7 @@
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/**
 	 * @memberof Wix
-	 * @namespace Events
+	 * @namespace Wix.Events
 	 */
 	'use strict';
 
@@ -461,6 +463,27 @@
 	    DEVICE_TYPE_CHANGED: 'DEVICE_TYPE_CHANGED',
 
 	    /**
+	     * Issued when the user hits a keyboard key down
+	     * @memberof Wix.Events
+	     * @since 1.73.0
+	     */
+	    KEY_DOWN: 'KEY_DOWN',
+
+	    /**
+	     * Issued when the user hits a keyboard key up
+	     * @memberof Wix.Events
+	     * @since 1.73.0
+	     */
+	    KEY_UP: 'KEY_UP',
+
+	    /**
+	     * Issued when the user presses a keyboard key
+	     * @memberof Wix.Events
+	     * @since 1.73.0
+	     */
+	    KEY_PRESS: 'KEY_PRESS',
+
+	    /**
 	     * Issued when the site is saved.
 	     * @memberof Wix.Events
 	     * @since 1.62.0
@@ -494,18 +517,22 @@
 	var currentEditMode;
 
 	var getViewMode = function getViewMode() {
+	    return window.top === window ? 'standalone' : getViewModeInternal();
+	};
+
+	var getViewModeInternal = function getViewModeInternal() {
 	    return currentEditMode || urlUtils.getQueryParameter('viewMode');
 	};
 
 	var setViewModeFromHandler = function setViewModeFromHandler() {
-	    postMessage.sendMessage(postMessage.MessageTypes.GET_VIEW_MODE, {}, function (params) {
+	    postMessage.sendMessage(postMessage.MessageTypes.GET_VIEW_MODE, undefined, {}, function (params) {
 	        currentEditMode = params && params.editMode;
 	    });
 	};
 
 	var init = function init() {
 	    // initialize edit mode state tracking
-	    postMessage.addEventListenerInternal('EDIT_MODE_CHANGE', function (params) {
+	    postMessage.addEventListenerInternal('EDIT_MODE_CHANGE', undefined, function (params) {
 	        currentEditMode = params.editMode;
 	    });
 
@@ -514,7 +541,8 @@
 
 	module.exports = {
 	    init: init,
-	    getViewMode: getViewMode
+	    getViewMode: getViewMode,
+	    getViewModeInternal: getViewModeInternal
 	};
 
 /***/ },
@@ -533,6 +561,7 @@
 
 	var MessageTypes = {
 	    REFRESH_APP: 'refreshApp',
+	    REFRESH_APP_BY_COMP_IDS: 'refreshAppByCompIds',
 	    APP_IS_ALIVE: 'appIsAlive',
 	    APP_STATE_CHANGED: 'appStateChanged',
 	    CLOSE_WINDOW: 'closeWindow',
@@ -542,7 +571,6 @@
 	    OPEN_POPUP: 'openPopup',
 	    OPEN_MODAL: 'openModal',
 	    OPEN_MEDIA_DIALOG: 'openMediaDialog',
-	    SUPER_APPS_OPEN_MEDIA_DIALOG: 'superAppsOpenMediaDialog',
 	    OPEN_BILLING_PAGE: 'openBillingPage',
 	    GET_SITE_PAGES: 'getSitePages',
 	    SET_PAGE_METADATA: 'setPageMetadata',
@@ -578,10 +606,8 @@
 	    GET_SECTION_URL: 'getSectionUrl',
 	    OPEN_BILLING_PAGE_FOR_PRODUCT: 'openBillingPageForProduct',
 	    GET_BILLING_PAGE_FOR_PRODUCT: 'getBillingPageForProduct',
-	    GET_ACTIVE_BILLING_PACKAGE: 'getActiveBillingPackage',
 	    GET_BILLING_PACKAGES: 'getBillingPackages',
 	    ADD_COMPONENT: 'addComponent',
-	    POST_COUNTERS_REPORT: 'postCountersReport',
 	    RESIZE_COMPONENT: 'resizeComponent',
 	    OPEN_SETTINGS_DIALOG: 'openSettingsDialog',
 	    IS_SUPPORTED: 'isSupported',
@@ -613,8 +639,47 @@
 	    IS_FULL_WIDTH: 'isFullWidth',
 	    GET_STYLE_BY_COMP_ID: 'getStyleByCompId',
 	    OPEN_REVIEW_INFO: 'openReviewInfo',
+	    TO_WIX_DATE: 'toWixDate',
+	    GET_COMP_ID: 'getCompId',
+	    GET_ORIG_COMP_ID: 'getOrigCompId',
+	    GET_WIDTH: 'getWidth',
+	    GET_LOCALE: 'getLocale',
+	    GET_CACHE_KILLER: 'getCacheKiller',
+	    GET_TARGET: 'getTarget',
+	    GET_INSTANCE_ID: 'getInstanceId',
+	    GET_SIGN_DATE: 'getSignDate',
+	    GET_UID: 'getUid',
+	    GET_PERMISSIONS: 'getPermissions',
+	    GET_IP_AND_PORT: 'getIpAndPort',
+	    GET_DEMO_MODE: 'getDemoMode',
+	    GET_DEVICE_TYPE: 'getDeviceType',
+	    GET_INSTANCE_VALUE: 'getInstanceValue',
+	    GET_SITE_OWNER_ID: 'getSiteOwnerId',
+	    GET_IMAGE_URL: 'getImageUrl',
+	    GET_RESIZED_IMAGE_URL: 'getResizedImageUrl',
+	    GET_AUDIO_URL: 'getAudioUrl',
+	    GET_DOCUMENT_URL: 'getDocumentUrl',
+	    GET_SWF_URL: 'getSwfUrl',
+	    GET_PREVIEW_SECURE_MUSIC_URL: 'getPreviewSecureMusicUrl',
+	    GET_VIEW_MODE_INTERNAL: 'getViewModeInternal',
+	    GET_STYLE_COLOR_BY_KEY: 'getStyleColorByKey',
+	    GET_COLOR_BY_REFERENCE: 'getColorByreference',
+	    GET_EDITOR_FONTS: 'getEditorFonts',
+	    SET_COLOR_PARAM: 'setColorParam',
+	    SET_NUMBER_PARAM: 'setNumberParam',
+	    SET_BOOLEAN_PARAM: 'setBooleanParam',
+	    GET_SITE_TEXT_PRESETS: 'getSiteTextPresets',
+	    GET_FONTS_SPRITE_URL: 'getFontsSpriteUrl',
+	    GET_STYLE_FONT_BY_KEY: 'getStyleFontByKey',
+	    GET_STYLE_FONT_BY_REFERENCE: 'getStyleFontByReference',
+	    SET_UI_LIB_PARAM_VALUE: 'setUILIBParamValue',
 	    SET_HELP_ARTICLE: 'setHelpArticle',
-	    GET_CT_TOKEN: 'getCtToken'
+	    GET_CT_TOKEN: 'getCtToken',
+	    GET_PRODUCTS: 'getProducts',
+	    GET_STATE_URL: 'getStateUrl',
+	    APPLICATION_LOADED: 'applicationLoaded',
+	    APPLICATION_LOADED_STEP: 'applicationLoadingStep',
+	    SUPER_APPS_OPEN_MEDIA_DIALOG: 'superAppsOpenMediaDialog'
 	};
 
 	var callId = 1;
@@ -627,14 +692,14 @@
 
 	var version;
 
-	var sendMessage = function sendMessage(msgType, params, callback) {
+	var sendMessage = function sendMessage(msgType, namespace, params, callback) {
 	    if (!msgType) {
 	        return;
 	    }
 	    if (params === null) {
 	        params = undefined;
 	    }
-	    var blob = getBlob(msgType, params, callback);
+	    var blob = getBlob(msgType, namespace, params, callback);
 
 	    var target = parent.postMessage ? parent : parent.document.postMessage ? parent.document : undefined;
 	    if (target && typeof target !== "undefined") {
@@ -694,7 +759,7 @@
 	    }
 	};
 
-	var addEventListenerInternal = function addEventListenerInternal(eventKey, callBack, skipValidation, params) {
+	var addEventListenerInternal = function addEventListenerInternal(eventKey, namespace, callBack, skipValidation, params) {
 	    if (!skipValidation && (!eventKey || !Events.hasOwnProperty(eventKey))) {
 	        reporter.reportSdkError('Unsupported event name, ' + eventKey);
 	        return;
@@ -711,7 +776,7 @@
 	    params = params || {};
 	    params.eventKey = eventKey;
 
-	    sendMessage(MessageTypes.REGISTER_EVENT_LISTENER, params, handleAddEventListenerResponse.bind(null, callBack));
+	    sendMessage(MessageTypes.REGISTER_EVENT_LISTENER, namespace, params, handleAddEventListenerResponse.bind(null, callBack));
 	    return id;
 	};
 
@@ -723,23 +788,23 @@
 	    }
 	};
 
-	var getBlob = function getBlob(msgType) {
-	    var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	    var onResponseCallback = arguments.length <= 2 || arguments[2] === undefined ? function () {} : arguments[2];
+	var getBlob = function getBlob(type, namespace) {
+	    var data = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	    var onResponseCallback = arguments.length <= 3 || arguments[3] === undefined ? function () {} : arguments[3];
 
-	    if (utils.isObject(params)) {
-	        params.version = version;
-	    } else {
-	        reporter.reportSdkMsg('Expecting params to be of type Object, ' + typeof params + " given");
+	    if (!utils.isObject(data)) {
+	        reporter.reportSdkMsg('Expecting params to be of type Object, ' + typeof data + " given");
 	    }
 
 	    var blob = {
 	        intent: "TPA2",
 	        callId: getCallId(),
-	        type: msgType,
+	        type: type,
 	        compId: compId,
 	        deviceType: deviceType,
-	        data: params
+	        namespace: namespace,
+	        version: version,
+	        data: data
 	    };
 
 	    if (onResponseCallback) {
@@ -753,7 +818,7 @@
 	    return callId++;
 	};
 
-	var removeEventListenerInternal = function removeEventListenerInternal(eventName, callBackOrId, skipValidation) {
+	var removeEventListenerInternal = function removeEventListenerInternal(eventName, namespace, callBackOrId, skipValidation) {
 	    if (!skipValidation && (!eventName || !Events.hasOwnProperty(eventName))) {
 	        reporter.reportSdkError('Unsupported event name, ' + eventName);
 	        return;
@@ -773,7 +838,7 @@
 	    }
 
 	    if (i >= 0 && eventCallbacks.length === 0) {
-	        sendMessage(MessageTypes.REMOVE_EVENT_LISTENER, {
+	        sendMessage(MessageTypes.REMOVE_EVENT_LISTENER, namespace, {
 	            eventKey: eventName
 	        });
 	    }
@@ -1046,8 +1111,8 @@
 	    var init = function init(onReady, style) {
 	        utils.onDocumentReady(function () {
 	            templateUtils.insertStyleReset();
-	            postMessage.addEventListenerInternal(Events.THEME_CHANGE, onThemeChange);
-	            postMessage.addEventListenerInternal(Events.STYLE_PARAMS_CHANGE, onStyleParamChange);
+	            postMessage.addEventListenerInternal(Events.THEME_CHANGE, undefined, onThemeChange);
+	            postMessage.addEventListenerInternal(Events.STYLE_PARAMS_CHANGE, undefined, onStyleParamChange);
 	            onThemeChange(style);
 	            onReady(style);
 	        });
@@ -1341,7 +1406,9 @@
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/responseHandlers */ 14), __webpack_require__(/*! privates/reporter */ 10)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage, utils, responseHandlers, reporter) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/responseHandlers */ 14), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/sharedAPI */ 17)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage, utils, responseHandlers, reporter, sharedAPI) {
+
+	    var namespace = 'Billing';
 
 	    var openBillingPageForProduct = function openBillingPageForProduct(vendorProductId, cycle, onError) {
 	        if (!utils.isString(vendorProductId)) {
@@ -1358,7 +1425,7 @@
 	            cycle: cycle
 	        };
 
-	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_BILLING_PAGE_FOR_PRODUCT, args, onError);
+	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_BILLING_PAGE_FOR_PRODUCT, namespace, args, onError);
 	    };
 
 	    var getBillingPageForProduct = function getBillingPageForProduct(vendorProductId, cycle, onSuccess, onError) {
@@ -1385,7 +1452,7 @@
 	            responseHandlers.handleDataResponse(result, onSuccess, onError);
 	        };
 
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_BILLING_PAGE_FOR_PRODUCT, args, onComplete);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_BILLING_PAGE_FOR_PRODUCT, namespace, args, onComplete);
 	    };
 
 	    var getBillingPackages = function getBillingPackages(vendorProductIds, onSuccess, onError) {
@@ -1407,20 +1474,11 @@
 	            responseHandlers.handleDataResponse(result, onSuccess, onError);
 	        };
 
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_BILLING_PACKAGES, args, onComplete);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_BILLING_PACKAGES, namespace, args, onComplete);
 	    };
 
-	    var getActiveBillingPackage = function getActiveBillingPackage(onSuccess, onError) {
-	        if (!utils.isFunction(onSuccess)) {
-	            reporter.reportSdkError('Missing mandatory argument - onSuccess must be a function');
-	            return;
-	        }
-
-	        var onComplete = function onComplete(result) {
-	            responseHandlers.handleDataResponse(result, onSuccess, onError);
-	        };
-
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_ACTIVE_BILLING_PACKAGE, undefined, onComplete);
+	    var getProducts = function getProducts(onSuccess, onError) {
+	        sharedAPI.getProducts(namespace, {}, onSuccess, onError);
 	    };
 
 	    return {
@@ -1463,6 +1521,7 @@
 	         * @memberof Wix.Billing
 	         * @author lior.shefer@wix.com
 	         * @since 1.37.0
+	         * @private
 	         * @param {String} vendorProductId Vendor product id as detailed in the Features section of the Wix Developer App Registration <a href="http://dev.wix.com" target="_blank">dev.wix.com</a>
 	         * @param {Wix.Billing.Cycle} cycle The billing cycle.
 	         * @param {Function} onSuccess A callback function, returns a link the Wix billing page with information about the product and cycle requested.
@@ -1524,29 +1583,54 @@
 	         * Wix.Billing.getBillingPackages(onSuccess, onError);
 	         *
 	         */
-	        getBillingPackages: getBillingPackages
+
+	        getBillingPackages: getBillingPackages,
 
 	        /**
-	         * Gets the current billing package information. This includes productId and cycle.
+	         *  Returns an Array of objects containing product and pricing info.
 	         *
 	         * @function
 	         * @memberof Wix.Billing
-	         * @author lior.shefer@wix.com
-	         * @since 1.37.0
-	         * @param {Function} onSuccess A callback function to receive the product info.
-	         * @param {Function} [onError] A callback error function.
+	         * @since 1.69.0
+	         * @param {Function} onSuccess A callback function to receive the products.
+	         * @param {Function} onError A callback error function.
 	         *
 	         * @example
 	         * var onError = function () {
 	         *  //handle the error
 	         * };
-	         * var onSuccess = function () {
-	         *  //handle callback
-	         * };
-	         * Wix.Billing.getActiveBillingPackage(onSuccess, onError);
+	         * var onSuccess = function (data) {
+	         *  //handle onSuccess
+	         *  //sample data schema:
+	         *  [{
+	         *     "id": <vendorProductId>,
+	         *     "name": "App Premium Package",
+	         *     "price": "4.95",
+	         *     "is_active": true,
+	         *     "freeMonth": true,
+	         *     "currencyCode": "USD",
+	         *     "currencySymbol": "US$"
+	         *     "monthly": {
+	         *          "price": "4.95",
+	         *          "url": "https://premium.wix.com/wix/api/tpaPriceQuote?appInstanceId=aaa-bbb&appDefinitionId=aa-bb&paymentCycle=MONTHLY&vendorProductId=1234"
+	         *     },
+	         *     "yearly:: {
+	         *          "price": "3.97",
+	         *          "url": "https://premium.wix.com/wix/api/tpaPriceQuote?appInstanceId=aaa-bbb&appDefinitionId=aa-bb&paymentCycle=YEARLY&vendorProductId=1234"
+	         *     },
+	         *     "oneTime": {
+	         *          "price": "5.99",
+	         *          "url": "https://premium.wix.com/wix/api/tpaPriceQuote?appInstanceId=aaa-bbb&appDefinitionId=aa-bb&paymentCycle=ONE_TIME&vendorProductId=1234"
+	         *     },
+	         *     "bestSellingFeature": "",
+	         *      "discountPercent": 20
+	         *     ]
+	         *  }]
 	         *
+	         * };
+	         * Wix.Billing.getProducts(onSuccess, onError);
 	         */
-	        //getActiveBillingPackage: getActiveBillingPackage
+	        getProducts: getProducts
 	    };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -1671,11 +1755,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
-	 * @namespace WixDataCursor
+	 * @private
 	 */
 	'use strict';
 
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage) {
+
+	    var namespace = 'WixDataCursor';
+
 	    var _callService = function _callService(onSuccess, onFailure, cursorId) {
 	        var that = this;
 	        var onComplete = function onComplete(response) {
@@ -1694,7 +1781,7 @@
 	            options: this._options
 	        };
 
-	        postMessage.sendMessage(this._serviceMessageType, args, onComplete);
+	        postMessage.sendMessage(this._serviceMessageType, namespace, args, onComplete);
 	    };
 
 	    function WixDataCursor(serviceMessageType, data, total, pageSize) {
@@ -1712,7 +1799,6 @@
 	    }
 
 	    /**
-	     * @memberof WixDataCursor
 	     * @returns {boolean} If WixDataCursor has more data.
 	     */
 	    WixDataCursor.prototype.hasNext = function hasNext() {
@@ -1720,7 +1806,6 @@
 	    };
 
 	    /**
-	     * @memberof WixDataCursor
 	     * @returns {boolean} If WixDataCursor has previous data.
 	     */
 	    WixDataCursor.prototype.hasPrevious = function hasPrevious() {
@@ -1728,7 +1813,6 @@
 	    };
 
 	    /**
-	     * @memberof WixDataCursor
 	     * @param onSuccess
 	     * @param onFailure
 	     * @returns {boolean} The next WixDataCursor object.
@@ -1742,7 +1826,6 @@
 	    };
 
 	    /**
-	     * @memberof WixDataCursor
 	     * @param onSuccess
 	     * @param onFailure
 	     * @returns {boolean} The previous WixDataCursor object.
@@ -1756,8 +1839,6 @@
 	    };
 
 	    /**
-	     * @memberof WixDataCursor
-	     * @private
 	     * @param {Object} data
 	     */
 	    WixDataCursor.prototype.setData = function setData(data) {
@@ -1765,8 +1846,6 @@
 	    };
 
 	    /**
-	     * @memberof WixDataCursor
-	     * @private
 	     * @returns {WixDataCursor[]}
 	     */
 	    WixDataCursor.prototype.getData = function getData() {
@@ -1774,8 +1853,6 @@
 	    };
 
 	    /**
-	     * @memberof WixDataCursor
-	     * @private
 	     * @param {WixDataCursor} cursor
 	     */
 	    WixDataCursor.prototype.setNextCursor = function setNextCursor(cursor) {
@@ -1783,8 +1860,6 @@
 	    };
 
 	    /**
-	     * @memberof WixDataCursor
-	     * @private
 	     * @param {WixDataCursor} cursor
 	     */
 	    WixDataCursor.prototype.setPreviousCursor = function setPreviousCursor(cursor) {
@@ -1792,7 +1867,6 @@
 	    };
 
 	    /**
-	     * @memberof WixDataCursor
 	     * @returns {Number} The total number of Object in the cursor.
 	     */
 	    WixDataCursor.prototype.getTotal = function getTotal() {
@@ -1800,7 +1874,6 @@
 	    };
 
 	    /**
-	     * @memberof WixDataCursor
 	     * @returns {Number} The number of the cursor page size.
 	     */
 	    WixDataCursor.prototype.getPageSize = function getPageSize() {
@@ -1808,9 +1881,7 @@
 	    };
 
 	    /**
-	     * @memberof WixDataCursor
 	     * @param {Object} options
-	     * @private
 	     * @returns Sets the cursor options object.
 	     */
 	    WixDataCursor.prototype.setOptions = function setOptions(options) {
@@ -1822,6 +1893,394 @@
 
 /***/ },
 /* 17 */
+/*!******************************************!*\
+  !*** ./js/modules/privates/sharedAPI.js ***!
+  \******************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/responseHandlers */ 14), __webpack_require__(/*! privates/styles */ 11), __webpack_require__(/*! privates/core */ 4), __webpack_require__(/*! privates/viewMode */ 6), __webpack_require__(/*! privates/urlUtils */ 8)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, postMessage, reporter, responseHandlers, styles, core, viewMode, urlUtils) {
+	    'use strict';
+
+	    var resizeComponent = function resizeComponent(options, namespace, onSuccess, onFailure) {
+	        if (!options || !options.width && !options.height) {
+	            reporter.reportSdkError('Mandatory arguments - width or height must be supplied');
+	            return;
+	        }
+
+	        var args = {};
+
+	        if (options.width) {
+	            args.width = options.width;
+	        }
+
+	        if (options.height) {
+	            args.height = options.height;
+	        }
+
+	        var callback = function callback(data) {
+	            if (data.onError) {
+	                if (onFailure) {
+	                    onFailure(data);
+	                }
+	            } else {
+	                if (onSuccess) {
+	                    onSuccess(data);
+	                }
+	            }
+	        };
+
+	        postMessage.sendMessage(postMessage.MessageTypes.RESIZE_COMPONENT, namespace, args, callback);
+	    };
+
+	    var openMediaDialog = function openMediaDialog(messageType, namespace, supportedMediaTypes, mediaType, multipleSelection, onSuccess, onCancel) {
+	        if (!utils.isString(mediaType) || !isValidMediaType(supportedMediaTypes, mediaType)) {
+	            reporter.reportSdkError('Missing mandatory argument - mediaType must be one of Wix.Settings.MediaType');
+	            return;
+	        }
+
+	        if (!utils.isBoolean(multipleSelection)) {
+	            reporter.reportSdkError('Missing mandatory argument - multipleSelection must be true or false');
+	            return;
+	        }
+
+	        if (!utils.isFunction(onSuccess)) {
+	            reporter.reportSdkError('Missing mandatory argument - onSuccess must be a function');
+	            return;
+	        }
+
+	        var callOnCancel = utils.isFunction(onCancel);
+
+	        var callback = function callback(data) {
+	            if (data.wasCancelled) {
+	                if (callOnCancel) {
+	                    onCancel(data);
+	                }
+	            } else {
+	                onSuccess(data);
+	            }
+	        };
+
+	        var args = {
+	            mediaType: mediaType,
+	            multiSelection: multipleSelection,
+	            callOnCancel: callOnCancel
+	        };
+
+	        postMessage.sendMessage(messageType, namespace, args, callback);
+	    };
+
+	    var openModal = function openModal(namespace, url, width, height, title, onClose, bareUI, options) {
+	        if (!url || !width || !height) {
+	            reporter.reportSdkError('Mandatory arguments - url & width & height must be specified');
+	            return;
+	        }
+	        if (!utils.isString(url)) {
+	            reporter.reportSdkError('Invalid argument - a Url must be of type string');
+	            return;
+	        }
+	        if (!utils.isNumber(width) && !utils.isPercentValue(width)) {
+	            reporter.reportSdkError('Invalid argument - a width must be of type Number or Percentage');
+	            return;
+	        }
+	        if (!utils.isNumber(height) && !utils.isPercentValue(height)) {
+	            reporter.reportSdkError('Invalid argument - a height must be of type Number or Percentage');
+	            return;
+	        }
+
+	        var args = {
+	            url: url,
+	            width: width,
+	            height: height,
+	            isBareMode: bareUI,
+	            options: options
+	        };
+
+	        if (utils.isFunction(title)) {
+	            onClose = title;
+	        } else {
+	            args.title = title;
+	        }
+
+	        postMessage.sendMessage(postMessage.MessageTypes.SETTINGS_OPEN_MODAL, namespace, args, onClose);
+	    };
+
+	    var isValidMediaType = function isValidMediaType(MediaType, value) {
+	        for (var key in MediaType) {
+	            if (MediaType[key] === value) {
+	                return true;
+	            }
+	        }
+	        return false;
+	    };
+
+	    var revalidateSession = function revalidateSession(namespace, onSuccess, onError) {
+	        if (onSuccess) {
+	            if (utils.isFunction(onSuccess)) {
+	                var callback = function callback(response) {
+	                    if (response && response.onError) {
+	                        var wixErrorMessage = responseHandlers.getWixError(response.error.errorCode);
+	                        if (onError) {
+	                            onError.call(this, wixErrorMessage);
+	                        }
+	                    } else {
+	                        onSuccess.apply(this, arguments);
+	                    }
+	                };
+	                postMessage.sendMessage(postMessage.MessageTypes.REVALIDATE_SESSION, namespace, {}, callback);
+	            } else {
+	                reporter.reportSdkError('Mandatory argument - onSuccess - should be of type Function');
+	            }
+	        } else {
+	            reporter.reportSdkError('Missing Mandatory argument - onSuccess');
+	        }
+	    };
+
+	    var getCurrentPageAnchors = function getCurrentPageAnchors(namespace, callback) {
+	        if (!callback || !utils.isFunction(callback)) {
+	            reporter.reportSdkError('Mandatory arguments - a callback function must be specified');
+	            return;
+	        }
+
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_CURRENT_PAGE_ANCHORS, namespace, {}, callback);
+	    };
+
+	    var getProducts = function getProducts(namespace, options, onSuccess, onError) {
+	        if (!utils.isObject(options)) {
+	            reporter.reportSdkError('Missing mandatory argument - options must be an object');
+	            return;
+	        }
+	        if (!utils.isFunction(onSuccess)) {
+	            reporter.reportSdkError('Missing mandatory argument - onSuccess must be a function');
+	            return;
+	        }
+	        if (onError && !utils.isFunction(onError)) {
+	            reporter.reportSdkError('Invalid argument - onError must be a function');
+	            return;
+	        }
+
+	        var callback = function callback(data) {
+	            if (data && data.error) {
+	                if (onError) {
+	                    onError(data);
+	                }
+	            } else {
+	                if (onSuccess) {
+	                    onSuccess(data);
+	                }
+	            }
+	        };
+
+	        var args = {};
+	        if (options.appDefinitionId) {
+	            args.appDefinitionId = options.appDefinitionId;
+	        }
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_PRODUCTS, namespace, args, callback);
+	    };
+
+	    var getSiteInfo = function getSiteInfo(namespace, onSuccess) {
+	        postMessage.sendMessage(postMessage.MessageTypes.SITE_INFO, namespace, null, onSuccess);
+	    };
+
+	    var closeWindow = function closeWindow(namespace, message) {
+	        postMessage.sendMessage(postMessage.MessageTypes.CLOSE_WINDOW, namespace, { message: message });
+	    };
+
+	    var getViewMode = function getViewMode(namespace) {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_VIEW_MODE_INTERNAL, namespace);
+	        return viewMode.getViewMode();
+	    };
+
+	    var getStyle = function getStyle(callback, key) {
+	        if (styles.Cache[key] && callback) {
+	            callback(styles.Cache[key]);
+	        } else {
+	            core.addToReadyQ(function () {
+	                if (callback) {
+	                    callback(styles.Cache[key]);
+	                }
+	            });
+	        }
+	        return styles.Cache[key];
+	    };
+
+	    var getStyleParams = function getStyleParams(callback) {
+	        return getStyle(callback, 'style');
+	    };
+
+	    var getStyleColorByKey = function getStyleColorByKey(colorKey) {
+	        var color = styles.Cache.mappedColors && styles.Cache.mappedColors['style.' + colorKey];
+	        return color ? color.value : '';
+	    };
+
+	    var getColorByreference = function getColorByreference(colorReference) {
+	        var color = styles.Cache.mappedColors && styles.Cache.mappedColors[colorReference];
+	        color = utils.shallowCloneObject(color, ['name']);
+	        return color;
+	    };
+
+	    var EDITOR_PARAM_TYPES = ['color', 'number', 'boolean', 'font'];
+
+	    var setEditorParam = function setEditorParam(namespace, type, key, value, onSuccess, onError) {
+	        if (EDITOR_PARAM_TYPES.indexOf(type) === -1) {
+	            reporter.reportSdkError('Invalid editor param type: "' + type + '"');
+	        }
+	        if (!key) {
+	            reporter.reportSdkError('Invalid key name');
+	        }
+
+	        var callback = function callback(data) {
+	            if (data && data.onError) {
+	                if (onError) {
+	                    onError.apply(this, arguments);
+	                }
+	            } else {
+	                if (onSuccess) {
+	                    onSuccess.apply(this, arguments);
+	                }
+	            }
+	        };
+
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_STYLE_PARAM, namespace, {
+	            type: type,
+	            key: key,
+	            param: value
+	        }, callback);
+	    };
+
+	    var setColorParam = function setColorParam(namespace, key, value, onSuccess, onError) {
+	        if (value.hasOwnProperty('reference') && value.reference) {
+	            value.color = getColorByreference(value.reference);
+	        }
+	        setEditorParam(namespace, 'color', key, value, onSuccess, onError);
+	    };
+
+	    var getSitePages = function getSitePages(namespace, options, callback) {
+	        var args = {};
+
+	        if (utils.isFunction(options)) {
+	            callback = options;
+	        } else if (options) {
+	            if (utils.isObject(options)) {
+	                if (options.includePagesUrl) {
+	                    if (utils.isBoolean(options.includePagesUrl)) {
+	                        args.includePagesUrl = options.includePagesUrl;
+	                    } else {
+	                        reporter.reportSdkError('Invalid argument - includePagesUrl should be of type boolean');
+	                        return;
+	                    }
+	                }
+	            } else {
+	                reporter.reportSdkError('Invalid argument - options should be of type Object');
+	                return;
+	            }
+
+	            if (callback && !utils.isFunction(callback)) {
+	                reporter.reportSdkError('Invalid argument - callback should be of type Function');
+	                return;
+	            }
+	        }
+
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_SITE_PAGES, namespace, args, callback);
+	    };
+
+	    var currentMember = function currentMember(namespace, onSuccess) {
+	        if (getViewMode() !== "site") {
+	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor/preview mode. Supported view mode is: [site]');
+	            return;
+	        }
+	        postMessage.sendMessage(postMessage.MessageTypes.SM_CURRENT_MEMBER, namespace, null, onSuccess);
+	    };
+
+	    var getDeviceType = function getDeviceType(namespace) {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_DEVICE_TYPE, namespace);
+	        return urlUtils.getQueryParameter("deviceType") || "desktop";
+	    };
+
+	    var getLocale = function getLocale(namespace) {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_WIDTH, namespace);
+	        return urlUtils.getQueryParameter("locale");
+	    };
+
+	    var getInstanceId = function getInstanceId(namespace) {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_INSTANCE_ID, namespace);
+	        return core.getInstanceValue("instanceId");
+	    };
+
+	    var getIpAndPort = function getIpAndPort(namespace) {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_IP_AND_PORT, namespace);
+	        return core.getInstanceValue("ipAndPort");
+	    };
+
+	    var navigateToSection = function navigateToSection(namespace, sectionIdentifier, state, onFailure) {
+	        var args;
+	        if (utils.isFunction(sectionIdentifier)) {
+	            onFailure = sectionIdentifier;
+	        } else if (utils.isString(sectionIdentifier)) {
+	            args = {
+	                state: sectionIdentifier
+	            };
+	            onFailure = state;
+	        } else if (utils.isObject(sectionIdentifier) && utils.isFunction(state)) {
+	            args = {
+	                sectionIdentifier: sectionIdentifier
+	            };
+	            onFailure = state;
+	        } else {
+	            args = {
+	                sectionIdentifier: sectionIdentifier,
+	                state: state
+	            };
+	        }
+
+	        postMessage.sendMessage(postMessage.MessageTypes.NAVIGATE_TO_SECTION_PAGE, namespace, args, onFailure);
+	    };
+
+	    var getStateUrl = function getStateUrl(namespace, sectionId, state, callback) {
+	        if (!utils.isString(sectionId)) {
+	            reporter.reportSdkError('Missing mandatory argument - sectionId - should be of type String');
+	            return;
+	        }
+	        if (!utils.isString(state)) {
+	            reporter.reportSdkError('Missing mandatory argument - state - should be of type String');
+	            return;
+	        }
+	        if (!utils.isFunction(callback)) {
+	            reporter.reportSdkError('Missing mandatory argument - callback - should be of type Function');
+	        }
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_STATE_URL, namespace, { sectionId: sectionId, state: state }, callback);
+	    };
+
+	    return {
+	        resizeComponent: resizeComponent,
+	        openMediaDialog: openMediaDialog,
+	        revalidateSession: revalidateSession,
+	        getCurrentPageAnchors: getCurrentPageAnchors,
+	        openModal: openModal,
+	        getSiteInfo: getSiteInfo,
+	        closeWindow: closeWindow,
+	        getStyle: getStyle,
+	        getStyleParams: getStyleParams,
+	        getStyleColorByKey: getStyleColorByKey,
+	        getColorByreference: getColorByreference,
+	        setEditorParam: setEditorParam,
+	        setColorParam: setColorParam,
+	        getViewMode: getViewMode,
+	        getSitePages: getSitePages,
+	        currentMember: currentMember,
+	        getDeviceType: getDeviceType,
+	        getLocale: getLocale,
+	        getInstanceId: getInstanceId,
+	        getIpAndPort: getIpAndPort,
+	        navigateToSection: navigateToSection,
+	        getProducts: getProducts,
+	        getStateUrl: getStateUrl
+	    };
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 18 */
 /*!**********************************!*\
   !*** ./js/modules/Activities.js ***!
   \**********************************/
@@ -1829,14 +2288,16 @@
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
 	 * @memberof Wix
-	 * @namespace Activities
+	 * @namespace Wix.Activities
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/responseHandlers */ 14), __webpack_require__(/*! Utils */ 18), __webpack_require__(/*! privates/reporter */ 10)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage, responseHandlers, utils, reporter) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/responseHandlers */ 14), __webpack_require__(/*! privates/sharedAPI */ 17), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/viewMode */ 6)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage, responseHandlers, sharedAPI, reporter, viewMode) {
+
+	  var namespace = 'Activities';
 
 	  var postActivity = function postActivity(activity, onSuccess, onFailure) {
-	    if (utils.getViewMode() !== "site") {
+	    if (viewMode.getViewMode() !== "site") {
 	      reporter.reportSdkError('Invalid view mode. This function cannot be called in editor/preview mode. Supported view mode is: [site]');
 	      return;
 	    }
@@ -1854,7 +2315,7 @@
 	        }
 	      };
 	    }
-	    postMessage.sendMessage(postMessage.MessageTypes.POST_ACTIVITY, args, onComplete);
+	    postMessage.sendMessage(postMessage.MessageTypes.POST_ACTIVITY, namespace, args, onComplete);
 	  };
 
 	  var getActivities = function getActivities(onSuccess, onFailure, query) {
@@ -1876,7 +2337,7 @@
 	      responseHandlers.handleCursorResponse(response, onSuccess, onFailure, postMessage.MessageTypes.GET_ACTIVITIES);
 	    };
 
-	    postMessage.sendMessage(postMessage.MessageTypes.GET_ACTIVITIES, args, onComplete);
+	    postMessage.sendMessage(postMessage.MessageTypes.GET_ACTIVITIES, namespace, args, onComplete);
 	  };
 
 	  var getActivityById = function getActivityById(id, onSuccess, onFailure) {
@@ -1901,11 +2362,11 @@
 	      responseHandlers.handleDataResponse(result, onSuccess, onFailure);
 	    };
 
-	    postMessage.sendMessage(postMessage.MessageTypes.GET_ACTIVITY_BY_ID, args, onComplete);
+	    postMessage.sendMessage(postMessage.MessageTypes.GET_ACTIVITY_BY_ID, namespace, args, onComplete);
 	  };
 
 	  var getUserSessionToken = function getUserSessionToken(callback) {
-	    postMessage.sendMessage(postMessage.MessageTypes.GET_USER_SESSION, null, callback);
+	    postMessage.sendMessage(postMessage.MessageTypes.GET_USER_SESSION, namespace, null, callback);
 	  };
 	  return {
 
@@ -2086,7 +2547,32 @@
 	       * indicates a user is tracking activity on the site (Like, Follow, Subscribe, etc)
 	       * @constant
 	       */
-	      SOCIAL_TRACK: 'social/track'
+	      SOCIAL_TRACK: 'social/track',
+	      /**
+	       * Indicates a contact form was filled out.
+	       * @constant
+	       * @since 1.69.0
+	       */
+	      FORM_CONTACT_FORM: 'form/contact-form',
+	      /**
+	       * Indicates a subscription form was filled.
+	       * @constant
+	       * @since 1.69.0
+	       */
+	      FORM_SUBSCRIPTION_FORM: 'form/subscription-form',
+	      /**
+	       * Indicates a form was filled.
+	       * @constant
+	       * @since 1.69.0
+	       */
+	      FORM_FORM: 'form/form',
+	      /**
+	       * Indicates a chat message was sent to a contact..
+	       * @constant
+	       * @since 1.69.0
+	       */
+	      MESSAGE_IM: 'Messaging/im'
+
 	    },
 
 	    /**
@@ -2190,618 +2676,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 18 */
-/*!*****************************!*\
-  !*** ./js/modules/Utils.js ***!
-  \*****************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
-	 * This is the description for the Utils namespace.
-	 * @memberof Wix
-	 * @namespace Wix.Utils
-	 */
-	'use strict';
-
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/core */ 4), __webpack_require__(/*! Media */ 19), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/urlUtils */ 8), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/viewMode */ 6)], __WEBPACK_AMD_DEFINE_RESULT__ = function (core, Media, utils, reporter, urlUtils, postMessage, viewMode) {
-
-	    var getViewMode = function getViewMode() {
-	        return window.top === window ? 'standalone' : viewMode.getViewMode();
-	    };
-
-	    var toWixDate = function toWixDate(date) {
-	        return date.toISOString();
-	    };
-
-	    var getCompId = function getCompId() {
-	        return urlUtils.getQueryParameter("compId");
-	    };
-
-	    var getOrigCompId = function getOrigCompId() {
-	        return urlUtils.getQueryParameter("origCompId");
-	    };
-
-	    var getWidth = function getWidth() {
-	        return urlUtils.getQueryParameter("width");
-	    };
-
-	    var getLocale = function getLocale() {
-	        return urlUtils.getQueryParameter("locale");
-	    };
-
-	    var getCacheKiller = function getCacheKiller() {
-	        return urlUtils.getQueryParameter("cacheKiller");
-	    };
-
-	    var getTarget = function getTarget() {
-	        return urlUtils.getQueryParameter("target");
-	    };
-
-	    var getSectionUrl = function getSectionUrl(sectionIdentifier, callback) {
-	        if (utils.isObject(sectionIdentifier)) {
-	            if (utils.isFunction(callback)) {
-	                if (sectionIdentifier.sectionId) {
-	                    var args = {
-	                        sectionIdentifier: sectionIdentifier.sectionId
-	                    };
-	                    postMessage.sendMessage(postMessage.MessageTypes.GET_SECTION_URL, args, callback);
-	                } else {
-	                    reporter.reportSdkError('Wrong arguments - an Object with sectionId must be provided');
-	                }
-	            } else {
-	                reporter.reportSdkError('Mandatory arguments - callback must be specified');
-	            }
-	        } else {
-	            var sectionUrl = urlUtils.getQueryParameter("section-url");
-	            return sectionUrl && sectionUrl.replace(/\?$/, "");
-	        }
-	    };
-
-	    var getInstanceId = function getInstanceId() {
-	        return core.getInstanceValue("instanceId");
-	    };
-
-	    var getSignDate = function getSignDate() {
-	        return core.getInstanceValue("signDate");
-	    };
-
-	    var getUid = function getUid() {
-	        return core.getInstanceValue("uid");
-	    };
-
-	    var getPermissions = function getPermissions() {
-	        return core.getInstanceValue("permissions");
-	    };
-
-	    var getIpAndPort = function getIpAndPort() {
-	        return core.getInstanceValue("ipAndPort");
-	    };
-
-	    var getDemoMode = function getDemoMode() {
-	        var mode = core.getInstanceValue("demoMode");
-	        mode = mode === null ? false : mode;
-
-	        return mode;
-	    };
-
-	    var getDeviceType = function getDeviceType() {
-	        return urlUtils.getQueryParameter("deviceType") || "desktop";
-	    };
-
-	    var getInstanceValue = function getInstanceValue(key) {
-	        return core.getInstanceValue(key);
-	    };
-
-	    var getSiteOwnerId = function getSiteOwnerId() {
-	        return getInstanceValue('siteOwnerId');
-	    };
-
-	    var navigateToSection = function navigateToSection(sectionIdentifier, state, onFailure) {
-	        var args;
-	        if (utils.isFunction(sectionIdentifier)) {
-	            onFailure = sectionIdentifier;
-	        } else if (utils.isString(sectionIdentifier)) {
-	            args = {
-	                state: sectionIdentifier
-	            };
-	            onFailure = state;
-	        } else if (utils.isObject(sectionIdentifier) && utils.isFunction(state)) {
-	            args = {
-	                sectionIdentifier: sectionIdentifier
-	            };
-	            onFailure = state;
-	        } else {
-	            args = {
-	                sectionIdentifier: sectionIdentifier,
-	                state: state
-	            };
-	        }
-
-	        postMessage.sendMessage(postMessage.MessageTypes.NAVIGATE_TO_SECTION_PAGE, args, onFailure);
-	    };
-
-	    return {
-	        /**
-	         * This method returns a String which represents the current view mode.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.12.0
-	         * @returns {String} The current view mode (editor/preview/site/standalone).
-	         * @example
-	         *
-	         * //viewMode will get a value like 'editor/preview/site'
-	         * var viewMode = Wix.Utils.getViewMode();
-	         */
-	        getViewMode: getViewMode,
-
-	        /**
-	         * Converts a JavaScript Date object into the correct format, ISO 8601, used by Wix APIs when dealing with dates.
-	         * It follows the same example provided by Mozilla as a polyfill for non-ECMA 262, 5th edition browsers.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.28.0
-	         * @param {Date}
-	         * @return {String} Represents the given date formatted in ISO 8601.
-	         */
-	        toWixDate: toWixDate,
-
-	        /**
-	         * This method returns a String which represents the Widget/Page/Settings iframe's component id.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.12.0
-	         * @returns {String} The Widget/Page/Settings iframe's component id.
-	         * @example
-	         *
-	         * //compId will get a value like 'TPWdgt-d88e26c-217b-505f-196d-2f6d87f1c2db'
-	         * var compId = Wix.Utils.getCompId();
-	         */
-	        getCompId: getCompId,
-
-	        /**
-	         * This method returns for valid endpoints a String which represents the Widget/Page iframe's component id which opened the App Settings panel.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.12.0
-	         * @returns {String} The Widget/Page iframe's component id which opened the App Settings panel, popup or modal. If not exist returns null.
-	         * @example
-	         *
-	         * //origCompId will get a value like 'TPWdgt-d88e26c-217b-505f-196d-2f6d87f1c2db'
-	         * var origCompId = Wix.Utils.getOrigCompId();
-	         */
-	        getOrigCompId: getOrigCompId,
-
-	        /**
-	         * This method returns a Number which represents the Widget/Page/Settings iframe's width.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.12.0
-	         * @returns {Number} The Widget/Page/Settings iframe's width.
-	         * @example
-	         *
-	         * // width will get a value like 300
-	         * var width = Wix.Utils.getWidth();
-	         */
-	        getWidth: getWidth,
-
-	        /**
-	         * This method for valid endpoints (Widget/Page/Settings) returns a String which represents the current locale of the site/editor. A locale is an abbreviated language tag that defines the user's language, country and any special variant preference of the user interface (e.g. Number format, Date format, etc.).
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.14.0
-	         * @return {String} A standard IETF language tag - en (English), es (Spanish), fr (Franch), it (Italian), etc.
-	         * @example
-	         *
-	         * //locale will get a value like 'en', 'es', etc.
-	         * var locale = Wix.Utils.getLocale()
-	         */
-	        getLocale: getLocale,
-
-	        /**
-	         * This method for valid endpoints (Widget/Page) returns a String which is the cacheKiller query parameter.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.12.0
-	         * @returns {String} The cacheKiller query parameter, if not exist returns null.
-	         * @example
-	         *
-	         * //cacheKiller will get a value of a random string - 1359996970511
-	         *var cacheKiller = Wix.Utils.getCacheKiller();
-	         */
-	        getCacheKiller: getCacheKiller,
-
-	        /**
-	         * This method for valid endpoints (Widget/Page) returns a String which is the target query parameter (for the section-url).
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.12.0
-	         * @returns {String} The target query parameter, if not exist returns null.
-	         * @example
-	         *
-	         * //target will get a value like '_top' or '_self'
-	         * var target = Wix.Utils.getTarget();
-	         */
-	        getTarget: getTarget,
-
-	        /**
-	         * This method when no sectionId is given is valid for Page endpoint only.
-	         *
-	         * When a sectionId is not provided this method returns a string which is the section-url query parameter.
-	         *
-	         * When a sectionId and a callback function are provided this method returns the page app Url for the given sectionId.
-	         *
-	         * Please note: The parameter "section-url" here refers to the Page app URL.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.37.0
-	         * @private
-	         * @param {Object} [sectionId] App pageId defined in dev.wix.com
-	         * @param {Function} [callback] A callback function that returns the section's URL - this is mandatory if sectionId was provided.
-	         *
-	         * @returns {String} The section-url query parameter, if not exist returns null.
-	         * @returns {Object} The section url for the given sectionId
-	         *
-	         * @example
-	         *
-	         * //url will get a value of a valid url like 'http://user.wix.com/site#!page/ch6q'
-	         * var url = Wix.Utils.getSectionUrl()
-	         *
-	         * var url = Wix.Utils.getSectionUrl({sectionId: 'mySectionId'}, function(data) {
-	         *      //do something with data.url
-	         * })
-	         */
-	        getSectionUrl: getSectionUrl,
-
-	        /**
-	         * This method returns a String which represents the app instance Id.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.12.0
-	         * @returns {String} An app instance id - a GUID like value (decoded property of the instance query parameter)
-	         * @example
-	         *
-	         * //instanceId will get a GUID like value - e.g. '12de5bae-01e7-eaab-325f-436462858228'
-	         * var instanceId = Wix.Utils.getInstanceId();
-	         */
-	        getInstanceId: getInstanceId,
-
-	        /**
-	         * This method returns a String which represents the app instance signDate.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @deprecated 1.13.0
-	         * @returns {String} An app instance signDate (property of the decoded instance query parameter).
-	         * @example
-	         *
-	         * //date will get a value like '2013-01-04T02:45:35.302-06:00'
-	         * var date = Wix.Utils.getSignDate();
-	         */
-	        getSignDate: getSignDate,
-
-	        /**
-	         * This method returns a String which represents the user identifier.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.12.0
-	         * @returns {String} A user identifier (decoded property of the instance query parameter).
-	         * @example
-	         *
-	         * var uid = Wix.Utils.getUid();
-	         */
-	        getUid: getUid,
-
-	        /**
-	         * This method returns a String which represents the user's permissions (decoded property of the instance query parameter).
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.12.0
-	         * @returns {String} User's permissions (decoded property of the instance query parameter) - permissions can get the value of 'OWNER' for the site owner otherwise it will be null.
-	         * @example
-	         *
-	         * var permissions = Wix.Utils.getPermissions();
-	         */
-	        getPermissions: getPermissions,
-
-	        /**
-	         * This method returns a String which represents the app IP and port.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.13.0
-	         * @returns {String} An app IP and port (decoded property of the instance query parameter).
-	         * @example
-	         *
-	         * //ipAndPort will get a value like '91.199.119.254/61308'
-	         * var ipAndPort = Wix.Utils.getIpAndPort();
-	         */
-	        getIpAndPort: getIpAndPort,
-
-	        /**
-	         * This method returns a Boolean which represents the app instance demo mode state.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.12.0
-	         * @returns {Boolean} An app instance demo mode state (decoded property of the instance query parameter).
-	         * @example
-	         *
-	         * // demoMode will get a value like true/false
-	         * var demoMode = Wix.Utils.getDemoMode();
-	         */
-	        getDemoMode: getDemoMode,
-
-	        /**
-	         * This method returns a String which represents the current device type.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.20.0
-	         * @returns {String} The current device type. One of the following: * desktop *mobile
-	         * @example
-	         *
-	         * // deviceType will get a value of 'desktop' or 'mobile'
-	         * var deviceType = Wix.Worker.Utils.getDeviceType();
-	         */
-	        getDeviceType: getDeviceType,
-
-	        /**
-	         * Gets a value contained within the instance by key. If the key does not exist, null is returned
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.44.0
-	         * @returns {*} The current value of the requested key. If the key does not exist, null is returned.
-	         * @example
-	         *
-	         * // demoMode will get a value of true or false
-	         * var demoMode = Wix.Utils.getInstanceValue('demoMode');
-	         */
-	        getInstanceValue: getInstanceValue,
-
-	        /**
-	         * Navigates to the callers section page in the hosted site.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.65.0
-	         * @param {Object} [sectionIdenfitier] App page id defined in dev.wix.com {sectionId : 'sectionId'} can contain noTransition, boolean indicating cancel transition to page.
-	         * @param {String} [state] New app's state to push into the editor history stack.
-	         * @param {Function} onFailure This will be called if the hosting site does not include the section app, or if the caller's application does not include a section.
-	         * @example
-	         *
-	         *
-	         * Wix.Utils.navigateToSection({ sectionId : 'sectionId', noTransition: true }, 'myState', function(error){
-	         *    //Handle error use-case
-	         * });
-	         */
-	        navigateToSection: navigateToSection,
-
-	        /**
-	         * This method returns a String which represents the site owner's identifier.
-	         * @function
-	         * @memberof Wix.Utils
-	         * @since 1.52.0
-	         * @returns {String} A site owner identifier.
-	         * @example
-	         *
-	         * var siteOwnerId = Wix.Utils.getSiteOwnerId();
-	         */
-	        getSiteOwnerId: getSiteOwnerId,
-
-	        Media: Media
-	    };
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
 /* 19 */
-/*!*****************************!*\
-  !*** ./js/modules/Media.js ***!
-  \*****************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
-	 * This is the description for the Media namespace.
-	 * @memberof Wix.Utils
-	 * @namespace Wix.Utils.Media
-	 */
-	'use strict';
-
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, reporter) {
-	    var getWixStatic = function getWixStatic() {
-	        return 'https://static.wixstatic.com/';
-	    };
-
-	    var getWixMedia = function getWixMedia() {
-	        return 'https://media.wix.com/';
-	    };
-
-	    var getImageUrl = function getImageUrl(relativeUrl) {
-	        return getWixStatic() + 'media/' + relativeUrl;
-	    };
-
-	    var getResizedImageUrl = function getResizedImageUrl(imageURI, width, height, params) {
-	        // assign sharp default parameters
-	        params = params || {};
-	        params.quality = params.quality || 85;
-	        params.usm_r = (params.usm_r || 0.66).toFixed(2);
-	        params.usm_a = (params.usm_a || 1.00).toFixed(2);
-	        params.usm_t = (params.usm_t || 0.01).toFixed(2);
-
-	        // build the image url
-	        // e.g. http://static.wixstatic.com/media/12-345.jpg/v1/fill/w_1280,h_720,q_85,usm_0.66_1.00_0.01/12-345.jpg
-	        var tramsformStr = '';
-	        // domain
-	        tramsformStr += getWixStatic() + 'media/';
-	        // image uri
-	        tramsformStr += imageURI + '/';
-	        // api version
-	        tramsformStr += 'v1/';
-	        // image transform type - fill
-	        tramsformStr += 'fill/';
-	        // target width
-	        tramsformStr += 'w_' + Math.round(width) + ',';
-	        // target height
-	        tramsformStr += 'h_' + Math.round(height) + ',';
-	        // quality - applicable for jpeg only (no effect otherwise)
-	        tramsformStr += 'q_' + params.quality + ',';
-	        // un-sharp mask
-	        tramsformStr += 'usm_' + params.usm_r + '_' + params.usm_a + '_' + params.usm_t + '/';
-	        // image uri
-	        tramsformStr += imageURI;
-
-	        return tramsformStr;
-	    };
-
-	    var getAudioUrl = function getAudioUrl(relativeUrl, audioType) {
-	        //support for old usage: when no audioType is given should return the standard
-	        audioType = audioType || AudioType.STANDARD;
-	        if (!utils.has(AudioType, audioType)) {
-	            reporter.reportSdkError('Invalid argument - audioType value should be set using Wix.Utils.Media.AudioType');
-	        }
-
-	        switch (audioType) {
-	            case AudioType.STANDARD:
-	                return getWixMedia() + 'mp3/' + relativeUrl;
-	            case AudioType.PREVIEW:
-	                return getWixStatic() + 'preview/' + relativeUrl;
-	            case AudioType.SHORT_PREVIEW:
-	                return getWixStatic() + relativeUrl;
-	        }
-	    };
-
-	    var getDocumentUrl = function getDocumentUrl(relativeUrl) {
-	        return getWixMedia() + 'ugd/' + relativeUrl;
-	    };
-
-	    var getSwfUrl = function getSwfUrl(relativeUrl) {
-	        return getWixStatic() + 'media/' + relativeUrl;
-	    };
-
-	    var getPreviewSecureMusicUrl = function getPreviewSecureMusicUrl(previewFileName) {
-	        reporter.reportSdkMsg('Wix.Utils.Media.getPreviewSecureMusicUrl is DEPRECATED please use Wix.Utils.Media.getAudioUrl(\'myFileName.mp3\', Wix.Utils.Media.AudioType.PREVIEW)');
-	        return getWixStatic() + 'preview/' + previewFileName;
-	    };
-
-	    var AudioType = {
-	        STANDARD: 'STANDARD',
-	        PREVIEW: 'PREVIEW',
-	        SHORT_PREVIEW: 'SHORT_PREVIEW'
-	    };
-
-	    return {
-
-	        /**
-	         * An enum of audio types that are supported by Wix.Utils.Media.getAudioUrl
-	         * @enum
-	         * @memberof Wix.Utils.Media
-	         * @since 1.45.0
-	         */
-	        AudioType: {
-	            /**
-	             * Standard mp3 audio file
-	             * @since 1.45.0
-	             */
-	            STANDARD: AudioType.STANDARD,
-	            /**
-	             * A full preview of a high-quality audio file playable in the browser
-	             * @since 1.45.0
-	             */
-	            PREVIEW: AudioType.PREVIEW,
-	            /**
-	             * A short preview of a high-quality audio file playable in the browser
-	             * @since 1.45.0
-	             */
-	            SHORT_PREVIEW: AudioType.SHORT_PREVIEW
-	        },
-
-	        /**
-	         * This method constructs a URL for a media item of type image.
-	         * @function
-	         * @memberof Wix.Utils.Media
-	         * @since 1.17.0
-	         * @param {String} Image item uri (relative to Wix media gallery).
-	         * @returns {String} A full URL pointing to the Wix static servers of an image with the default dimensions - width and height.
-	         * @example
-	         *
-	         * var imageUrl = Wix.Utils.Media.getImageUrl('relative_url.jpg')
-	         */
-	        getImageUrl: getImageUrl,
-
-	        /**
-	         * This method constructs a URL for a media item of type image and let the developer change the image dimensions as well as it's sharpening properties (optional),
-	         * see sharpening explained here - http://en.wikipedia.org/wiki/Unsharp_masking.
-	         * @function
-	         * @memberof Wix.Utils.Media
-	         * @since 1.17.0
-	         * @param {String} relativeUrl Static image url provided by the media dialog.
-	         * @param {Number} width Desired image width.
-	         * @param {Number} height Desired image height.
-	         * @param {Object} [sharpParams]
-	         * @param {Number} sharpParams.quality JPEG quality, leave as is (75) unless image size is important for your app.
-	         * @param {Number} sharpParams.resizeFilter Resize filter.
-	         * @param {Number} sharpParams.usm_r Unsharp mask radius.
-	         * @param {Number} sharpParams.usm_a Unsharp mask amount (percentage).
-	         * @param {Number} sharpParams.usm_t Unsharp mask threshold.
-	         * @returns {String} A full URL pointing to the Wix static servers of an image with the custom dimension parameters.
-	         * @example
-	         *
-	         * var resizedImageUrl = Wix.Utils.Media.getResizedImageUrl('relative_url.jpg', 500, 500)
-	         */
-	        getResizedImageUrl: getResizedImageUrl,
-
-	        /**
-	         * Constructs an absolute URL for a relative path to an audio file. By default, returns a URL to a standard audio file.
-	         * @function
-	         * @memberof Wix.Utils.Media
-	         * @since 1.45.0
-	         * @param {String} relativeUri A relative URL to the target audio file.
-	         * @param {Wix.Utils.Media.AudioType} audioType the type of audio URL to build. Default is Wix.Media.AudioType.STANDARD.
-	         * @returns {String} An absolute URL pointing to the audio file hosted on Wix's static.
-	         * @example
-	         *
-	         * var audioUrl = Wix.Utils.Media.getAudioUrl('relative_url.mp3', Wix.Utils.Media.AudioType.SHORT_PREVIEW)
-	         */
-	        getAudioUrl: getAudioUrl,
-
-	        /**
-	         * This method constructs a URL for a media item of type document.
-	         * @function
-	         * @memberof Wix.Utils.Media
-	         * @since 1.17.0
-	         * @param {String} relativeUri Document item uri (relative to Wix media gallery).
-	         * @returns {String} A full URL pointing to the Wix static servers of a document media file with the default dimensions.
-	         * @example
-	         *
-	         * var documentUrl = Wix.Utils.Media.getDocumentUrl('relative_url.pdf')
-	         */
-	        getDocumentUrl: getDocumentUrl,
-
-	        /**
-	         * This method constructs a URL for a media item of type swf.
-	         * @function
-	         * @memberof Wix.Utils.Media
-	         * @since 1.17.0
-	         * @param {String} relativeUri Swf item uri (relative to Wix media gallery).
-	         * @returns {String} A full URL pointing to the Wix static servers of a swf media file  with the default dimensions.
-	         * @example
-	         *
-	         * var swfUrl = Wix.Utils.Media.getSwfUrl('relative_url.swf')
-	         */
-	        getSwfUrl: getSwfUrl,
-
-	        /**
-	         * This method constructs a URL for a media item of type secure music.
-	         * @function
-	         * @memberof Wix.Utils.Media
-	         * @since 1.41.0
-	         * @param {String} relativeUri secure music item uri (relative to Wix media gallery).
-	         * @returns {String} A full URL pointing to the Wix static servers of a secure media file.
-	         * @deprecated
-	         * @example
-	         * var preview = Wix.Utils.Media.getPreviewSecureMusicUrl('relative_url.mp3')
-	         */
-	        getPreviewSecureMusicUrl: getPreviewSecureMusicUrl
-
-	    };
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 20 */
 /*!********************************!*\
   !*** ./js/modules/Settings.js ***!
   \********************************/
@@ -2814,11 +2689,14 @@
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Styles */ 21), __webpack_require__(/*! Base */ 22), __webpack_require__(/*! WindowPlacement */ 24), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/sharedAPI */ 25)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Styles, Base, WindowPlacement, utils, reporter, postMessage, sharedAPI) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! WindowPlacement */ 20), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/sharedAPI */ 17)], __WEBPACK_AMD_DEFINE_RESULT__ = function (WindowPlacement, utils, reporter, postMessage, sharedAPI) {
+
+	    var namespace = 'Settings';
 
 	    var getStyleParams = function getStyleParams(callback) {
 	        reporter.reportSdkMsg('Wix.Settings.getStyleParams is DEPRECATED use Wix.Styles.getStyleParams');
-	        return Styles.getStyleParams(callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_STYLE_PARAMS, namespace);
+	        return sharedAPI.getStyleParams(callback);
 	    };
 
 	    /** Function getStyleColorByKey
@@ -2832,7 +2710,8 @@
 	     */
 	    var getStyleColorByKey = function getStyleColorByKey(colorKey) {
 	        reporter.reportSdkMsg('Wix.Settings.getStyleColorByKey is DEPRECATED use Wix.Styles.getStyleColorByKey');
-	        return Styles.getStyleColorByKey(colorKey);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_STYLE_COLOR_BY_KEY, namespace);
+	        return sharedAPI.getStyleColorByKey(colorKey);
 	    };
 
 	    /**
@@ -2846,7 +2725,8 @@
 	     */
 	    var getColorByreference = function getColorByreference(colorReference) {
 	        reporter.reportSdkMsg('Wix.Settings.getColorByreference is DEPRECATED use Wix.Styles.getColorByreference');
-	        return Styles.getColorByreference(colorReference);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_COLOR_BY_REFERENCE, namespace);
+	        return sharedAPI.getColorByreference(colorReference);
 	    };
 
 	    /**
@@ -2860,7 +2740,8 @@
 	     */
 	    var setColorParam = function setColorParam(key, value) {
 	        reporter.reportSdkMsg('Wix.Settings.setColorParam is DEPRECATED use Wix.Styles.setColorParam');
-	        return Styles.setColorParam(key, value);
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_COLOR_PARAM, namespace);
+	        return sharedAPI.setColorParam(key, value);
 	    };
 
 	    /**
@@ -2874,7 +2755,8 @@
 	     */
 	    var setNumberParam = function setNumberParam(key, value) {
 	        reporter.reportSdkMsg('Wix.Settings.setNumberParam is DEPRECATED use Wix.Styles.setNumberParam');
-	        return Styles.setNumberParam(key, value);
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_NUMBER_PARAM, namespace);
+	        return sharedAPI.setEditorParam(namespace, 'color', key, value);
 	    };
 
 	    /** Function setBooleanParam
@@ -2888,7 +2770,8 @@
 	     */
 	    var setBooleanParam = function setBooleanParam(key, value) {
 	        reporter.reportSdkMsg('Wix.Settings.setBooleanParam is DEPRECATED use Wix.Styles.setBooleanParam');
-	        return Styles.setBooleanParam(key, value);
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_BOOLEAN_PARAM, namespace);
+	        return sharedAPI.setEditorParam(namespace, 'boolean', key, value);
 	    };
 
 	    /** Function getSiteColors
@@ -2901,7 +2784,8 @@
 	     */
 	    var getSiteColors = function getSiteColors(callback) {
 	        reporter.reportSdkMsg('Wix.Settings.getSiteColors is DEPRECATED use Wix.Styles.getSiteColors');
-	        return Styles.getSiteColors(callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_SITE_COLORS, namespace);
+	        return sharedAPI.getStyle(callback, 'siteColors');
 	    };
 
 	    var getWindowPlacement = function getWindowPlacement(compId, callback) {
@@ -2909,46 +2793,43 @@
 	            reporter.reportSdkError('Mandatory arguments - compId & callback must be specified');
 	        }
 
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_WINDOW_PLACEMENT, {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_WINDOW_PLACEMENT, namespace, {
 	            compId: compId
 	        }, callback);
 	    };
 
 	    var getSiteInfo = function getSiteInfo(onSuccess) {
-	        Base.getSiteInfo(onSuccess);
+	        sharedAPI.getSiteInfo(namespace, onSuccess);
 	    };
 
 	    var refreshApp = function refreshApp(queryParams) {
-	        refreshAppByCompIds(null, queryParams);
+	        postMessage.sendMessage(postMessage.MessageTypes.REFRESH_APP, namespace, { queryParams: queryParams });
 	    };
 
 	    var refreshAppByCompIds = function refreshAppByCompIds(compIds, queryParams) {
-	        postMessage.sendMessage(postMessage.MessageTypes.REFRESH_APP, {
-	            queryParams: queryParams,
-	            compIds: compIds
-	        });
+	        postMessage.sendMessage(postMessage.MessageTypes.REFRESH_APP_BY_COMP_IDS, namespace, { queryParams: queryParams, compIds: compIds });
 	    };
 
 	    var openBillingPage = function openBillingPage() {
-	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_BILLING_PAGE);
+	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_BILLING_PAGE, namespace);
 	    };
 
 	    var openMediaDialog = function openMediaDialog(mediaType, multipleSelection, onSuccess, onCancel) {
-	        sharedAPI.openMediaDialog(postMessage.MessageTypes.OPEN_MEDIA_DIALOG, this.MediaType, mediaType, multipleSelection, onSuccess, onCancel);
+	        sharedAPI.openMediaDialog(postMessage.MessageTypes.OPEN_MEDIA_DIALOG, namespace, this.MediaType, mediaType, multipleSelection, onSuccess, onCancel);
 	    };
 
 	    var triggerSettingsUpdatedEvent = function triggerSettingsUpdatedEvent(message, compId) {
 	        message = message || {};
 	        compId = compId || '*';
 
-	        postMessage.sendMessage(postMessage.MessageTypes.POST_MESSAGE, {
+	        postMessage.sendMessage(postMessage.MessageTypes.POST_MESSAGE, namespace, {
 	            message: message,
 	            compId: compId
 	        });
 	    };
 
 	    var getSitePages = function getSitePages(options, callback) {
-	        Base.getSitePages(options, callback);
+	        sharedAPI.getSitePages(namespace, options, callback);
 	    };
 
 	    var setWindowPlacement = function setWindowPlacement(compId, placement, verticalMargin, horizontalMargin) {
@@ -2959,7 +2840,7 @@
 	        if (!WindowPlacement.hasOwnProperty(placement)) {
 	            reporter.reportSdkError('Invalid argument - placement value should be set using Wix.WindowPlacement');
 	        }
-	        postMessage.sendMessage(postMessage.MessageTypes.SET_WINDOW_PLACEMENT, {
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_WINDOW_PLACEMENT, namespace, {
 	            compId: compId,
 	            placement: placement,
 	            verticalMargin: verticalMargin,
@@ -2972,15 +2853,15 @@
 	            reporter.reportSdkError('Mandatory arguments - a callback must be specified');
 	        }
 
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_DASHBOARD_APP_URL, undefined, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_DASHBOARD_APP_URL, namespace, undefined, callback);
 	    };
 
 	    var openModal = function openModal(url, width, height, title, onClose, bareUI) {
-	        sharedAPI.openModal(url, width, height, title, onClose, bareUI);
+	        sharedAPI.openModal(namespace, url, width, height, title, onClose, bareUI);
 	    };
 
 	    var closeWindow = function closeWindow(message) {
-	        Base.closeWindow(message);
+	        sharedAPI.closeWindow(namespace, message);
 	    };
 
 	    var addComponent = function addComponent(options, onSuccess, onError) {
@@ -3044,7 +2925,7 @@
 	            };
 	        }
 
-	        postMessage.sendMessage(postMessage.MessageTypes.ADD_COMPONENT, args, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.ADD_COMPONENT, namespace, args, callback);
 	    };
 
 	    var setExternalId = function setExternalId(guid, onSuccess, onError) {
@@ -3069,11 +2950,11 @@
 	            externalId: guid
 	        };
 
-	        postMessage.sendMessage(postMessage.MessageTypes.SET_EXTERNAL_ID, args, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_EXTERNAL_ID, namespace, args, callback);
 	    };
 
 	    var revalidateSession = function revalidateSession(onSuccess, onError) {
-	        Base.revalidateSession(onSuccess, onError);
+	        sharedAPI.revalidateSession(namespace, onSuccess, onError);
 	    };
 
 	    var setFullWidth = function setFullWidth(shouldBeFullWidth, options, onSuccess, onError) {
@@ -3099,7 +2980,7 @@
 	            options: options
 	        };
 
-	        postMessage.sendMessage(postMessage.MessageTypes.SET_FULL_WIDTH, args, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_FULL_WIDTH, namespace, args, callback);
 	    };
 
 	    var isFullWidth = function isFullWidth(callback) {
@@ -3107,11 +2988,23 @@
 	            reporter.reportSdkError('Mandatory arguments - a callback must be specified');
 	        }
 
-	        postMessage.sendMessage(postMessage.MessageTypes.IS_FULL_WIDTH, undefined, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.IS_FULL_WIDTH, namespace, undefined, callback);
 	    };
 
 	    var openReviewInfo = function openReviewInfo() {
-	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_REVIEW_INFO);
+	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_REVIEW_INFO, namespace);
+	    };
+
+	    var resizeComponent = function resizeComponent(options, onSuccess, onFailure) {
+	        sharedAPI.resizeComponent(options, namespace, onSuccess, onFailure);
+	    };
+
+	    var getCurrentPageAnchors = function getCurrentPageAnchors(callback) {
+	        sharedAPI.getCurrentPageAnchors(namespace, callback);
+	    };
+
+	    var getStateUrl = function getStateUrl(sectionId, state, callback) {
+	        sharedAPI.getStateUrl(namespace, sectionId, state, callback);
 	    };
 
 	    return {
@@ -3332,13 +3225,11 @@
 	         * @memberof Wix.Settings
 	         * @author lior.shefer@wix.com
 	         * @since 1.43.0
-	         * @private
 	         * @param {String} url Model iframe url.
 	         * @param {Number} width The modal window width (can be a string for percent, i.e., '90%', or an integer for pixels, i.e., 90).
 	         * @param {Number} height The modal window height (can be a string for percent, i.e., '90%', or an integer for pixels, i.e., 90).
 	         * @param {String} [title] Title of the modal.
 	         * @param {Function} [onClose] onClose callback function.
-	         * @param {Boolean} [bareUI] Opens the modal in a bare mode without the modal title, help and close buttons.
 	         * @example
 	         *
 	         * var onClose = function(message) { console.log("modal closed", message); }
@@ -3405,7 +3296,7 @@
 	         *    height:600
 	         * });
 	         */
-	        resizeComponent: sharedAPI.resizeComponent,
+	        resizeComponent: resizeComponent,
 
 	        /**
 	         * Stores the value, which is a GUID. If a value for the given component did not previously exist, it is created. If it already exists, its existing value is overwritten with the new contents of value.
@@ -3454,7 +3345,7 @@
 	         *      // do something with anchors
 	         * });
 	         */
-	        getCurrentPageAnchors: sharedAPI.getCurrentPageAnchors,
+	        getCurrentPageAnchors: getCurrentPageAnchors,
 
 	        /**
 	         * Sets the widget/page components to full width/exit full width (true/false)
@@ -3492,12 +3383,890 @@
 	         *
 	         * Wix.Settings.openReviewInfo();
 	         */
-	        openReviewInfo: openReviewInfo
+	        openReviewInfo: openReviewInfo,
+
+	        /**
+	         * Gets a URL for a given deep-linked state in a given sectionIdentifier. In the editor, gets the public URL for the address.
+	         *
+	         * Available from Editor, Preview and Viewer
+	         *
+	         * @function
+	         * @memberOf Wix.Settings
+	         * @since 1.69.0
+	         * @param {String} sectionId - the sectionId of the page to deep-link
+	         * @param {String} state - the deep-linked state
+	         * @returns {Object} The section url for the given sectionId
+	         * @example
+	         *
+	         * Wix.Settings.getStateUrl("cd1mp", "internal/app/state", function (url) {
+	         *      // do something with the URL for the state
+	         * });
+	         */
+	        getStateUrl: getStateUrl
 	    };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
+/* 20 */
+/*!***************************************!*\
+  !*** ./js/modules/WindowPlacement.js ***!
+  \***************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/**
+	 * Represents a predefined values to position a Wix popup windows without the hassle of figuring out the position yourself.
+	 * Can be used to position the window relatively (to the calling widget) or absolutely (to the view port).
+	 *
+	 * @memberof Wix
+	 * @namespace Wix.WindowPlacement
+	 */
+	'use strict';
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
+	  return {
+	    /**
+	     * Top left placement.
+	     * @memberof Wix.WindowPlacement
+	     * @since 1.17.0
+	     */
+	    TOP_LEFT: 'TOP_LEFT',
+
+	    /**
+	     * Top right placement.
+	     * @memberof Wix.WindowPlacement
+	     * @since 1.17.0
+	     */
+	    TOP_RIGHT: 'TOP_RIGHT',
+
+	    /**
+	     * Bottom right placement.
+	     * @memberof Wix.WindowPlacement
+	     * @since 1.17.0
+	     */
+	    BOTTOM_RIGHT: 'BOTTOM_RIGHT',
+
+	    /**
+	     * Bottom left placement.
+	     * @memberof Wix.WindowPlacement
+	     * @since 1.17.0
+	     */
+	    BOTTOM_LEFT: 'BOTTOM_LEFT',
+
+	    /**
+	     * Top center placement.
+	     * @memberof Wix.WindowPlacement
+	     * @since 1.17.0
+	     */
+	    TOP_CENTER: 'TOP_CENTER',
+
+	    /**
+	     * Center right placement.
+	     * @memberof Wix.WindowPlacement
+	     * @since 1.17.0
+	     */
+	    CENTER_RIGHT: 'CENTER_RIGHT',
+
+	    /**
+	     * Bottom center placement.
+	     * @memberof Wix.WindowPlacement
+	     * @since 1.17.0
+	     */
+	    BOTTOM_CENTER: 'BOTTOM_CENTER',
+
+	    /**
+	     * Center left placement.
+	     * @memberof Wix.WindowPlacement
+	     * @since 1.17.0
+	     */
+	    CENTER_LEFT: 'CENTER_LEFT',
+
+	    /**
+	     * (FIXED origin only) center of the screen.
+	     * @memberof Wix.WindowPlacement
+	     * @since 1.17.0
+	     * @deprecated
+	     */
+	    CENTER: 'CENTER'
+	  };
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
 /* 21 */
+/*!********************************!*\
+  !*** ./js/modules/Contacts.js ***!
+  \********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+	 * @memberof Wix
+	 * @namespace Wix.Contacts
+	 */
+	'use strict';
+
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/responseHandlers */ 14), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, responseHandlers, reporter, postMessage) {
+
+	    var namespace = 'Contacts';
+
+	    var getContacts = function getContacts(options, onSuccess, onFailure) {
+	        if (!utils.isObject(options)) {
+	            reporter.reportSdkError('Missing mandatory argument - options, must be an object');
+	            return;
+	        }
+
+	        if (!utils.isFunction(onSuccess)) {
+	            reporter.reportSdkError('Missing mandatory argument - onSuccess, must be a function');
+	            return;
+	        }
+
+	        var args = {
+	            options: options
+	        };
+
+	        var onComplete = function onComplete(response) {
+	            responseHandlers.handleCursorResponse(response, onSuccess, onFailure, postMessage.MessageTypes.GET_CONTACTS, options);
+	        };
+
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_CONTACTS, namespace, args, onComplete);
+	    };
+
+	    var getContactById = function getContactById(id, onSuccess, onFailure) {
+	        if (typeof id !== 'string') {
+	            reporter.reportSdkError('Missing mandatory argument - id, must be a string');
+	            return;
+	        }
+
+	        if (!utils.isFunction(onSuccess)) {
+	            reporter.reportSdkError('Missing mandatory argument - onSuccess, must be a function');
+	            return;
+	        }
+
+	        if (!utils.isFunction(onFailure)) {
+	            reporter.reportSdkError('Missing mandatory argument - onFailure, must be a function');
+	            return;
+	        }
+
+	        var args = {
+	            id: id
+	        };
+
+	        var onComplete = function onComplete(response) {
+	            responseHandlers.handleDataResponse(response, onSuccess, onFailure);
+	        };
+
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_CONTACT_BY_ID, namespace, args, onComplete);
+	    };
+
+	    function validateReconcileParams(contactInfo, onSuccess, onFailure) {
+	        var result = {
+	            passed: false
+	        };
+	        if (contactInfo === undefined) {
+	            result = {
+	                passed: false,
+	                error: 'Missing mandatory contact options parameter'
+	            };
+	        } else if (!utils.isObject(contactInfo)) {
+	            result = {
+	                passed: false,
+	                error: 'Contact options parameter must be an object'
+	            };
+	        } else if (onSuccess && !utils.isFunction(onSuccess)) {
+	            result = {
+	                passed: false,
+	                error: 'Missing mandatory argument - onSuccess, must be a function'
+	            };
+	        } else if (onFailure && !utils.isFunction(onFailure)) {
+	            result = {
+	                passed: false,
+	                error: 'Missing mandatory argument - onFailure, must be a function'
+	            };
+	        } else {
+	            result = {
+	                passed: true
+	            };
+	        }
+	        return result;
+	    }
+	    var reconcileContact = function reconcileContact(contactInfo, onSuccess, onFailure) {
+	        var validation = validateReconcileParams(contactInfo, onSuccess, onFailure);
+	        if (validation.passed) {
+	            var onComplete = function onComplete(response) {
+	                responseHandlers.handleDataResponse(response, onSuccess, onFailure);
+	            };
+	            postMessage.sendMessage(postMessage.MessageTypes.RECONCILE_CONTACT, namespace, contactInfo, onComplete);
+	        } else {
+	            reporter.reportSdkError(validation.error);
+	        }
+	    };
+	    return {
+	        /**
+	         * Gets a list of all contacts that have interacted with a given site.
+	         * @memberof Wix.Contacts
+	         * @author lior.shefer@wix.com
+	         * @since  1.31.0
+	         * @function
+	         * @param {Object} options object that supports two parameters: 'label' and 'pageSize'.
+	         * 'label' can either be a list of strings or a string. if a list, the strings are joined together with a comma
+	         * to be sent to the contacts endpoint. 'pageSize' accepts either 25, 50 or 100 and defaults to 25.
+	         * @param {Function} onSuccess An on success callback which gets WixDataCursor as parameter.
+	         * @param {Function} onFailure An on failure callback.
+	         * @return {WixDataCursor} cursor.
+	         * @example
+	         * Wix.Contacts.getContacts(function(WixDataCursor), function(errorType));
+	         */
+	        getContacts: getContacts,
+
+	        /**
+	         * Gets a specific Contact that has interacted with the current site by its id.
+	         * @memberof Wix.Contacts
+	         * @author lior.shefer@wix.com
+	         * @since 1.27.0
+	         * @function
+	         * @param {String} id The id of the Contact to look up.
+	         * @param {Function} onSuccess A function that receives data about the Contact.
+	         * @param {Function} onFailure A function called when an error occurs that receives a Wix.Error.
+	         * @return {Contact}
+	         */
+	        getContactById: getContactById,
+
+	        /**
+	         * Reconciles Contact information with that of the WixHive's.
+	         *
+	         * Use this when your app has information about a site visitor that may already be registered as a Contact as part of the WixHive. Your app should provide as much information as possible so that we will find the best match for that Contact and return it with the reconciled information. If no match was found, we will create a new Contact.
+	         *
+	         * Depending on the type of information, we will either add or dismiss changes. When the information can be added to a list, such as emails or phones, a new item will be added if no similar item exists. When the information cannot be added we dismiss the change, such is the case with name, company and picture. If your wish is to override such data, there are explicit ways to do so using the Contact’s id and our REST API.
+	         *
+	         * @memberof Wix.Contacts
+	         * @author benk@wix.com
+	         * @since 1.46.0
+	         * @function
+	         * @param {Object} contactInfo Contact information that will be passed to the server.
+	         * @param {Function} [onSuccess] A function that receives reconciliation details.
+	         * @param {Function} [onFailure] A function called when an error occurs, receives a Wix.Error.
+	         * @return {ReconcileContactResult} Contains the reconciled Contact and details about the operation.
+	         */
+	        reconcileContact: reconcileContact
+	    };
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 22 */
+/*!*****************************!*\
+  !*** ./js/modules/Utils.js ***!
+  \*****************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+	 * This is the description for the Utils namespace.
+	 * @memberof Wix
+	 * @namespace Wix.Utils
+	 */
+	'use strict';
+
+	var _slice = Array.prototype.slice;
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/core */ 4), __webpack_require__(/*! Media */ 23), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/urlUtils */ 8), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/sharedAPI */ 17)], __WEBPACK_AMD_DEFINE_RESULT__ = function (core, Media, utils, reporter, urlUtils, postMessage, sharedAPI) {
+
+	    var namespace = 'Utils';
+
+	    var getViewMode = function getViewMode() {
+	        return sharedAPI.getViewMode(namespace);
+	    };
+
+	    var toWixDate = function toWixDate(date) {
+	        postMessage.sendMessage(postMessage.MessageTypes.TO_WIX_DATE, namespace);
+	        return date.toISOString();
+	    };
+
+	    var getCompId = function getCompId() {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_COMP_ID, namespace);
+	        return urlUtils.getQueryParameter("compId");
+	    };
+
+	    var getOrigCompId = function getOrigCompId() {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_ORIG_COMP_ID, namespace);
+	        return urlUtils.getQueryParameter("origCompId");
+	    };
+
+	    var getWidth = function getWidth() {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_WIDTH, namespace);
+	        return urlUtils.getQueryParameter("width");
+	    };
+
+	    var getLocale = function getLocale() {
+	        return sharedAPI.getLocale(namespace);
+	    };
+
+	    var getCacheKiller = function getCacheKiller() {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_CACHE_KILLER, namespace);
+	        return urlUtils.getQueryParameter("cacheKiller");
+	    };
+
+	    var getTarget = function getTarget() {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_TARGET, namespace);
+	        return urlUtils.getQueryParameter("target");
+	    };
+
+	    var getSectionUrl = function getSectionUrl(sectionIdentifier, callback) {
+	        if (utils.isObject(sectionIdentifier)) {
+	            if (utils.isFunction(callback)) {
+	                if (sectionIdentifier.sectionId) {
+	                    var args = {
+	                        sectionIdentifier: sectionIdentifier.sectionId
+	                    };
+	                    postMessage.sendMessage(postMessage.MessageTypes.GET_SECTION_URL, namespace, args, callback);
+	                } else {
+	                    reporter.reportSdkError('Wrong arguments - an Object with sectionId must be provided');
+	                }
+	            } else {
+	                reporter.reportSdkError('Mandatory arguments - callback must be specified');
+	            }
+	        } else {
+	            var sectionUrl = urlUtils.getQueryParameter("section-url");
+	            return sectionUrl && sectionUrl.replace(/\?$/, "");
+	        }
+	    };
+
+	    var getInstanceId = function getInstanceId() {
+	        return sharedAPI.getInstanceId(namespace);
+	    };
+
+	    var getSignDate = function getSignDate() {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_SIGN_DATE, namespace);
+	        return core.getInstanceValue("signDate");
+	    };
+
+	    var getUid = function getUid() {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_UID, namespace);
+	        return core.getInstanceValue("uid");
+	    };
+
+	    var getPermissions = function getPermissions() {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_PERMISSIONS, namespace);
+	        return core.getInstanceValue("permissions");
+	    };
+
+	    var getIpAndPort = function getIpAndPort() {
+	        return sharedAPI.getIpAndPort(namespace);
+	    };
+
+	    var getDemoMode = function getDemoMode() {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_DEMO_MODE, namespace);
+	        var mode = core.getInstanceValue("demoMode");
+	        mode = mode === null ? false : mode;
+
+	        return mode;
+	    };
+
+	    var getDeviceType = function getDeviceType() {
+	        return sharedAPI.getDeviceType(namespace);
+	    };
+
+	    var getInstanceValue = function getInstanceValue(key) {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_INSTANCE_VALUE, namespace);
+	        return core.getInstanceValue(key);
+	    };
+
+	    var getSiteOwnerId = function getSiteOwnerId() {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_SITE_OWNER_ID, namespace);
+	        return core.getInstanceValue('siteOwnerId');
+	    };
+
+	    var navigateToSection = function navigateToSection() {
+	        sharedAPI.navigateToSection.apply(sharedAPI, [namespace].concat(_slice.call(arguments)));
+	    };
+
+	    return {
+	        /**
+	         * This method returns a String which represents the current view mode.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.12.0
+	         * @returns {String} The current view mode (editor/preview/site/standalone).
+	         * @example
+	         *
+	         * //viewMode will get a value like 'editor/preview/site'
+	         * var viewMode = Wix.Utils.getViewMode();
+	         */
+	        getViewMode: getViewMode,
+
+	        /**
+	         * Converts a JavaScript Date object into the correct format, ISO 8601, used by Wix APIs when dealing with dates.
+	         * It follows the same example provided by Mozilla as a polyfill for non-ECMA 262, 5th edition browsers.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.28.0
+	         * @param {Date}
+	         * @return {String} Represents the given date formatted in ISO 8601.
+	         */
+	        toWixDate: toWixDate,
+
+	        /**
+	         * This method returns a String which represents the Widget/Page/Settings iframe's component id.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.12.0
+	         * @returns {String} The Widget/Page/Settings iframe's component id.
+	         * @example
+	         *
+	         * //compId will get a value like 'TPWdgt-d88e26c-217b-505f-196d-2f6d87f1c2db'
+	         * var compId = Wix.Utils.getCompId();
+	         */
+	        getCompId: getCompId,
+
+	        /**
+	         * This method returns for valid endpoints a String which represents the Widget/Page iframe's component id which opened the App Settings panel.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.12.0
+	         * @returns {String} The Widget/Page iframe's component id which opened the App Settings panel, popup or modal. If not exist returns null.
+	         * @example
+	         *
+	         * //origCompId will get a value like 'TPWdgt-d88e26c-217b-505f-196d-2f6d87f1c2db'
+	         * var origCompId = Wix.Utils.getOrigCompId();
+	         */
+	        getOrigCompId: getOrigCompId,
+
+	        /**
+	         * This method returns a Number which represents the Widget/Page/Settings iframe's width.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.12.0
+	         * @returns {Number} The Widget/Page/Settings iframe's width.
+	         * @example
+	         *
+	         * // width will get a value like 300
+	         * var width = Wix.Utils.getWidth();
+	         */
+	        getWidth: getWidth,
+
+	        /**
+	         * This method for valid endpoints (Widget/Page/Settings) returns a String which represents the current locale of the site/editor. A locale is an abbreviated language tag that defines the user's language, country and any special variant preference of the user interface (e.g. Number format, Date format, etc.).
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.14.0
+	         * @return {String} A standard IETF language tag - en (English), es (Spanish), fr (Franch), it (Italian), etc.
+	         * @example
+	         *
+	         * //locale will get a value like 'en', 'es', etc.
+	         * var locale = Wix.Utils.getLocale()
+	         */
+	        getLocale: getLocale,
+
+	        /**
+	         * This method for valid endpoints (Widget/Page) returns a String which is the cacheKiller query parameter.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.12.0
+	         * @returns {String} The cacheKiller query parameter, if not exist returns null.
+	         * @example
+	         *
+	         * //cacheKiller will get a value of a random string - 1359996970511
+	         *var cacheKiller = Wix.Utils.getCacheKiller();
+	         */
+	        getCacheKiller: getCacheKiller,
+
+	        /**
+	         * This method for valid endpoints (Widget/Page) returns a String which is the target query parameter (for the section-url).
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.12.0
+	         * @returns {String} The target query parameter, if not exist returns null.
+	         * @example
+	         *
+	         * //target will get a value like '_top' or '_self'
+	         * var target = Wix.Utils.getTarget();
+	         */
+	        getTarget: getTarget,
+
+	        /**
+	         * This method when no sectionId is given is valid for Page endpoint only.
+	         *
+	         * When a sectionId is not provided this method returns a string which is the section-url query parameter.
+	         *
+	         * When a sectionId and a callback function are provided this method returns the page app Url for the given sectionId.
+	         *
+	         * Please note: The parameter "section-url" here refers to the Page app URL.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.37.0
+	         * @param {Object} [sectionId] App pageId defined in dev.wix.com
+	         * @param {Function} [callback] A callback function that returns the section's URL - this is mandatory if sectionId was provided.
+	         *
+	         * @returns {String} The section-url query parameter, if not exist returns null.
+	         * @returns {Object} The section url for the given sectionId
+	         *
+	         * @example
+	         *
+	         * //url will get a value of a valid url like 'http://user.wix.com/site#!page/ch6q'
+	         * var url = Wix.Utils.getSectionUrl()
+	         *
+	         * var url = Wix.Utils.getSectionUrl({sectionId: 'mySectionId'}, function(data) {
+	         *      //do something with data.url
+	         * })
+	         */
+	        getSectionUrl: getSectionUrl,
+
+	        /**
+	         * This method returns a String which represents the app instance Id.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.12.0
+	         * @returns {String} An app instance id - a GUID like value (decoded property of the instance query parameter)
+	         * @example
+	         *
+	         * //instanceId will get a GUID like value - e.g. '12de5bae-01e7-eaab-325f-436462858228'
+	         * var instanceId = Wix.Utils.getInstanceId();
+	         */
+	        getInstanceId: getInstanceId,
+
+	        /**
+	         * This method returns a String which represents the app instance signDate.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @deprecated 1.13.0
+	         * @returns {String} An app instance signDate (property of the decoded instance query parameter).
+	         * @example
+	         *
+	         * //date will get a value like '2013-01-04T02:45:35.302-06:00'
+	         * var date = Wix.Utils.getSignDate();
+	         */
+	        getSignDate: getSignDate,
+
+	        /**
+	         * This method returns a String which represents the user identifier.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.12.0
+	         * @returns {String} A user identifier (decoded property of the instance query parameter).
+	         * @example
+	         *
+	         * var uid = Wix.Utils.getUid();
+	         */
+	        getUid: getUid,
+
+	        /**
+	         * This method returns a String which represents the user's permissions (decoded property of the instance query parameter).
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.12.0
+	         * @returns {String} User's permissions (decoded property of the instance query parameter) - permissions can get the value of 'OWNER' for the site owner otherwise it will be null.
+	         * @example
+	         *
+	         * var permissions = Wix.Utils.getPermissions();
+	         */
+	        getPermissions: getPermissions,
+
+	        /**
+	         * This method returns a String which represents the app IP and port.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.13.0
+	         * @returns {String} An app IP and port (decoded property of the instance query parameter).
+	         * @example
+	         *
+	         * //ipAndPort will get a value like '91.199.119.254/61308'
+	         * var ipAndPort = Wix.Utils.getIpAndPort();
+	         */
+	        getIpAndPort: getIpAndPort,
+
+	        /**
+	         * This method returns a Boolean which represents the app instance demo mode state.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.12.0
+	         * @returns {Boolean} An app instance demo mode state (decoded property of the instance query parameter).
+	         * @example
+	         *
+	         * // demoMode will get a value like true/false
+	         * var demoMode = Wix.Utils.getDemoMode();
+	         */
+	        getDemoMode: getDemoMode,
+
+	        /**
+	         * This method returns a String which represents the current device type.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.20.0
+	         * @returns {String} The current device type. One of the following: * desktop *mobile
+	         * @example
+	         *
+	         * // deviceType will get a value of 'desktop' or 'mobile'
+	         * var deviceType = Wix.Worker.Utils.getDeviceType();
+	         */
+	        getDeviceType: getDeviceType,
+
+	        /**
+	         * Gets a value contained within the instance by key. If the key does not exist, null is returned
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.44.0
+	         * @returns {*} The current value of the requested key. If the key does not exist, null is returned.
+	         * @example
+	         *
+	         * // demoMode will get a value of true or false
+	         * var demoMode = Wix.Utils.getInstanceValue('demoMode');
+	         */
+	        getInstanceValue: getInstanceValue,
+
+	        /**
+	         * Navigates to the callers section page in the hosted site.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.65.0
+	         * @param {Object} [sectionIdenfitier] App page id defined in dev.wix.com {sectionId : 'sectionId'} can contain noTransition, boolean indicating cancel transition to page.
+	         * @param {String} [state] New app's state to push into the editor history stack.
+	         * @param {Function} onFailure This will be called if the hosting site does not include the section app, or if the caller's application does not include a section.
+	         * @example
+	         *
+	         *
+	         * Wix.Utils.navigateToSection({ sectionId : 'sectionId', noTransition: true }, 'myState', function(error){
+	         *    //Handle error use-case
+	         * });
+	         */
+	        navigateToSection: navigateToSection,
+
+	        /**
+	         * This method returns a String which represents the site owner's identifier.
+	         * @function
+	         * @memberof Wix.Utils
+	         * @since 1.52.0
+	         * @returns {String} A site owner identifier.
+	         * @example
+	         *
+	         * var siteOwnerId = Wix.Utils.getSiteOwnerId();
+	         */
+	        getSiteOwnerId: getSiteOwnerId,
+
+	        Media: Media
+	    };
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 23 */
+/*!*****************************!*\
+  !*** ./js/modules/Media.js ***!
+  \*****************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+	 * This is the description for the Media namespace.
+	 * @memberof Wix.Utils
+	 * @namespace Wix.Utils.Media
+	 */
+	'use strict';
+
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, reporter, postMessage) {
+
+	    var namespace = 'Utils.Media';
+
+	    var getWixStatic = function getWixStatic() {
+	        return 'https://static.wixstatic.com/';
+	    };
+
+	    var getWixMedia = function getWixMedia() {
+	        return 'https://media.wix.com/';
+	    };
+
+	    var getImageUrl = function getImageUrl(relativeUrl) {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_IMAGE_URL, namespace);
+	        return getWixStatic() + 'media/' + relativeUrl;
+	    };
+
+	    var getResizedImageUrl = function getResizedImageUrl(imageURI, width, height, params) {
+	        // assign sharp default parameters
+	        params = params || {};
+	        params.quality = params.quality || 85;
+	        params.usm_r = (params.usm_r || 0.66).toFixed(2);
+	        params.usm_a = (params.usm_a || 1.00).toFixed(2);
+	        params.usm_t = (params.usm_t || 0.01).toFixed(2);
+
+	        // build the image url
+	        // e.g. http://static.wixstatic.com/media/12-345.jpg/v1/fill/w_1280,h_720,q_85,usm_0.66_1.00_0.01/12-345.jpg
+	        var tramsformStr = '';
+	        // domain
+	        tramsformStr += getWixStatic() + 'media/';
+	        // image uri
+	        tramsformStr += imageURI + '/';
+	        // api version
+	        tramsformStr += 'v1/';
+	        // image transform type - fill
+	        tramsformStr += 'fill/';
+	        // target width
+	        tramsformStr += 'w_' + Math.round(width) + ',';
+	        // target height
+	        tramsformStr += 'h_' + Math.round(height) + ',';
+	        // quality - applicable for jpeg only (no effect otherwise)
+	        tramsformStr += 'q_' + params.quality + ',';
+	        // un-sharp mask
+	        tramsformStr += 'usm_' + params.usm_r + '_' + params.usm_a + '_' + params.usm_t + '/';
+	        // image uri
+	        tramsformStr += imageURI;
+
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_RESIZED_IMAGE_URL, namespace);
+
+	        return tramsformStr;
+	    };
+
+	    var getAudioUrl = function getAudioUrl(relativeUrl, audioType) {
+	        //support for old usage: when no audioType is given should return the standard
+	        audioType = audioType || AudioType.STANDARD;
+	        if (!utils.has(AudioType, audioType)) {
+	            reporter.reportSdkError('Invalid argument - audioType value should be set using Wix.Utils.Media.AudioType');
+	        }
+
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_AUDIO_URL, namespace);
+
+	        switch (audioType) {
+	            case AudioType.STANDARD:
+	                return getWixMedia() + 'mp3/' + relativeUrl;
+	            case AudioType.PREVIEW:
+	                return getWixStatic() + 'preview/' + relativeUrl;
+	            case AudioType.SHORT_PREVIEW:
+	                return getWixStatic() + relativeUrl;
+	        }
+	    };
+
+	    var getDocumentUrl = function getDocumentUrl(relativeUrl) {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_DOCUMENT_URL, namespace);
+	        return getWixMedia() + 'ugd/' + relativeUrl;
+	    };
+
+	    var getSwfUrl = function getSwfUrl(relativeUrl) {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_SWF_URL, namespace);
+	        return getWixStatic() + 'media/' + relativeUrl;
+	    };
+
+	    var getPreviewSecureMusicUrl = function getPreviewSecureMusicUrl(previewFileName) {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_PREVIEW_SECURE_MUSIC_URL, namespace);
+	        reporter.reportSdkMsg('Wix.Utils.Media.getPreviewSecureMusicUrl is DEPRECATED please use Wix.Utils.Media.getAudioUrl(\'myFileName.mp3\', Wix.Utils.Media.AudioType.PREVIEW)');
+	        return getWixStatic() + 'preview/' + previewFileName;
+	    };
+
+	    var AudioType = {
+	        STANDARD: 'STANDARD',
+	        PREVIEW: 'PREVIEW',
+	        SHORT_PREVIEW: 'SHORT_PREVIEW'
+	    };
+
+	    return {
+
+	        /**
+	         * An enum of audio types that are supported by Wix.Utils.Media.getAudioUrl
+	         * @enum
+	         * @memberof Wix.Utils.Media
+	         * @since 1.45.0
+	         */
+	        AudioType: {
+	            /**
+	             * Standard mp3 audio file
+	             * @since 1.45.0
+	             */
+	            STANDARD: AudioType.STANDARD,
+	            /**
+	             * A full preview of a high-quality audio file playable in the browser
+	             * @since 1.45.0
+	             */
+	            PREVIEW: AudioType.PREVIEW,
+	            /**
+	             * A short preview of a high-quality audio file playable in the browser
+	             * @since 1.45.0
+	             */
+	            SHORT_PREVIEW: AudioType.SHORT_PREVIEW
+	        },
+
+	        /**
+	         * This method constructs a URL for a media item of type image.
+	         * @function
+	         * @memberof Wix.Utils.Media
+	         * @since 1.17.0
+	         * @param {String} Image item uri (relative to Wix media gallery).
+	         * @returns {String} A full URL pointing to the Wix static servers of an image with the default dimensions - width and height.
+	         * @example
+	         *
+	         * var imageUrl = Wix.Utils.Media.getImageUrl('relative_url.jpg')
+	         */
+	        getImageUrl: getImageUrl,
+
+	        /**
+	         * This method constructs a URL for a media item of type image and let the developer change the image dimensions as well as it's sharpening properties (optional),
+	         * see sharpening explained here - http://en.wikipedia.org/wiki/Unsharp_masking.
+	         * @function
+	         * @memberof Wix.Utils.Media
+	         * @since 1.17.0
+	         * @param {String} relativeUrl Static image url provided by the media dialog.
+	         * @param {Number} width Desired image width.
+	         * @param {Number} height Desired image height.
+	         * @param {Object} [sharpParams]
+	         * @param {Number} sharpParams.quality JPEG quality, leave as is (75) unless image size is important for your app.
+	         * @param {Number} sharpParams.resizeFilter Resize filter.
+	         * @param {Number} sharpParams.usm_r Unsharp mask radius.
+	         * @param {Number} sharpParams.usm_a Unsharp mask amount (percentage).
+	         * @param {Number} sharpParams.usm_t Unsharp mask threshold.
+	         * @returns {String} A full URL pointing to the Wix static servers of an image with the custom dimension parameters.
+	         * @example
+	         *
+	         * var resizedImageUrl = Wix.Utils.Media.getResizedImageUrl('relative_url.jpg', 500, 500)
+	         */
+	        getResizedImageUrl: getResizedImageUrl,
+
+	        /**
+	         * Constructs an absolute URL for a relative path to an audio file. By default, returns a URL to a standard audio file.
+	         * @function
+	         * @memberof Wix.Utils.Media
+	         * @since 1.45.0
+	         * @param {String} relativeUri A relative URL to the target audio file.
+	         * @param {Wix.Utils.Media.AudioType} audioType the type of audio URL to build. Default is Wix.Media.AudioType.STANDARD.
+	         * @returns {String} An absolute URL pointing to the audio file hosted on Wix's static.
+	         * @example
+	         *
+	         * var audioUrl = Wix.Utils.Media.getAudioUrl('relative_url.mp3', Wix.Utils.Media.AudioType.SHORT_PREVIEW)
+	         */
+	        getAudioUrl: getAudioUrl,
+
+	        /**
+	         * This method constructs a URL for a media item of type document.
+	         * @function
+	         * @memberof Wix.Utils.Media
+	         * @since 1.17.0
+	         * @param {String} relativeUri Document item uri (relative to Wix media gallery).
+	         * @returns {String} A full URL pointing to the Wix static servers of a document media file with the default dimensions.
+	         * @example
+	         *
+	         * var documentUrl = Wix.Utils.Media.getDocumentUrl('relative_url.pdf')
+	         */
+	        getDocumentUrl: getDocumentUrl,
+
+	        /**
+	         * This method constructs a URL for a media item of type swf.
+	         * @function
+	         * @memberof Wix.Utils.Media
+	         * @since 1.17.0
+	         * @param {String} relativeUri Swf item uri (relative to Wix media gallery).
+	         * @returns {String} A full URL pointing to the Wix static servers of a swf media file  with the default dimensions.
+	         * @example
+	         *
+	         * var swfUrl = Wix.Utils.Media.getSwfUrl('relative_url.swf')
+	         */
+	        getSwfUrl: getSwfUrl,
+
+	        /**
+	         * This method constructs a URL for a media item of type secure music.
+	         * @function
+	         * @memberof Wix.Utils.Media
+	         * @since 1.41.0
+	         * @param {String} relativeUri secure music item uri (relative to Wix media gallery).
+	         * @returns {String} A full URL pointing to the Wix static servers of a secure media file.
+	         * @deprecated
+	         * @example
+	         * var preview = Wix.Utils.Media.getPreviewSecureMusicUrl('relative_url.mp3')
+	         */
+	        getPreviewSecureMusicUrl: getPreviewSecureMusicUrl
+
+	    };
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 24 */
 /*!******************************!*\
   !*** ./js/modules/Styles.js ***!
   \******************************/
@@ -3510,22 +4279,11 @@
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/core */ 4), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/templateUtils */ 12), __webpack_require__(/*! privates/styles */ 11), __webpack_require__(/*! privates/utils */ 9)], __WEBPACK_AMD_DEFINE_RESULT__ = function (core, postMessage, reporter, templateUtils, styles, utils) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/styles */ 11), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/sharedAPI */ 17)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage, reporter, styles, utils, sharedAPI) {
+
+	    var namespace = 'Styles';
 
 	    var EDITOR_PARAM_TYPES = ['color', 'number', 'boolean', 'font'];
-
-	    var getStyle = function getStyle(callback, key) {
-	        if (styles.Cache[key] && callback) {
-	            callback(styles.Cache[key]);
-	        } else {
-	            core.addToReadyQ(function () {
-	                if (callback) {
-	                    callback(styles.Cache[key]);
-	                }
-	            });
-	        }
-	        return styles.Cache[key];
-	    };
 
 	    var getDynamicCallback = function getDynamicCallback(onSuccess, onError) {
 	        return function (data) {
@@ -3566,35 +4324,9 @@
 	        };
 	    };
 
-	    var setEditorParam = function setEditorParam(type, key, value, onSuccess, onError) {
-	        if (EDITOR_PARAM_TYPES.indexOf(type) === -1) {
-	            reporter.reportSdkError('Invalid editor param type: "' + type + '"');
-	        }
-	        if (!key) {
-	            reporter.reportSdkError('Invalid key name');
-	        }
-
-	        var callback = function callback(data) {
-	            if (data && data.onError) {
-	                if (onError) {
-	                    onError.apply(this, arguments);
-	                }
-	            } else {
-	                if (onSuccess) {
-	                    onSuccess.apply(this, arguments);
-	                }
-	            }
-	        };
-
-	        postMessage.sendMessage(postMessage.MessageTypes.SET_STYLE_PARAM, {
-	            type: type,
-	            key: key,
-	            param: value
-	        }, callback);
-	    };
-
 	    var getStyleParams = function getStyleParams(callback) {
-	        return getStyle(callback, 'style');
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_STYLE_PARAMS, namespace);
+	        return sharedAPI.getStyleParams(callback);
 	    };
 
 	    var setStyleParams = function setStyleParams(styleObjArr, onSuccess, onError) {
@@ -3622,73 +4354,78 @@
 	        }
 
 	        var callback = getDynamicCallback(onSuccess, onError);
-	        postMessage.sendMessage(postMessage.MessageTypes.SET_STYLE_PARAM, mappedStyleObjArr, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_STYLE_PARAM, namespace, mappedStyleObjArr, callback);
 	    };
 
 	    var setFontParam = function setFontParam(key, value, onSuccess, onError) {
-	        setEditorParam('font', key, value, onSuccess, onError);
+	        sharedAPI.setEditorParam(namespace, 'font', key, value, onSuccess, onError);
 	    };
 
 	    var getEditorFonts = function getEditorFonts(callback) {
-	        return getStyle(callback, 'fontsMeta');
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_EDITOR_FONTS, namespace);
+	        return sharedAPI.getStyle(callback, 'fontsMeta');
 	    };
 
 	    var getSiteTextPresets = function getSiteTextPresets(callback) {
-	        return getStyle(callback, 'siteTextPresets');
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_SITE_TEXT_PRESETS, namespace);
+	        return sharedAPI.getStyle(callback, 'siteTextPresets');
 	    };
 
 	    var getFontsSpriteUrl = function getFontsSpriteUrl(callback) {
-	        return getStyle(callback, 'fontsSpriteUrl');
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_FONTS_SPRITE_URL, namespace);
+	        return sharedAPI.getStyle(callback, 'fontsSpriteUrl');
 	    };
 
 	    var getStyleFontByKey = function getStyleFontByKey(fontKey) {
-	        var font = styles.Cache.mappedFonts && styles.Cache.mappedFonts['style.' + fontKey];
-	        return font;
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_STYLE_FONT_BY_KEY, namespace);
+	        return styles.Cache.mappedFonts && styles.Cache.mappedFonts['style.' + fontKey];
 	    };
 
 	    var getStyleFontByReference = function getStyleFontByReference(fontReference) {
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_STYLE_FONT_BY_REFERENCE, namespace);
 	        return styles.Cache.siteTextPresets && styles.Cache.siteTextPresets[fontReference];
 	    };
 
 	    var getSiteColors = function getSiteColors(callback) {
-	        return getStyle(callback, 'siteColors');
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_SITE_COLORS, namespace);
+	        return sharedAPI.getStyle(callback, 'siteColors');
 	    };
 
 	    var getStyleColorByKey = function getStyleColorByKey(colorKey) {
-	        var color = styles.Cache.mappedColors && styles.Cache.mappedColors['style.' + colorKey];
-	        return color ? color.value : '';
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_STYLE_COLOR_BY_KEY, namespace);
+	        return sharedAPI.getStyleColorByKey(colorKey);
 	    };
 
 	    var getColorByreference = function getColorByreference(colorReference) {
-	        var color = styles.Cache.mappedColors && styles.Cache.mappedColors[colorReference];
-	        color = utils.shallowCloneObject(color, ['name']);
-	        return color;
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_COLOR_BY_REFERENCE, namespace);
+	        return sharedAPI.getColorByreference(colorReference);
 	    };
 
 	    var setColorParam = function setColorParam(key, value, onSuccess, onError) {
-	        if (value.hasOwnProperty('reference') && value.reference) {
-	            value.color = getColorByreference(value.reference);
-	        }
-	        setEditorParam('color', key, value, onSuccess, onError);
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_COLOR_PARAM, namespace);
+	        sharedAPI.setColorParam(namespace, key, value, onSuccess, onError);
 	    };
 
 	    var setNumberParam = function setNumberParam(key, value, onSuccess, onError) {
-	        setEditorParam('number', key, value, onSuccess, onError);
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_NUMBER_PARAM, namespace);
+	        sharedAPI.setEditorParam(namespace, 'number', key, value, onSuccess, onError);
 	    };
 
 	    var setBooleanParam = function setBooleanParam(key, value, onSuccess, onError) {
-	        setEditorParam('boolean', key, value, onSuccess, onError);
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_BOOLEAN_PARAM, namespace);
+	        sharedAPI.setEditorParam(namespace, 'boolean', key, value, onSuccess, onError);
 	    };
 
 	    var openColorPicker = function openColorPicker(params, callback) {
-	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_COLOR_PICKER, params, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_COLOR_PICKER, namespace, params, callback);
 	    };
 
 	    var openFontPicker = function openFontPicker(params, callback) {
-	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_FONT_PICKER, params, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_FONT_PICKER, namespace, params, callback);
 	    };
 
 	    var setUILIBParamValue = function setUILIBParamValue(type, key, value) {
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_UI_LIB_PARAM_VALUE, namespace);
 	        styles.Cache.style[type][key] = value;
 	    };
 
@@ -3700,7 +4437,7 @@
 	            reporter.reportSdkError('Invalid argument - callback should be of type Function');
 	            return;
 	        }
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_STYLE_ID, {}, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_STYLE_ID, namespace, {}, callback);
 	    };
 
 	    var getStyleParamsByStyleId = function getStyleParamsByStyleId(styleId, onSuccess, onFailure) {
@@ -3733,7 +4470,7 @@
 	        };
 
 	        var args = { styleId: styleId };
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_STYLE_PARAMS_BY_STYLE_ID, args, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_STYLE_PARAMS_BY_STYLE_ID, namespace, args, callback);
 	    };
 
 	    return {
@@ -4010,7 +4747,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 22 */
+/* 25 */
 /*!****************************!*\
   !*** ./js/modules/Base.js ***!
   \****************************/
@@ -4022,10 +4759,12 @@
 	*/
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Utils */ 18), __webpack_require__(/*! Styles */ 21), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! Theme */ 23), __webpack_require__(/*! WindowOrigin */ 3), __webpack_require__(/*! WindowPlacement */ 24), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/sharedAPI */ 25)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Utils, Styles, utils, Theme, WindowOrigin, WindowPlacement, reporter, postMessage, sharedAPI) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! Theme */ 26), __webpack_require__(/*! WindowOrigin */ 3), __webpack_require__(/*! WindowPlacement */ 20), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/sharedAPI */ 17), __webpack_require__(/*! privates/viewMode */ 6)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, Theme, WindowOrigin, WindowPlacement, reporter, postMessage, sharedAPI, viewMode) {
+
+	    var namespace = 'Wix';
 
 	    var openModal = function openModal(url, width, height, onClose, theme) {
-	        if (Utils.getViewMode() === "editor") {
+	        if (viewMode.getViewMode() === "editor") {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor mode. Supported view modes are: [preview, site]');
 	            return;
 	        }
@@ -4037,7 +4776,7 @@
 	            theme: theme || Theme.DEFAULT
 	        };
 
-	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_MODAL, args, onClose);
+	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_MODAL, namespace, args, onClose);
 	    };
 
 	    var setHeight = function setHeight(height, options) {
@@ -4060,7 +4799,7 @@
 	            }
 	        }
 
-	        postMessage.sendMessage(postMessage.MessageTypes.HEIGHT_CHANGED, {
+	        postMessage.sendMessage(postMessage.MessageTypes.HEIGHT_CHANGED, namespace, {
 	            height: height,
 	            overflow: overflow
 	        });
@@ -4070,11 +4809,11 @@
 	        var args = {
 	            message: message
 	        };
-	        postMessage.sendMessage(postMessage.MessageTypes.CLOSE_WINDOW, args);
+	        postMessage.sendMessage(postMessage.MessageTypes.CLOSE_WINDOW, namespace, args);
 	    };
 
 	    var scrollTo = function scrollTo(x, y) {
-	        if (Utils.getViewMode() === 'editor') {
+	        if (viewMode.getViewMode() === 'editor') {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor mode. Supported view modes are: [preview, site]');
 	            return;
 	        }
@@ -4083,11 +4822,11 @@
 	            y: y
 	        };
 
-	        postMessage.sendMessage(postMessage.MessageTypes.SCROLL_TO, args);
+	        postMessage.sendMessage(postMessage.MessageTypes.SCROLL_TO, namespace, args);
 	    };
 
 	    var navigateToComponent = function navigateToComponent(compId, options, onFailure) {
-	        if (Utils.getViewMode() === 'editor') {
+	        if (viewMode.getViewMode() === 'editor') {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor mode. Supported view modes are: [preview, site]');
 	            return;
 	        }
@@ -4125,44 +4864,19 @@
 	            }
 	        }
 
-	        postMessage.sendMessage(postMessage.MessageTypes.NAVIGATE_TO_COMPONENT, args, onFailure);
+	        postMessage.sendMessage(postMessage.MessageTypes.NAVIGATE_TO_COMPONENT, namespace, args, onFailure);
 	    };
 
 	    var getSiteInfo = function getSiteInfo(onSuccess) {
-	        postMessage.sendMessage(postMessage.MessageTypes.SITE_INFO, null, onSuccess);
+	        sharedAPI.getSiteInfo(namespace, onSuccess);
 	    };
 
 	    var getSitePages = function getSitePages(options, callback) {
-	        var args = {};
-
-	        if (utils.isFunction(options)) {
-	            callback = options;
-	        } else if (options) {
-	            if (utils.isObject(options)) {
-	                if (options.includePagesUrl) {
-	                    if (utils.isBoolean(options.includePagesUrl)) {
-	                        args.includePagesUrl = options.includePagesUrl;
-	                    } else {
-	                        reporter.reportSdkError('Invalid argument - includePagesUrl should be of type boolean');
-	                        return;
-	                    }
-	                }
-	            } else {
-	                reporter.reportSdkError('Invalid argument - options should be of type Object');
-	                return;
-	            }
-
-	            if (callback && !utils.isFunction(callback)) {
-	                reporter.reportSdkError('Invalid argument - callback should be of type Function');
-	                return;
-	            }
-	        }
-
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_SITE_PAGES, args, callback);
+	        sharedAPI.getSitePages(namespace, options, callback);
 	    };
 
 	    var setPageMetadata = function setPageMetadata(options) {
-	        if (Utils.getViewMode() !== 'site') {
+	        if (viewMode.getViewMode() !== 'site') {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor/preview mode. Supported view mode is: [site]');
 	            return;
 	        }
@@ -4190,12 +4904,13 @@
 	        if (options.description) {
 	            args.description = options.description;
 	        }
-	        postMessage.sendMessage(postMessage.MessageTypes.SET_PAGE_METADATA, args);
+	        postMessage.sendMessage(postMessage.MessageTypes.SET_PAGE_METADATA, namespace, args);
 	    };
 
 	    var getStyleParams = function getStyleParams(callback) {
 	        reporter.reportSdkMsg('Wix.getStyleParams is DEPRECATED use Wix.Styles.getStyleParams');
-	        return Styles.getStyleParams(callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_STYLE_PARAMS, namespace);
+	        return sharedAPI.getStyleParams(callback);
 	    };
 
 	    var reportHeightChange = function reportHeightChange() {
@@ -4207,13 +4922,13 @@
 	            reporter.reportSdkError('Missing mandatory argument - state - should be of type String');
 	            return;
 	        }
-	        postMessage.sendMessage(postMessage.MessageTypes.APP_STATE_CHANGED, {
+	        postMessage.sendMessage(postMessage.MessageTypes.APP_STATE_CHANGED, namespace, {
 	            state: state
 	        });
 	    };
 
 	    var replaceSectionState = function replaceSectionState(state) {
-	        if (Utils.getViewMode() === "editor") {
+	        if (viewMode.getViewMode() === "editor") {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor mode. Supported view modes are: [preview, site]');
 	            return;
 	        }
@@ -4225,13 +4940,13 @@
 	            reporter.reportSdkError('Invalid argument - state should be of type String');
 	            return;
 	        }
-	        postMessage.sendMessage(postMessage.MessageTypes.REPLACE_SECTION_STATE, {
+	        postMessage.sendMessage(postMessage.MessageTypes.REPLACE_SECTION_STATE, namespace, {
 	            state: state
 	        });
 	    };
 
 	    var getCurrentPageId = function getCurrentPageId(callback) {
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_CURRENT_PAGE_ID, null, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_CURRENT_PAGE_ID, namespace, null, callback);
 	    };
 
 	    var getComponentInfo = function getComponentInfo(callback) {
@@ -4239,7 +4954,7 @@
 	            reporter.reportSdkError('Missing mandatory argument - callback - should be of type Function');
 	            return;
 	        }
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_COMPONENT_INFO, null, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_COMPONENT_INFO, namespace, null, callback);
 	    };
 
 	    var navigateToPage = function navigateToPage(pageId, options, onFailure) {
@@ -4260,7 +4975,7 @@
 
 	        if (options) {
 	            if (options.anchorId) {
-	                if (Utils.getViewMode() === 'editor') {
+	                if (viewMode.getViewMode() === 'editor') {
 	                    reporter.reportSdkError('Invalid view mode. This function cannot be called with anchorId in editor mode. Supported view modes are: [preview, site]');
 	                    return;
 	                }
@@ -4275,20 +4990,16 @@
 	                args.noTransition = options.noTransition;
 	            }
 	        }
-	        postMessage.sendMessage(postMessage.MessageTypes.NAVIGATE_TO_PAGE, args, onFailure);
+	        postMessage.sendMessage(postMessage.MessageTypes.NAVIGATE_TO_PAGE, namespace, args, onFailure);
 	    };
 
 	    var currentMember = function currentMember(onSuccess) {
-	        if (Utils.getViewMode() !== "site") {
-	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor/preview mode. Supported view mode is: [site]');
-	            return;
-	        }
-	        postMessage.sendMessage(postMessage.MessageTypes.SM_CURRENT_MEMBER, null, onSuccess);
+	        sharedAPI.currentMember(namespace, onSuccess);
 	    };
 
 	    var requestLogin = function requestLogin(options, onSuccess, onCancel) {
 
-	        if (Utils.getViewMode() !== 'site') {
+	        if (viewMode.getViewMode() !== 'site') {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor/preview mode. Supported view mode is: [site]');
 	            return;
 	        }
@@ -4314,6 +5025,7 @@
 	                reporter.reportSdkError("Invalid argument - mode can only be 'login' or 'signup'");
 	                return;
 	            }
+
 	            if (options.language) {
 	                args.language = options.language;
 	            }
@@ -4340,11 +5052,11 @@
 	            };
 	        }
 
-	        postMessage.sendMessage(postMessage.MessageTypes.SM_REQUEST_LOGIN, args, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.SM_REQUEST_LOGIN, namespace, args, callback);
 	    };
 
 	    var logOutCurrentMember = function logOutCurrentMember(options, onError) {
-	        if (Utils.getViewMode() !== 'site') {
+	        if (viewMode.getViewMode() !== 'site') {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor/preview mode. Supported view mode is: [site]');
 	            return;
 	        }
@@ -4358,18 +5070,18 @@
 	                reporter.reportSdkError('Invalid argument - onError, must be a function');
 	                return;
 	            }
-	            postMessage.sendMessage(postMessage.MessageTypes.LOG_OUT_CURRENT_MEMBER, args, onError);
+	            postMessage.sendMessage(postMessage.MessageTypes.LOG_OUT_CURRENT_MEMBER, namespace, args, onError);
 	        } else if (utils.isFunction(options)) {
-	            postMessage.sendMessage(postMessage.MessageTypes.LOG_OUT_CURRENT_MEMBER, args, options);
+	            postMessage.sendMessage(postMessage.MessageTypes.LOG_OUT_CURRENT_MEMBER, namespace, args, options);
 	        } else if (options) {
 	            reporter.reportSdkError('Invalid argument - options, must be an object');
 	        } else {
-	            postMessage.sendMessage(postMessage.MessageTypes.LOG_OUT_CURRENT_MEMBER, args);
+	            postMessage.sendMessage(postMessage.MessageTypes.LOG_OUT_CURRENT_MEMBER, namespace, args);
 	        }
 	    };
 
 	    var openPopup = function openPopup(url, width, height, position, onClose, theme) {
-	        if (Utils.getViewMode() === 'editor') {
+	        if (viewMode.getViewMode() === 'editor') {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor mode. Supported view modes are: [preview, site]');
 	            return;
 	        }
@@ -4390,7 +5102,7 @@
 	            position: position,
 	            theme: theme || Theme.DEFAULT
 	        };
-	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_POPUP, args, onClose);
+	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_POPUP, namespace, args, onClose);
 	    };
 
 	    var resizeWindow = function resizeWindow(width, height, onComplete) {
@@ -4398,19 +5110,19 @@
 	            width: width,
 	            height: height
 	        };
-	        postMessage.sendMessage(postMessage.MessageTypes.RESIZE_WINDOW, args, onComplete);
+	        postMessage.sendMessage(postMessage.MessageTypes.RESIZE_WINDOW, namespace, args, onComplete);
 	    };
 
 	    var addEventListener = function addEventListener(eventName, callBack) {
-	        return postMessage.addEventListenerInternal(eventName, callBack, false);
+	        return postMessage.addEventListenerInternal(eventName, namespace, callBack, false);
 	    };
 
 	    var removeEventListener = function removeEventListener(eventName, callBackOrId) {
-	        postMessage.removeEventListenerInternal(eventName, callBackOrId, false);
+	        postMessage.removeEventListenerInternal(eventName, namespace, callBackOrId, false);
 	    };
 
 	    var scrollBy = function scrollBy(x, y) {
-	        if (Utils.getViewMode() === 'editor') {
+	        if (viewMode.getViewMode() === 'editor') {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor mode. Supported view modes are: [preview, site]');
 	            return;
 	        }
@@ -4418,11 +5130,11 @@
 	            x: x,
 	            y: y
 	        };
-	        postMessage.sendMessage(postMessage.MessageTypes.SCROLL_BY, args);
+	        postMessage.sendMessage(postMessage.MessageTypes.SCROLL_BY, namespace, args);
 	    };
 
 	    var getBoundingRectAndOffsets = function getBoundingRectAndOffsets(callback) {
-	        postMessage.sendMessage(postMessage.MessageTypes.BOUNDING_RECT_AND_OFFSETS, null, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.BOUNDING_RECT_AND_OFFSETS, namespace, null, callback);
 	    };
 
 	    var getExternalId = function getExternalId(onSuccess, onError) {
@@ -4440,24 +5152,24 @@
 	            }
 	        };
 
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_EXTERNAL_ID, undefined, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_EXTERNAL_ID, namespace, undefined, callback);
 	    };
 
 	    var resizeComponent = function resizeComponent(options, onSuccess, onFailure) {
-	        var viewMode = Utils.getViewMode();
-	        if (viewMode !== 'editor') {
-	            reporter.reportSdkError(viewMode + ' is an invalid view mode. This function can only be called in editor mode.');
+	        var currentViewMode = viewMode.getViewMode();
+	        if (currentViewMode !== 'editor') {
+	            reporter.reportSdkError(currentViewMode + ' is an invalid view mode. This function can only be called in editor mode.');
 	        } else {
-	            sharedAPI.resizeComponent(options, onSuccess, onFailure);
+	            sharedAPI.resizeComponent(options, namespace, onSuccess, onFailure);
 	        }
 	    };
 
 	    var revalidateSession = function revalidateSession(onSuccess, onError) {
-	        sharedAPI.revalidateSession(onSuccess, onError);
+	        sharedAPI.revalidateSession(namespace, onSuccess, onError);
 	    };
 
 	    var navigateToAnchor = function navigateToAnchor(anchorId, onFailure) {
-	        if (Utils.getViewMode() === 'editor') {
+	        if (viewMode.getViewMode() === 'editor') {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor mode. Supported view modes are: [preview, site]');
 	            return;
 	        }
@@ -4475,7 +5187,15 @@
 	            anchorId: anchorId
 	        };
 
-	        postMessage.sendMessage(postMessage.MessageTypes.NAVIGATE_TO_ANCHOR, args, onFailure);
+	        postMessage.sendMessage(postMessage.MessageTypes.NAVIGATE_TO_ANCHOR, namespace, args, onFailure);
+	    };
+
+	    var getCurrentPageAnchors = function getCurrentPageAnchors(callback) {
+	        sharedAPI.getCurrentPageAnchors(namespace, callback);
+	    };
+
+	    var getStateUrl = function getStateUrl(sectionId, state, callback) {
+	        sharedAPI.getStateUrl(namespace, sectionId, state, callback);
 	    };
 
 	    return {
@@ -4833,17 +5553,19 @@
 	         *
 	         * @function
 	         * @memberof Wix
-	         * @since 1.68.0
-	         * @param {Object} [options] An Object that may contain a 'mode' property with possible values: 'login' or 'signup', and may contain a 'language' property (default is 'en')
-	         * @param {Function} [onSuccess] A callback function to receive the current member details.
-	         * @param {Function} [onCancel] A callback function called when user cancels and closes the log-in/sign-up dialog.
+	         * @since 1.69.0
+	         * @param {Object} [options] may contain:
+	         *                           a 'mode' property with possible values: 'login' or 'signup'
+	         *                           language property that define in which language the panel will be displayed in
+	         * @param {Function} [callback] A callback function to receive the current member details.
+	         * @param {Function} [onCancel] that will be called if the form was closed without login.
 	         * @example
 	         *
 	         * Wix.requestLogin({mode: 'login', language: 'es'}, function (data) {
 	         *    //do something with data
-	         * }, function(){
-	         *    //handle user cancellation
-	         * });
+	         * }, function () {
+	         *    //do something
+	         * })
 	         */
 	        requestLogin: requestLogin,
 
@@ -5014,13 +5736,31 @@
 	         * @example
 	         *
 	         *
-	         * Wix.Settings.resizeComponent({
+	         * Wix.resizeComponent({
 	         *    width: 400,
 	         *    height:600
 	         * });
 	         */
 	        resizeComponent: resizeComponent,
 
+	        /**
+	         * Before showing sensitive information or making an action which requires a secure session,
+	         * an app should verify that a secure session exists.
+	         * Get a newly signed app instance by calling Wix.revalidateSession.
+	         * @function
+	         * @memberof Wix
+	         * @since 1.47.0
+	         * @param {Function} onSuccess Receives a newly signed and encoded app instance.
+	         * @param {Function} onFailure
+	         * @example
+	         *
+	         *
+	         * Wix.revalidateSession(function(instanceData){
+	         *  //handle success use-case
+	         * }, function(error){
+	         *    //Handle error use-case
+	         * });
+	         */
 	        revalidateSession: revalidateSession,
 
 	        /**
@@ -5037,7 +5777,7 @@
 	         * });
 	         */
 
-	        getCurrentPageAnchors: sharedAPI.getCurrentPageAnchors,
+	        getCurrentPageAnchors: getCurrentPageAnchors,
 
 	        /**
 	         * The navigateToAnchor method will navigate to an anchor on the current page.
@@ -5096,12 +5836,30 @@
 	         *
 	         * Wix.replaceSectionState("app-state");
 	         */
-	        replaceSectionState: replaceSectionState
+	        replaceSectionState: replaceSectionState,
+	        /**
+	         * Gets a URL for a given deep-linked state in a given sectionIdentifier. In the editor, gets the public URL for the address.
+	         *
+	         * Available from Editor, Preview and Viewer
+	         *
+	         * @function
+	         * @memberOf Wix
+	         * @since 1.69.0
+	         * @param {String} sectionId - the sectionId of the page to deep-link
+	         * @param {String} state - the deep-linked state
+	         * @returns {Object} The section url for the given sectionId
+	         * @example
+	         *
+	         * Wix.getStateUrl("cd1mp", "internal/app/state", function (url) {
+	         *      // do something with the URL for the state
+	         * });
+	         */
+	        getStateUrl: getStateUrl
 	    };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 23 */
+/* 26 */
 /*!*****************************!*\
   !*** ./js/modules/Theme.js ***!
   \*****************************/
@@ -5110,7 +5868,7 @@
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
 	 * A theme for a popup window.
 	 * @memberof Wix
-	 * @namespace Theme
+	 * @namespace Wix.Theme
 	 */
 	'use strict';
 
@@ -5133,411 +5891,6 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 24 */
-/*!***************************************!*\
-  !*** ./js/modules/WindowPlacement.js ***!
-  \***************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/**
-	 * Represents a predefined values to position a Wix popup windows without the hassle of figuring out the position yourself.
-	 * Can be used to position the window relatively (to the calling widget) or absolutely (to the view port).
-	 *
-	 * @memberof Wix
-	 * @namespace WindowPlacement
-	 */
-	'use strict';
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
-	  return {
-	    /**
-	     * Top left placement.
-	     * @memberof Wix.WindowPlacement
-	     * @since 1.17.0
-	     */
-	    TOP_LEFT: 'TOP_LEFT',
-
-	    /**
-	     * Top right placement.
-	     * @memberof Wix.WindowPlacement
-	     * @since 1.17.0
-	     */
-	    TOP_RIGHT: 'TOP_RIGHT',
-
-	    /**
-	     * Bottom right placement.
-	     * @memberof Wix.WindowPlacement
-	     * @since 1.17.0
-	     */
-	    BOTTOM_RIGHT: 'BOTTOM_RIGHT',
-
-	    /**
-	     * Bottom left placement.
-	     * @memberof Wix.WindowPlacement
-	     * @since 1.17.0
-	     */
-	    BOTTOM_LEFT: 'BOTTOM_LEFT',
-
-	    /**
-	     * Top center placement.
-	     * @memberof Wix.WindowPlacement
-	     * @since 1.17.0
-	     */
-	    TOP_CENTER: 'TOP_CENTER',
-
-	    /**
-	     * Center right placement.
-	     * @memberof Wix.WindowPlacement
-	     * @since 1.17.0
-	     */
-	    CENTER_RIGHT: 'CENTER_RIGHT',
-
-	    /**
-	     * Bottom center placement.
-	     * @memberof Wix.WindowPlacement
-	     * @since 1.17.0
-	     */
-	    BOTTOM_CENTER: 'BOTTOM_CENTER',
-
-	    /**
-	     * Center left placement.
-	     * @memberof Wix.WindowPlacement
-	     * @since 1.17.0
-	     */
-	    CENTER_LEFT: 'CENTER_LEFT',
-
-	    /**
-	     * (FIXED origin only) center of the screen.
-	     * @memberof Wix.WindowPlacement
-	     * @since 1.17.0
-	     * @deprecated
-	     */
-	    CENTER: 'CENTER'
-	  };
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 25 */
-/*!******************************************!*\
-  !*** ./js/modules/privates/sharedAPI.js ***!
-  \******************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
-
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/responseHandlers */ 14)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, postMessage, reporter, responseHandlers) {
-	    'use strict';
-
-	    var resizeComponent = function resizeComponent(options, onSuccess, onFailure) {
-	        if (!options || !options.width && !options.height) {
-	            reporter.reportSdkError('Mandatory arguments - width or height must be supplied');
-	            return;
-	        }
-
-	        var args = {};
-
-	        if (options.width) {
-	            args.width = options.width;
-	        }
-
-	        if (options.height) {
-	            args.height = options.height;
-	        }
-
-	        var callback = function callback(data) {
-	            if (data.onError) {
-	                if (onFailure) {
-	                    onFailure(data);
-	                }
-	            } else {
-	                if (onSuccess) {
-	                    onSuccess(data);
-	                }
-	            }
-	        };
-
-	        postMessage.sendMessage(postMessage.MessageTypes.RESIZE_COMPONENT, args, callback);
-	    };
-
-	    var openMediaDialog = function openMediaDialog(messageType, supportedMediaTypes, mediaType, multipleSelection, onSuccess, onCancel) {
-	        if (!utils.isString(mediaType) || !isValidMediaType(supportedMediaTypes, mediaType)) {
-	            reporter.reportSdkError('Missing mandatory argument - mediaType must be one of Wix.Settings.MediaType');
-	            return;
-	        }
-
-	        if (!utils.isBoolean(multipleSelection)) {
-	            reporter.reportSdkError('Missing mandatory argument - multipleSelection must be true or false');
-	            return;
-	        }
-
-	        if (!utils.isFunction(onSuccess)) {
-	            reporter.reportSdkError('Missing mandatory argument - onSuccess must be a function');
-	            return;
-	        }
-
-	        var callOnCancel = utils.isFunction(onCancel);
-
-	        var callback = function callback(data) {
-	            if (data.wasCancelled) {
-	                if (callOnCancel) {
-	                    onCancel(data);
-	                }
-	            } else {
-	                onSuccess(data);
-	            }
-	        };
-
-	        var args = {
-	            mediaType: mediaType,
-	            multiSelection: multipleSelection,
-	            callOnCancel: callOnCancel
-	        };
-
-	        postMessage.sendMessage(messageType, args, callback);
-	    };
-
-	    var openModal = function openModal(url, width, height, title, onClose, bareUI, options) {
-	        if (!url || !width || !height) {
-	            reporter.reportSdkError('Mandatory arguments - url & width & height must be specified');
-	            return;
-	        }
-	        if (!utils.isString(url)) {
-	            reporter.reportSdkError('Invalid argument - a Url must be of type string');
-	            return;
-	        }
-	        if (!utils.isNumber(width) && !utils.isPercentValue(width)) {
-	            reporter.reportSdkError('Invalid argument - a width must be of type Number or Percentage');
-	            return;
-	        }
-	        if (!utils.isNumber(height) && !utils.isPercentValue(height)) {
-	            reporter.reportSdkError('Invalid argument - a height must be of type Number or Percentage');
-	            return;
-	        }
-
-	        var args = {
-	            url: url,
-	            width: width,
-	            height: height,
-	            isBareMode: bareUI,
-	            options: options
-	        };
-
-	        if (utils.isFunction(title)) {
-	            onClose = title;
-	        } else {
-	            args.title = title;
-	        }
-
-	        postMessage.sendMessage(postMessage.MessageTypes.SETTINGS_OPEN_MODAL, args, onClose);
-	    };
-
-	    var isValidMediaType = function isValidMediaType(MediaType, value) {
-	        for (var key in MediaType) {
-	            if (MediaType[key] === value) {
-	                return true;
-	            }
-	        }
-	        return false;
-	    };
-
-	    var revalidateSession = function revalidateSession(onSuccess, onError) {
-	        if (onSuccess) {
-	            if (utils.isFunction(onSuccess)) {
-	                var callback = function callback(response) {
-	                    if (response && response.onError) {
-	                        var wixErrorMessage = responseHandlers.getWixError(response.error.errorCode);
-	                        if (onError) {
-	                            onError.call(this, wixErrorMessage);
-	                        }
-	                    } else {
-	                        onSuccess.apply(this, arguments);
-	                    }
-	                };
-	                postMessage.sendMessage(postMessage.MessageTypes.REVALIDATE_SESSION, {}, callback);
-	            } else {
-	                reporter.reportSdkError('Mandatory argument - onSuccess - should be of type Function');
-	            }
-	        } else {
-	            reporter.reportSdkError('Missing Mandatory argument - onSuccess');
-	        }
-	    };
-
-	    var getCurrentPageAnchors = function getCurrentPageAnchors(callback) {
-	        if (!callback || !utils.isFunction(callback)) {
-	            reporter.reportSdkError('Mandatory arguments - a callback function must be specified');
-	            return;
-	        }
-
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_CURRENT_PAGE_ANCHORS, {}, callback);
-	    };
-
-	    return {
-	        resizeComponent: resizeComponent,
-	        openMediaDialog: openMediaDialog,
-	        revalidateSession: revalidateSession,
-	        getCurrentPageAnchors: getCurrentPageAnchors,
-	        openModal: openModal
-	    };
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 26 */
-/*!********************************!*\
-  !*** ./js/modules/Contacts.js ***!
-  \********************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
-	 * @memberof Wix
-	 * @namespace Contacts
-	 */
-	'use strict';
-
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/responseHandlers */ 14), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, responseHandlers, reporter, postMessage) {
-
-	    var getContacts = function getContacts(options, onSuccess, onFailure) {
-	        if (!utils.isObject(options)) {
-	            reporter.reportSdkError('Missing mandatory argument - options, must be an object');
-	            return;
-	        }
-
-	        if (!utils.isFunction(onSuccess)) {
-	            reporter.reportSdkError('Missing mandatory argument - onSuccess, must be a function');
-	            return;
-	        }
-
-	        var args = {
-	            options: options
-	        };
-
-	        var onComplete = function onComplete(response) {
-	            responseHandlers.handleCursorResponse(response, onSuccess, onFailure, postMessage.MessageTypes.GET_CONTACTS, options);
-	        };
-
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_CONTACTS, args, onComplete);
-	    };
-
-	    var getContactById = function getContactById(id, onSuccess, onFailure) {
-	        if (typeof id !== 'string') {
-	            reporter.reportSdkError('Missing mandatory argument - id, must be a string');
-	            return;
-	        }
-
-	        if (!utils.isFunction(onSuccess)) {
-	            reporter.reportSdkError('Missing mandatory argument - onSuccess, must be a function');
-	            return;
-	        }
-
-	        if (!utils.isFunction(onFailure)) {
-	            reporter.reportSdkError('Missing mandatory argument - onFailure, must be a function');
-	            return;
-	        }
-
-	        var args = {
-	            id: id
-	        };
-
-	        var onComplete = function onComplete(response) {
-	            responseHandlers.handleDataResponse(response, onSuccess, onFailure);
-	        };
-
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_CONTACT_BY_ID, args, onComplete);
-	    };
-
-	    function validateReconcileParams(contactInfo, onSuccess, onFailure) {
-	        var result = {
-	            passed: false
-	        };
-	        if (contactInfo === undefined) {
-	            result = {
-	                passed: false,
-	                error: 'Missing mandatory contact options parameter'
-	            };
-	        } else if (!utils.isObject(contactInfo)) {
-	            result = {
-	                passed: false,
-	                error: 'Contact options parameter must be an object'
-	            };
-	        } else if (onSuccess && !utils.isFunction(onSuccess)) {
-	            result = {
-	                passed: false,
-	                error: 'Missing mandatory argument - onSuccess, must be a function'
-	            };
-	        } else if (onFailure && !utils.isFunction(onFailure)) {
-	            result = {
-	                passed: false,
-	                error: 'Missing mandatory argument - onFailure, must be a function'
-	            };
-	        } else {
-	            result = {
-	                passed: true
-	            };
-	        }
-	        return result;
-	    }
-	    var reconcileContact = function reconcileContact(contactInfo, onSuccess, onFailure) {
-	        var validation = validateReconcileParams(contactInfo, onSuccess, onFailure);
-	        if (validation.passed) {
-	            var onComplete = function onComplete(response) {
-	                responseHandlers.handleDataResponse(response, onSuccess, onFailure);
-	            };
-	            postMessage.sendMessage(postMessage.MessageTypes.RECONCILE_CONTACT, contactInfo, onComplete);
-	        } else {
-	            reporter.reportSdkError(validation.error);
-	        }
-	    };
-	    return {
-	        /**
-	         * Gets a list of all contacts that have interacted with a given site.
-	         * @memberof Wix.Contacts
-	         * @author lior.shefer@wix.com
-	         * @since  1.31.0
-	         * @function
-	         * @param {Object} options object that supports two parameters: 'label' and 'pageSize'.
-	         * 'label' can either be a list of strings or a string. if a list, the strings are joined together with a comma
-	         * to be sent to the contacts endpoint. 'pageSize' accepts either 25, 50 or 100 and defaults to 25.
-	         * @param {Function} onSuccess An on success callback which gets WixDataCursor as parameter.
-	         * @param {Function} onFailure An on failure callback.
-	         * @return {WixDataCursor} cursor.
-	         * @example
-	         * Wix.Contacts.getContacts(function(WixDataCursor), function(errorType));
-	         */
-	        getContacts: getContacts,
-
-	        /**
-	         * Gets a specific Contact that has interacted with the current site by its id.
-	         * @memberof Wix.Contacts
-	         * @author lior.shefer@wix.com
-	         * @since 1.27.0
-	         * @function
-	         * @param {String} id The id of the Contact to look up.
-	         * @param {Function} onSuccess A function that receives data about the Contact.
-	         * @param {Function} onFailure A function called when an error occurs that receives a Wix.Error.
-	         * @return {Contact}
-	         */
-	        getContactById: getContactById,
-
-	        /**
-	         * Reconciles Contact information with that of the WixHive's.
-	         *
-	         * Use this when your app has information about a site visitor that may already be registered as a Contact as part of the WixHive. Your app should provide as much information as possible so that we will find the best match for that Contact and return it with the reconciled information. If no match was found, we will create a new Contact.
-	         *
-	         * Depending on the type of information, we will either add or dismiss changes. When the information can be added to a list, such as emails or phones, a new item will be added if no similar item exists. When the information cannot be added we dismiss the change, such is the case with name, company and picture. If your wish is to override such data, there are explicit ways to do so using the Contact’s id and our REST API.
-	         *
-	         * @memberof Wix.Contacts
-	         * @author benk@wix.com
-	         * @since 1.46.0
-	         * @function
-	         * @param {Object} contactInfo Contact information that will be passed to the server.
-	         * @param {Function} [onSuccess] A function that receives reconciliation details.
-	         * @param {Function} [onFailure] A function called when an error occurs, receives a Wix.Error.
-	         * @return {ReconcileContactResult} Contains the reconciled Contact and details about the operation.
-	         */
-	        reconcileContact: reconcileContact
-	    };
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
 /* 27 */
 /*!******************************!*\
   !*** ./js/modules/Worker.js ***!
@@ -5551,70 +5904,87 @@
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Base */ 22), __webpack_require__(/*! PubSub */ 28), __webpack_require__(/*! Utils */ 18), __webpack_require__(/*! Data */ 29)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Base, PubSub, Utils, Data) {
+	var _slice = Array.prototype.slice;
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Data */ 28), __webpack_require__(/*! privates/sharedAPI */ 17), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/pubSub */ 30), __webpack_require__(/*! privates/data */ 29), __webpack_require__(/*! privates/performance */ 31)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Data, sharedAPI, postMessage, pubSub, data, performance) {
+
+	    var namespace = 'Worker';
 
 	    var getSiteInfo = function getSiteInfo(onSuccess) {
-	        Base.getSiteInfo(onSuccess);
+	        sharedAPI.getSiteInfo(namespace, onSuccess);
 	    };
 
 	    var getSitePages = function getSitePages(options, callback) {
-	        Base.getSitePages(options, callback);
+	        sharedAPI.getSitePages(namespace, options, callback);
 	    };
 
 	    var addEventListener = function addEventListener(eventName, callBack) {
-	        return Base.addEventListener(eventName, callBack);
+	        return postMessage.addEventListenerInternal(eventName, namespace, callBack, false);
 	    };
 
 	    var removeEventListener = function removeEventListener(eventName, callBackOrId) {
-	        return Base.removeEventListener(eventName, callBackOrId);
+	        postMessage.removeEventListenerInternal(eventName, namespace, callBackOrId, false);
 	    };
 
 	    var currentMember = function currentMember(onSuccess) {
-	        return Base.currentMember(onSuccess);
+	        return sharedAPI.currentMember(namespace, onSuccess);
 	    };
 
+	    var pubSubNamespace = namespace + '.PubSub';
+
 	    var publish = function publish(eventKey, data, isPersistent) {
-	        return PubSub.publish(eventKey, data, isPersistent);
+	        return pubSub.publish(pubSubNamespace, eventKey, data, isPersistent);
 	    };
 
 	    var subscribe = function subscribe(eventKey, callBack, receivePastEvents) {
-	        return PubSub.subscribe(eventKey, callBack, receivePastEvents);
+	        return pubSub.subscribe(pubSubNamespace, eventKey, callBack, receivePastEvents);
 	    };
 
 	    var unsubscribe = function unsubscribe(eventKey, callBackOrId) {
-	        return PubSub.unsubscribe(eventKey, callBackOrId);
+	        return pubSub.unsubscribe(pubSubNamespace, eventKey, callBackOrId);
 	    };
 
+	    var utilsNamespace = namespace + '.Utils';
+
 	    var getViewMode = function getViewMode() {
-	        return Utils.getViewMode();
+	        return sharedAPI.getViewMode(utilsNamespace);
 	    };
 
 	    var getDeviceType = function getDeviceType() {
-	        return Utils.getDeviceType();
+	        return sharedAPI.getDeviceType(utilsNamespace);
 	    };
 
 	    var getLocale = function getLocale() {
-	        return Utils.getLocale();
+	        return sharedAPI.getLocale(utilsNamespace);
 	    };
 
 	    var getInstanceId = function getInstanceId() {
-	        return Utils.getInstanceId();
+	        return sharedAPI.getInstanceId(utilsNamespace);
 	    };
 
 	    var getIpAndPort = function getIpAndPort() {
-	        return Utils.getIpAndPort();
+	        return sharedAPI.getIpAndPort(utilsNamespace);
 	    };
 
-	    var navigateToSection = function navigateToSection(sectionIdentifier, state, onFailure) {
-	        Utils.navigateToSection(sectionIdentifier, state, onFailure);
+	    var navigateToSection = function navigateToSection() {
+	        sharedAPI.navigateToSection.apply(sharedAPI, [utilsNamespace].concat(_slice.call(arguments)));
 	    };
+
+	    var dataPublicNamespace = namespace + '.Data.Public';
 
 	    var getValue = function getValue(key, onSuccess, onFailure) {
-	        Data.Public.get(key, { scope: Data.SCOPE.APP }, onSuccess, onFailure);
+	        data.get(dataPublicNamespace, key, { scope: Data.SCOPE.APP }, onSuccess, onFailure);
 	    };
 
 	    var getValues = function getValues(keys, onSuccess, onFailure) {
-	        Data.Public.getMulti(keys, { scope: Data.SCOPE.APP }, onSuccess, onFailure);
+	        data.getMulti(dataPublicNamespace, keys, { scope: Data.SCOPE.APP }, onSuccess, onFailure);
+	    };
+
+	    var applicationLoaded = function applicationLoaded() {
+	        performance.applicationLoaded(namespace);
+	    };
+
+	    var applicationLoadingStep = function applicationLoadingStep(stageNumber, stageDescription) {
+	        performance.applicationLoadingStep(namespace, stageNumber, stageDescription);
 	    };
 
 	    return {
@@ -5703,7 +6073,7 @@
 
 	            /**
 	             * @since 1.30.0
-	             * @memberof Worker.Utils
+	             * @memberof Wix.Worker.Utils
 	             * @see Wix.Utils.getLocale
 	             */
 	            getLocale: getLocale,
@@ -5731,7 +6101,15 @@
 	            navigateToSection: navigateToSection
 	        },
 
+	        /**
+	         * @memberof Wix.Worker
+	         * @namespace Wix.Worker.Data
+	         */
 	        Data: {
+	            /**
+	             * @memberof Wix.Worker.Data
+	             * @namespace Wix.Worker.Data.Public
+	             */
 	            Public: {
 	                /**
 	                 * Get value only from APP Scope
@@ -5754,12 +6132,443 @@
 	                getMulti: getValues
 
 	            }
+	        },
+	        /**
+	         * @memberof Wix.Worker
+	         * @namespace Wix.Worker.Performance
+	         */
+	        Performance: {
+	            /**
+	             * Allows a component app to report that it has been loaded.
+	             *
+	             * @function
+	             * @memberof Wix.Worker.Performance
+	             * @since 1.70.0
+	             *
+	             * @example
+	             * Wix.Worker.Performance.applicationLoaded()
+	             *
+	             */
+	            applicationLoaded: applicationLoaded,
+
+	            /**
+	             * Allows a component app to report on a loading step
+	             *
+	             * @function
+	             * @memberof Wix.Worker.Performance
+	             * @since 1.70.0
+	             * @param {Number} stageNumber Stage number
+	             * @param {String} [stageDescription] Stage Description
+	             *
+	             * @example
+	             * Wix.Worker.Performance.applicationLoadingStep(2, 'loading images')
+	             *
+	             */
+	            applicationLoadingStep: applicationLoadingStep
 	        }
 	    };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
 /* 28 */
+/*!****************************!*\
+  !*** ./js/modules/Data.js ***!
+  \****************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+	 * @memberof Wix
+	 * @namespace Wix.Data
+	 */
+	'use strict';
+
+	var _slice = Array.prototype.slice;
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/sharedAPI */ 17), __webpack_require__(/*! privates/data */ 29)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, postMessage, reporter, sharedAPI, data) {
+
+	  var namespace = 'Data.Public';
+
+	  var getMulti = function getMulti() {
+	    data.getMulti.apply(data, [namespace].concat(_slice.call(arguments)));
+	  };
+
+	  var set = function set() {
+	    data.set.apply(data, [namespace].concat(_slice.call(arguments)));
+	  };
+
+	  var get = function get() {
+	    data.get.apply(data, [namespace].concat(_slice.call(arguments)));
+	  };
+
+	  var remove = function remove() {
+	    data.remove.apply(data, [namespace].concat(_slice.call(arguments)));
+	  };
+
+	  return {
+	    /**
+	     * An enum of scope types indicates if data is accessible from a specific component or all components of an app
+	     * @enum
+	     * @memberof Wix.Data
+	     * @since 1.61.0
+	    */
+	    SCOPE: data.SCOPE,
+
+	    /**
+	     * @memberof Wix.Data
+	     * @namespace Wix.Data.Public
+	     */
+	    Public: {
+
+	      /**
+	       * Stores the value under the key. If the key did not previously exist, it is created.
+	       * If the key already exists, its existing value is overwritten with the new value.
+	       * User can set: string, bool, number and json.
+	       * Data is stored per component unless otherwise stated.
+	       * Data will only be accessible from the component from which it was set. Data can also be stored globally, in which case it will be available across all components.
+	       *
+	       * Available in the components, settings panel, modal and popups (for example: the Manage window) in the Editor.
+	       * @function
+	       * @author mayah@wix.com
+	       * @memberof Wix.Data.Public
+	       * @since 1.61.0
+	       * @param {String} key - key of value to set
+	       * @param {Object | String | Number | Boolean} value - value to set
+	       * @param {Object} [Options] - Object that contains Wix.Data.SCOPE that indicates if data is accessible by specific comp or all apps comps installed
+	       * @param {function} [onSuccess] - result will be a JSON Object mirroring the values given
+	       * @param {Function} [onFailure] the function will return an object that specifies the error that occurred, it will be invoked in the following scenarios:
+	       *        1. The app exceeded the provided 1K storage space.
+	       *        2. Invalid value type, valid types are boolean, string, number and JSON.
+	       *
+	       * @experimental
+	       * @example
+	       *
+	       * // Will be accessible only from the component from which it was called
+	       * Wix.Data.Public.set(‘defaultSettings’,
+	       *   { "menu": {
+	       *     "showSuccessMsg": true,
+	       *     "formFields": {
+	       *         "name": "What is your name?",
+	       *         "quest": "What is your quest?",
+	       *         "color": "What is your favorite color?"
+	       *     }
+	       *   });
+	       */
+	      set: set,
+
+	      /**
+	       * Get a single value that was stored
+	       *
+	       * Available from Editor and Viewer, in all components, popups and modals.
+	       * @function
+	       * @author mayah@wix.com
+	       * @memberof Wix.Data.Public
+	       * @since 1.61.0
+	       * @param {String} key - key of value to get.
+	       * @param {Object} [Options] - Object that contains Wix.Data.SCOPE that indicates which scope to get the key from. Default scope is COMPONENT.
+	       * @param {function} [onSuccess] - result will be the value attached to the key provided. For example: {  key1: value1 }
+	       * @param {Function} [onFailure] will be invoked when the provided key is not found
+	       *
+	       * @experimental
+	       * @example
+	       * // returns a key named 'myKey' from the APP scope
+	       * Wix.Data.Public.get(‘myKey’, { scope: 'APP' }, function(result){
+	      *  console.log(result);
+	       * });
+	       */
+	      get: get,
+
+	      /**
+	       * Remove a single value.
+	       * Future attempts to access this key will raise an exception until something is stored again for this key using one of the set methods.
+	       *
+	       * Available in the settings panel, modal and popups (for example: the Manage window) in the Editor.
+	       * @function
+	       * @author mayah@wix.com
+	       * @memberof Wix.Data.Public
+	       * @since 1.61.0
+	       * @param {String} key - key of value to remove.
+	       * @param {Object} [Options] - Object that contains Wix.Data.SCOPE that indicates which scope to remove the key from. Default scope is COMPONENT.
+	       * @param {function} [onSuccess] - result will be a JSON Object with the key and value that were found. For example: {  key1: value1 }
+	       * @param {Function} [onFailure] invoked when the provided key is not found
+	       *
+	       * @experimental
+	       * @example
+	       * // Will remove a key named 'myKey' from the COMPONENT scope
+	       * Wix.Data.Public.remove(‘myKey’, function(result){
+	      *  console.log(result);
+	       * });
+	       */
+	      remove: remove,
+
+	      /**
+	       * Get multiple values.
+	       * To get multiple values, use the more efficient getMulti method. Pass it an array of keys and it will return a JSON object with those keys and matching values.
+	       *
+	       * Available from Editor and Viewer, in all components, popups and modals.
+	       * @function
+	       * @author mayah@wix.com
+	       * @memberof Wix.Data.Public
+	       * @since 1.61.0
+	       * @param {Array} keys - array of keys of values to get. All values returned will be from the provided scope.
+	       * @param {Object} [Options] - Object that contains Wix.Data.SCOPE that indicates which scopes to get the keys from. Default scope is COMPONENT.
+	       * @param {function} [onSuccess] - result will be a JSON Object with the key and value that were found. For example: {  key1: value1 }
+	       * @param {Function} [onFailure] invoked when the one of the keys is not found
+	       *
+	       * @experimental
+	       * @example
+	       * // Returns key1 and key2 from the APP scope
+	       * Wix.Data.Public.getMulti([‘key1’, ‘key2’], { scope: 'APP' }, function(results){
+	       *  for(key in results) {
+	       *      console.log(key + ‘: ‘ + results[key]);
+	       *  };
+	       * });
+	       */
+	      getMulti: getMulti
+	    }
+	  };
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 29 */
+/*!*************************************!*\
+  !*** ./js/modules/privates/data.js ***!
+  \*************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/viewMode */ 6)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, postMessage, reporter, viewMode) {
+
+	    var SCOPE = {
+	        // Data set with scope = APP are accessible across all components
+	        APP: 'APP',
+
+	        // Data set with scope = COMPONENT are accessible across all components
+	        COMPONENT: 'COMPONENT'
+	    };
+
+	    var parseAndReturnArgs = function parseAndReturnArgs(options, onSuccess, onFailure) {
+	        var scope = SCOPE.COMPONENT;
+
+	        if (options) {
+	            if (utils.isObject(options) && options.scope && (options.scope === SCOPE.APP || options.scope === SCOPE.COMPONENT)) {
+	                scope = options.scope;
+	            } else if (utils.isFunction(options)) {
+	                onFailure = onSuccess;
+	                onSuccess = options;
+	            } else {
+	                reporter.reportSdkError('Invalid argument - options should be of type object, containing scope of type Wix.Data.SCOPE');
+	                return undefined;
+	            }
+	        }
+
+	        if (onSuccess && !utils.isFunction(onSuccess)) {
+	            reporter.reportSdkError('Invalid argument - onSuccess - should be a function');
+	            return undefined;
+	        }
+
+	        var onComplete = function onComplete(result) {
+	            handleDataResponse(result, onSuccess, onFailure);
+	        };
+
+	        return {
+	            scope: scope,
+	            onComplete: onComplete
+	        };
+	    };
+
+	    var handleDataResponse = function handleDataResponse(data, onSuccess, onFailure) {
+	        if (data && data.error) {
+	            if (onFailure) {
+	                onFailure(data);
+	            }
+	        } else {
+	            if (onSuccess) {
+	                onSuccess(data);
+	            }
+	        }
+	    };
+
+	    var getMulti = function getMulti(namespace, keys, options, onSuccess, onFailure) {
+	        if (!utils.isArray(keys)) {
+	            reporter.reportSdkError('Mandatory argument - keys - should be of type Array');
+	            return;
+	        }
+
+	        var args = parseAndReturnArgs(options, onSuccess, onFailure);
+
+	        if (args) {
+	            postMessage.sendMessage(postMessage.MessageTypes.GET_VALUES, namespace, {
+	                keys: keys,
+	                scope: args.scope
+	            }, args.onComplete);
+	        }
+	    };
+
+	    var set = function set(namespace, key, value, options, onSuccess, onFailure) {
+	        if (viewMode.getViewMode() !== "editor") {
+	            reporter.reportSdkError('Invalid view mode. This function can be called only in editor mode.');
+	            return;
+	        }
+
+	        if (!utils.isString(key)) {
+	            reporter.reportSdkError('Mandatory argument - key - should be of type String');
+	            return;
+	        } else if (!(utils.isString(value) || utils.isBoolean(value) || utils.isNumber(value) || utils.isObject(value))) {
+	            reporter.reportSdkError('Mandatory argument - value - should be of type String, Number, Boolean or Json');
+	            return;
+	        }
+
+	        var args = parseAndReturnArgs(options, onSuccess, onFailure);
+
+	        if (args) {
+	            postMessage.sendMessage(postMessage.MessageTypes.SET_VALUE, namespace, {
+	                key: key,
+	                value: value,
+	                scope: args.scope
+	            }, args.onComplete);
+	        }
+	    };
+
+	    var get = function get(namespace, key, options, onSuccess, onFailure) {
+	        if (!utils.isString(key)) {
+	            reporter.reportSdkError('Mandatory argument - key - should be of type String');
+	            return;
+	        }
+
+	        var args = parseAndReturnArgs(options, onSuccess, onFailure);
+
+	        if (args) {
+	            postMessage.sendMessage(postMessage.MessageTypes.GET_VALUE, namespace, {
+	                key: key,
+	                scope: args.scope
+	            }, args.onComplete);
+	        }
+	    };
+
+	    var remove = function remove(namespace, key, options, onSuccess, onFailure) {
+	        if (viewMode.getViewMode() !== "editor") {
+	            reporter.reportSdkError('Invalid view mode. This function can be called only in editor mode.');
+	            return;
+	        }
+
+	        if (!utils.isString(key)) {
+	            reporter.reportSdkError('Mandatory argument - key - should be of type String');
+	            return;
+	        }
+
+	        var args = parseAndReturnArgs(options, onSuccess, onFailure);
+
+	        if (args) {
+	            postMessage.sendMessage(postMessage.MessageTypes.REMOVE_VALUE, namespace, {
+	                key: key,
+	                scope: args.scope
+	            }, args.onComplete);
+	        }
+	    };
+
+	    return {
+	        SCOPE: SCOPE,
+
+	        set: set,
+	        get: get,
+	        remove: remove,
+	        getMulti: getMulti
+	    };
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 30 */
+/*!***************************************!*\
+  !*** ./js/modules/privates/pubSub.js ***!
+  \***************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, reporter, postMessage) {
+
+	    var TPA_PUB_SUB_PREFIX = 'TPA_PUB_SUB_';
+
+	    var unsubscribe = function unsubscribe(namespace, eventName, callBackOrId) {
+	        postMessage.removeEventListenerInternal(TPA_PUB_SUB_PREFIX + eventName, namespace, callBackOrId, true);
+	    };
+
+	    var subscribe = function subscribe(namespace, eventName, callBack, receivePastEvents) {
+	        if (!utils.isString(eventName)) {
+	            reporter.reportSdkError('Missing mandatory argument - eventName, must be a string');
+	            return;
+	        }
+	        if (!utils.isFunction(callBack)) {
+	            reporter.reportSdkError('Missing mandatory argument - callBack, must be a function');
+	            return;
+	        }
+	        return postMessage.addEventListenerInternal(TPA_PUB_SUB_PREFIX + eventName, namespace, callBack, true, {
+	            receivePastEvents: receivePastEvents
+	        });
+	    };
+
+	    var publish = function publish(namespace, eventName, data, isPersistent) {
+	        if (!utils.isString(eventName)) {
+	            reporter.reportSdkError('Missing mandatory argument - eventName, must be a string');
+	            return;
+	        }
+	        postMessage.sendMessage(postMessage.MessageTypes.PUBLISH, namespace, {
+	            eventKey: TPA_PUB_SUB_PREFIX + eventName,
+	            isPersistent: !!isPersistent || false,
+	            eventData: data || {}
+	        });
+	    };
+
+	    return {
+	        unsubscribe: unsubscribe,
+	        subscribe: subscribe,
+	        publish: publish
+	    };
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 31 */
+/*!********************************************!*\
+  !*** ./js/modules/privates/performance.js ***!
+  \********************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage, utils, reporter) {
+
+	    var applicationLoaded = function applicationLoaded(namespace) {
+	        postMessage.sendMessage(postMessage.MessageTypes.APPLICATION_LOADED, namespace);
+	    };
+
+	    var applicationLoadingStep = function applicationLoadingStep(namespace, stageNumber, stageDescription) {
+	        if (!utils.isNumber(stageNumber)) {
+	            reporter.reportSdkError('Missing mandatory argument - stageNumber - should be of type Number');
+	            return;
+	        }
+
+	        if (stageDescription && !utils.isString(stageDescription)) {
+	            reporter.reportSdkError('stageDescription should be of type String');
+	            return;
+	        }
+
+	        var args = {
+	            stage: stageDescription,
+	            stageNum: stageNumber
+	        };
+	        postMessage.sendMessage(postMessage.MessageTypes.APPLICATION_LOADED_STEP, namespace, args);
+	    };
+
+	    return {
+
+	        applicationLoaded: applicationLoaded,
+
+	        applicationLoadingStep: applicationLoadingStep
+	    };
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 32 */
 /*!******************************!*\
   !*** ./js/modules/PubSub.js ***!
   \******************************/
@@ -5772,38 +6581,20 @@
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (utils, reporter, postMessage) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/pubSub */ 30)], __WEBPACK_AMD_DEFINE_RESULT__ = function (pubSub) {
 
-	    var TPA_PUB_SUB_PREFIX = 'TPA_PUB_SUB_';
+	    var namespace = 'PubSub';
 
 	    var unsubscribe = function unsubscribe(eventName, callBackOrId) {
-	        postMessage.removeEventListenerInternal(TPA_PUB_SUB_PREFIX + eventName, callBackOrId, true);
+	        pubSub.unsubscribe(namespace, eventName, callBackOrId);
 	    };
 
 	    var subscribe = function subscribe(eventName, callBack, receivePastEvents) {
-	        if (!utils.isString(eventName)) {
-	            reporter.reportSdkError('Missing mandatory argument - eventName, must be a string');
-	            return;
-	        }
-	        if (!utils.isFunction(callBack)) {
-	            reporter.reportSdkError('Missing mandatory argument - callBack, must be a function');
-	            return;
-	        }
-	        return postMessage.addEventListenerInternal(TPA_PUB_SUB_PREFIX + eventName, callBack, true, {
-	            receivePastEvents: receivePastEvents
-	        });
+	        return pubSub.subscribe(namespace, eventName, callBack, receivePastEvents);
 	    };
 
 	    var publish = function publish(eventName, data, isPersistent) {
-	        if (!utils.isString(eventName)) {
-	            reporter.reportSdkError('Missing mandatory argument - eventName, must be a string');
-	            return;
-	        }
-	        postMessage.sendMessage(postMessage.MessageTypes.PUBLISH, {
-	            eventKey: TPA_PUB_SUB_PREFIX + eventName,
-	            isPersistent: !!isPersistent || false,
-	            eventData: data || {}
-	        });
+	        pubSub.publish(namespace, eventName, data, isPersistent);
 	    };
 
 	    return {
@@ -5865,270 +6656,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 29 */
-/*!****************************!*\
-  !*** ./js/modules/Data.js ***!
-  \****************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
-	 * @memberof Wix
-	 * @namespace Data.Public
-	 */
-	'use strict';
-
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Utils */ 18), __webpack_require__(/*! privates/utils */ 9), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/reporter */ 10)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Utils, utils, postMessage, reporter) {
-
-	    var SCOPE = {
-	        // Data set with scope = APP are accessible across all components
-	        APP: 'APP',
-
-	        // Data set with scope = COMPONENT are accessible across all components
-	        COMPONENT: 'COMPONENT'
-	    };
-
-	    var parseAndReturnArgs = function parseAndReturnArgs(options, onSuccess, onFailure) {
-	        var scope = SCOPE.COMPONENT;
-
-	        if (options) {
-	            if (utils.isObject(options) && options.scope && (options.scope === SCOPE.APP || options.scope === SCOPE.COMPONENT)) {
-	                scope = options.scope;
-	            } else if (utils.isFunction(options)) {
-	                onFailure = onSuccess;
-	                onSuccess = options;
-	            } else {
-	                reporter.reportSdkError('Invalid argument - options should be of type object, containing scope of type Wix.Data.SCOPE');
-	                return undefined;
-	            }
-	        }
-
-	        if (onSuccess && !utils.isFunction(onSuccess)) {
-	            reporter.reportSdkError('Invalid argument - onSuccess - should be a function');
-	            return undefined;
-	        }
-
-	        var onComplete = function onComplete(result) {
-	            handleDataResponse(result, onSuccess, onFailure);
-	        };
-
-	        return {
-	            scope: scope,
-	            onComplete: onComplete
-	        };
-	    };
-
-	    var handleDataResponse = function handleDataResponse(data, onSuccess, onFailure) {
-	        if (data && data.error) {
-	            if (onFailure) {
-	                onFailure(data);
-	            }
-	        } else {
-	            if (onSuccess) {
-	                onSuccess(data);
-	            }
-	        }
-	    };
-
-	    var getMulti = function getMulti(keys, options, onSuccess, onFailure) {
-	        if (!utils.isArray(keys)) {
-	            reporter.reportSdkError('Mandatory argument - keys - should be of type Array');
-	            return;
-	        }
-
-	        var args = parseAndReturnArgs(options, onSuccess, onFailure);
-
-	        if (args) {
-	            postMessage.sendMessage(postMessage.MessageTypes.GET_VALUES, {
-	                keys: keys,
-	                scope: args.scope
-	            }, args.onComplete);
-	        }
-	    };
-
-	    var set = function set(key, value, options, onSuccess, onFailure) {
-	        if (Utils.getViewMode() !== "editor") {
-	            reporter.reportSdkError('Invalid view mode. This function can be called only in editor mode.');
-	            return;
-	        }
-
-	        if (!utils.isString(key)) {
-	            reporter.reportSdkError('Mandatory argument - key - should be of type String');
-	            return;
-	        } else if (!(utils.isString(value) || utils.isBoolean(value) || utils.isNumber(value) || utils.isObject(value))) {
-	            reporter.reportSdkError('Mandatory argument - value - should be of type String, Number, Boolean or Json');
-	            return;
-	        }
-
-	        var args = parseAndReturnArgs(options, onSuccess, onFailure);
-
-	        if (args) {
-	            postMessage.sendMessage(postMessage.MessageTypes.SET_VALUE, {
-	                key: key,
-	                value: value,
-	                scope: args.scope
-	            }, args.onComplete);
-	        }
-	    };
-
-	    var get = function get(key, options, onSuccess, onFailure) {
-	        if (!utils.isString(key)) {
-	            reporter.reportSdkError('Mandatory argument - key - should be of type String');
-	            return;
-	        }
-
-	        var args = parseAndReturnArgs(options, onSuccess, onFailure);
-
-	        if (args) {
-	            postMessage.sendMessage(postMessage.MessageTypes.GET_VALUE, {
-	                key: key,
-	                scope: args.scope
-	            }, args.onComplete);
-	        }
-	    };
-
-	    var remove = function remove(key, options, onSuccess, onFailure) {
-	        if (Utils.getViewMode() !== "editor") {
-	            reporter.reportSdkError('Invalid view mode. This function can be called only in editor mode.');
-	            return;
-	        }
-
-	        if (!utils.isString(key)) {
-	            reporter.reportSdkError('Mandatory argument - key - should be of type String');
-	            return;
-	        }
-
-	        var args = parseAndReturnArgs(options, onSuccess, onFailure);
-
-	        if (args) {
-	            postMessage.sendMessage(postMessage.MessageTypes.REMOVE_VALUE, {
-	                key: key,
-	                scope: args.scope
-	            }, args.onComplete);
-	        }
-	    };
-
-	    return {
-	        /*
-	         * An enum of scope types indicates if data is accessible from a specific component or all components of an app
-	         * @enum
-	         * @memberof Wix.Data.Public
-	         * @since 1.61.0
-	        */
-	        SCOPE: SCOPE,
-
-	        Public: {
-
-	            /**
-	             * Stores the value under the key. If the key did not previously exist, it is created.
-	             * If the key already exists, its existing value is overwritten with the new value.
-	             * User can set: string, bool, number and json.
-	             * Data is stored per component unless otherwise stated.
-	             * Data will only be accessible from the component from which it was set. Data can also be stored globally, in which case it will be available across all components.
-	             *
-	             * Available in the components, settings panel, modal and popups (for example: the Manage window) in the Editor.
-	             * @function
-	             * @author mayah@wix.com
-	             * @memberof Wix.Data.Public
-	             * @since 1.61.0
-	             * @param {String} key - key of value to set
-	             * @param {Object | String | Number | Boolean} value - value to set
-	             * @param {Object} [Options] - Object that contains Wix.Data.SCOPE that indicates if data is accessible by specific comp or all apps comps installed
-	             * @param {function} [onSuccess] - result will be a JSON Object mirroring the values given
-	             * @param {Function} [onFailure] the function will return an object that specifies the error that occurred, it will be invoked in the following scenarios:
-	             *        1. The app exceeded the provided 1K storage space.
-	             *        2. Invalid value type, valid types are boolean, string, number and JSON.
-	             *
-	             * @experimental
-	             * @example
-	             *
-	             * // Will be accessible only from the component from which it was called
-	             * Wix.Data.Public.set(‘defaultSettings’,
-	             *   { "menu": {
-	             *     "showSuccessMsg": true,
-	             *     "formFields": {
-	             *         "name": "What is your name?",
-	             *         "quest": "What is your quest?",
-	             *         "color": "What is your favorite color?"
-	             *     }
-	             *   });
-	             */
-	            set: set,
-
-	            /**
-	             * Get a single value that was stored
-	             *
-	             * Available from Editor and Viewer, in all components, popups and modals.
-	             * @function
-	             * @author mayah@wix.com
-	             * @memberof Wix.Data.Public
-	             * @since 1.61.0
-	             * @param {String} key - key of value to get.
-	             * @param {Object} [Options] - Object that contains Wix.Data.SCOPE that indicates which scope to get the key from. Default scope is COMPONENT.
-	             * @param {function} [onSuccess] - result will be the value attached to the key provided. For example: {  key1: value1 }
-	             * @param {Function} [onFailure] will be invoked when the provided key is not found
-	             *
-	             * @experimental
-	             * @example
-	             * // returns a key named 'myKey' from the APP scope
-	             * Wix.Data.Public.get(‘myKey’, { scope: 'APP' }, function(result){
-	            *  console.log(result);
-	             * });
-	             */
-	            get: get,
-
-	            /**
-	             * Remove a single value.
-	             * Future attempts to access this key will raise an exception until something is stored again for this key using one of the set methods.
-	             *
-	             * Available in the settings panel, modal and popups (for example: the Manage window) in the Editor.
-	             * @function
-	             * @author mayah@wix.com
-	             * @memberof Wix.Data.Public
-	             * @since 1.61.0
-	             * @param {String} key - key of value to remove.
-	             * @param {Object} [Options] - Object that contains Wix.Data.SCOPE that indicates which scope to remove the key from. Default scope is COMPONENT.
-	             * @param {function} [onSuccess] - result will be a JSON Object with the key and value that were found. For example: {  key1: value1 }
-	             * @param {Function} [onFailure] invoked when the provided key is not found
-	             *
-	             * @experimental
-	             * @example
-	             * // Will remove a key named 'myKey' from the COMPONENT scope
-	             * Wix.Data.Public.remove(‘myKey’, function(result){
-	            *  console.log(result);
-	             * });
-	             */
-	            remove: remove,
-
-	            /**
-	             * Get multiple values.
-	             * To get multiple values, use the more efficient getMulti method. Pass it an array of keys and it will return a JSON object with those keys and matching values.
-	             *
-	             * Available from Editor and Viewer, in all components, popups and modals.
-	             * @function
-	             * @author mayah@wix.com
-	             * @memberof Wix.Data.Public
-	             * @since 1.61.0
-	             * @param {Array} keys - array of keys of values to get. All values returned will be from the provided scope.
-	             * @param {Object} [Options] - Object that contains Wix.Data.SCOPE that indicates which scopes to get the keys from. Default scope is COMPONENT.
-	             * @param {function} [onSuccess] - result will be a JSON Object with the key and value that were found. For example: {  key1: value1 }
-	             * @param {Function} [onFailure] invoked when the one of the keys is not found
-	             *
-	             * @experimental
-	             * @example
-	             * // Returns key1 and key2 from the APP scope
-	             * Wix.Data.Public.getMulti([‘key1’, ‘key2’], { scope: 'APP' }, function(results){
-	             *  for(key in results) {
-	             *      console.log(key + ‘: ‘ + results[key]);
-	             *  };
-	             * });
-	             */
-	            getMulti: getMulti
-	        }
-	    };
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 30 */
+/* 33 */
 /*!*******************************!*\
   !*** ./js/modules/Preview.js ***!
   \*******************************/
@@ -6144,7 +6672,7 @@
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage) {
 
 	    var openSettingsDialog = function openSettingsDialog(options, failure) {
-	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_SETTINGS_DIALOG, options, failure);
+	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_SETTINGS_DIALOG, 'Preview', options, failure);
 	    };
 
 	    return {
@@ -6171,7 +6699,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 31 */
+/* 34 */
 /*!*********************************!*\
   !*** ./js/modules/Dashboard.js ***!
   \*********************************/
@@ -6179,11 +6707,13 @@
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
 	 * @memberof Wix
-	 * @namespace Dashboard
+	 * @namespace Wix.Dashboard
 	 */
 	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Base */ 22), __webpack_require__(/*! Settings */ 20), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Base, Settings, reporter, postMessage) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! Base */ 25), __webpack_require__(/*! Settings */ 19), __webpack_require__(/*! privates/reporter */ 10), __webpack_require__(/*! privates/postMessage */ 7), __webpack_require__(/*! privates/sharedAPI */ 17)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Base, Settings, reporter, postMessage, sharedAPI) {
+
+	    var namespace = 'Dashboard';
 
 	    var setHeight = function setHeight(height) {
 	        Base.setHeight(height);
@@ -6218,7 +6748,7 @@
 	            reporter.reportSdkError('Mandatory arguments - a callback must be specified');
 	            return;
 	        }
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_EDITOR_URL, undefined, callback);
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_EDITOR_URL, namespace, undefined, callback);
 	    };
 
 	    var pushState = function pushState(state) {
@@ -6227,13 +6757,17 @@
 	            return;
 	        }
 
-	        postMessage.sendMessage(postMessage.MessageTypes.APP_STATE_CHANGED, {
+	        postMessage.sendMessage(postMessage.MessageTypes.APP_STATE_CHANGED, namespace, {
 	            state: state
 	        });
 	    };
 
 	    var revalidateSession = function revalidateSession(onSuccess, onError) {
 	        Base.revalidateSession(onSuccess, onError);
+	    };
+
+	    var getProducts = function getProducts(onSuccess, onError) {
+	        sharedAPI.getProducts(namespace, {}, onSuccess, onError);
 	    };
 
 	    return {
@@ -6308,7 +6842,7 @@
 	        /**
 	         * The closeWindow method is available only under a modal endpoint (will not have any effect for other endpoints). It allows the modal to close itself programmatically.
 	         * @function
-	         * @memberof Dashboard
+	         * @memberof Wix.Dashboard
 	         * @since 1.27.0
 	         * @see Wix.closeWindow
 	         * @example
@@ -6324,7 +6858,7 @@
 	         * The Dashboard.scrollTo method allows the app to scroll to an absolute offset - vertical & horizontal.
 	         * @function
 	         * @author lior.shefer@wix.com
-	         * @memberof Dashboard
+	         * @memberof Wix.Dashboard
 	         * @since 1.31.0
 	         * @see Wix.scrollTo
 	         * @example
@@ -6402,57 +6936,58 @@
 	         *    //Handle error use-case
 	         * });
 	         */
-	        revalidateSession: revalidateSession
-	    };
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	        revalidateSession: revalidateSession,
 
-/***/ },
-/* 32 */
-/*!********************************!*\
-  !*** ./js/modules/Counters.js ***!
-  \********************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
-	 * @memberof Wix
-	 * @private
-	 * @namespace Counters
-	 */
-	'use strict';
-
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/postMessage */ 7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (postMessage) {
-	    'use strict';
-
-	    var report = function report(data, onSuccess, onFailure) {
-	        var onComplete = null;
-	        if (onSuccess || onFailure) {
-	            onComplete = function (result) {
-	                if (result.status && result.status !== 'error' && onSuccess) {
-	                    onSuccess(result.response);
-	                } else if (onFailure) {
-	                    onFailure(result.response);
-	                }
-	            };
-	        }
-
-	        postMessage.sendMessage(postMessage.MessageTypes.POST_COUNTERS_REPORT, data, onComplete);
-	    };
-
-	    return {
 	        /**
+	         *  Returns an Array of objects containing product and pricing info.
+	         *
 	         * @function
-	         * @private
-	         * @memberof Wix.Counters
-	         * @param {Object} data
-	         * @param {Function} onSuccess A callback function.
-	         * @param {Function} [onFailure] An on Failure callback function.
+	         * @memberof Wix.Dashboard
+	         * @since 1.71.0
+	         * @param {Function} onSuccess A callback function to receive the products.
+	         * @param {Function} onError A callback error function.
+	         *
+	         * @example
+	         * var onError = function () {
+	         *  //handle the error
+	         * };
+	         * var onSuccess = function (data) {
+	         *  //handle onSuccess
+	         *  //sample data schema:
+	         *  [{
+	         *     "id": <vendorProductId>,
+	         *     "name": "App Premium Package",
+	         *     "price": "4.95",
+	         *     "is_active": true,
+	         *     "freeMonth": true,
+	         *     "currencyCode": "USD",
+	         *     "currencySymbol": "US$"
+	         *     "monthly": {
+	         *          "price": "4.95",
+	         *          "url": "https://premium.wix.com/wix/api/tpaPriceQuote?appInstanceId=aaa-bbb&appDefinitionId=aa-bb&paymentCycle=MONTHLY&vendorProductId=1234"
+	         *     },
+	         *     "yearly:: {
+	         *          "price": "3.97",
+	         *          "url": "https://premium.wix.com/wix/api/tpaPriceQuote?appInstanceId=aaa-bbb&appDefinitionId=aa-bb&paymentCycle=YEARLY&vendorProductId=1234"
+	         *     },
+	         *     "oneTime": {
+	         *          "price": "5.99",
+	         *          "url": "https://premium.wix.com/wix/api/tpaPriceQuote?appInstanceId=aaa-bbb&appDefinitionId=aa-bb&paymentCycle=ONE_TIME&vendorProductId=1234"
+	         *     },
+	         *     "bestSellingFeature": "",
+	         *      "discountPercent": 20
+	         *     ]
+	         *  }]
+	         *
+	         * };
+	         * Wix.Dashboard.getProducts(onSuccess, onError);
 	         */
-	        report: report
+	        getProducts: getProducts
 	    };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 33 */
+/* 35 */
 /*!********************************!*\
   !*** ./js/modules/Features.js ***!
   \********************************/
@@ -6460,7 +6995,7 @@
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
 	 * @memberof Wix
-	 * @namespace Features
+	 * @namespace Wix.Features
 	 */
 	'use strict';
 
@@ -6472,6 +7007,8 @@
 	        ADD_COMPONENT: 'ADD_COMPONENT',
 	        RESIZE_COMPONENT: 'RESIZE_COMPONENT'
 	    };
+
+	    var namespace = 'Features';
 
 	    var isValidFeatureName = function isValidFeatureName(featureName) {
 	        return featureName === Types.PREVIEW_TO_SETTINGS || featureName === Types.ADD_COMPONENT || featureName === Types.RESIZE_COMPONENT;
@@ -6499,7 +7036,7 @@
 	            var featureData = {
 	                name: featureName
 	            };
-	            postMessage.sendMessage(postMessage.MessageTypes.IS_SUPPORTED, featureData, callback);
+	            postMessage.sendMessage(postMessage.MessageTypes.IS_SUPPORTED, namespace, featureData, callback);
 	        } else {
 	            reporter.reportSdkError('Mandatory arguments - feature name and callback must be supplied.');
 	        }
@@ -6546,6 +7083,64 @@
 	         * @param {Function} callback
 	         */
 	        isSupported: isSupported
+	    };
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 36 */
+/*!***********************************!*\
+  !*** ./js/modules/Performance.js ***!
+  \***********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+	 * Functions to measure success rate and load time.
+	 * @memberof Wix
+	 * @namespace Wix.Performance
+	 */
+	'use strict';
+
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! privates/performance */ 31)], __WEBPACK_AMD_DEFINE_RESULT__ = function (performance) {
+
+	    var namespace = 'Performance';
+
+	    var applicationLoaded = function applicationLoaded() {
+	        performance.applicationLoaded(namespace);
+	    };
+
+	    var applicationLoadingStep = function applicationLoadingStep(stageNumber, stageDescription) {
+	        performance.applicationLoadingStep(namespace, stageNumber, stageDescription);
+	    };
+
+	    return {
+
+	        /**
+	         * Allows a component app to report that it has been loaded.
+	         *
+	         * @function
+	         * @memberof Wix.Performance
+	         * @since 1.70.0
+	         *
+	         * @example
+	         * Wix.Performance.applicationLoaded()
+	         *
+	         */
+	        applicationLoaded: applicationLoaded,
+
+	        /**
+	         * Allows a component app to report on a loading step
+	         *
+	         * @function
+	         * @memberof Wix.Performance
+	         * @since 1.70.0
+	         * @param {Number} stageNumber Stage number
+	         * @param {String} [stageDescription] Stage Description
+	         *
+	         * @example
+	         * Wix.Performance.applicationLoadingStep(2, 'loading images')
+	         *
+	         */
+	        applicationLoadingStep: applicationLoadingStep
 	    };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
