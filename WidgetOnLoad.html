@@ -8,9 +8,10 @@
 <script type="text/javascript">
 window.onload = function(){
 console.log('loading');
-Wix.addEventListener(Wix.Events.KEY_UP, function(){
+var id = Wix.addEventListener(Wix.Events.KEY_UP, function(){
 console.log('key up');
-})
+});
+	console.log('event register' , id);
 };
 </script>
 
