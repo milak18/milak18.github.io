@@ -15,6 +15,7 @@
         for(i=0;i<100000;i++)
         {
             Wix.getSitePages(function(a){console.log(a);});
+            Wix.getSiteInfo(function(a){console.log(a);});
             var counter=i+1;
             console.log('counter='+ counter);
         }
