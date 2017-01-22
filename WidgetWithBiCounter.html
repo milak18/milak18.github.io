@@ -14,10 +14,10 @@
 
         for(i=0;i<100000;i++)
         {
-            Wix.getSitePages(function(a){console.log(a);});
-            Wix.getSiteInfo(function(a){console.log(a);});
+            Wix.getSitePages(function(a){console.log('page');});
+            Wix.getSiteInfo(function(a){console.log('info');});
             var counter=i+1;
-            console.log('counter='+ counter);
+          //  console.log('counter='+ counter);
         }
     };
 
