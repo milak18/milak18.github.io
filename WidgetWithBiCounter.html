@@ -9,12 +9,14 @@
 	
 <script>
 
-    window.onload = function () {
+     function biCounter() {
 
-        console.log('loading');
+
         for(i=0;i<1000000;i++)
         {
             Wix.getSitePages(function(a){console.log(a);});
+            var counter=i+1;
+            console.log('counter='+ counter);
         }
     };
 
@@ -25,9 +27,7 @@
 
 <body  style="border:3px solid red; background-color: #0000ff;">
 
-		<button onClick="Wix.Settings.openModal('https://sslstatic.wix.com/services/js-sdk/1.60.0/html/modal.html', 400, 400, 'mila',function(message) { console.log('modal closed', message); },true)">Open Modal</button>
-
-		<button onClick="Wix.requestLogin({mode:'login'},function(a){console.log(a)},function(a){console.log(a)});">Request Login</button>
+		<button onClick=biCounter();>Request Login</button>
 
 </body>
 </html>
