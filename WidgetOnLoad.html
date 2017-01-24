@@ -11,7 +11,7 @@
             console.log('loading');
             var id = Wix.addEventListener(Wix.Events.KEY_UP, function () {
                 console.log('key up');
-                document.getElementById( 'color' ).style.background = "#000000";
+                document.body.style.background = "#000000";
             });
             console.log('event register', id);
         };
@@ -20,10 +20,7 @@
 
 </head>
 
-<body style="background-color: #00ffff;" id="body">
-<div id="color"style="background-color: #0000ff;">
-
-</div>
+<body style="background-color: #0000ff;" id="body">
 
 
 </body>
