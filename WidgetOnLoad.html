@@ -5,11 +5,12 @@
 
     <script type="text/javascript" src="https://milak18.github.io/WixKeypress.js"></script>
 
-    var eventId1;
-    var eventId2;
-    var eventId3;
 
     <script type="text/javascript">
+        var eventId1;
+        var eventId2;
+        var eventId3;
+
         window.onload = function () {
 
             console.log('loading');
@@ -56,7 +57,7 @@
 </div>
 <br>
 <br>
-<button onclick="Wix.removeEventListener(id,function(a){console.log(a);})"></button>
+<button onclick="Wix.removeEventListener(Wix.Events.KEY_UP, eventId1);Wix.removeEventListener(Wix.Events.KEY_UP, eventId2);"></button>
 
 </body>
 </html>
