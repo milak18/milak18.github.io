@@ -12,7 +12,17 @@
             var id = Wix.addEventListener(Wix.Events.KEY_UP, function () {
                 console.log('key up');
 
-                document.getElementById('color').style.background = "#000000"
+                document.getElementById('color1').style.background = "#000000"
+            });
+            var id = Wix.addEventListener(Wix.Events.KEY_DOWN, function () {
+                console.log('key down');
+
+                document.getElementById('color2').style.background = "#000000"
+            });
+            var id = Wix.addEventListener(Wix.Events.KEY_PRESS, function () {
+                console.log('key press');
+
+                document.getElementById('color3').style.background = "#000000"
             });
 
         };
