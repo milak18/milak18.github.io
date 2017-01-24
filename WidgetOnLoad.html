@@ -10,6 +10,7 @@
         var eventId1;
         var eventId2;
         var eventId3;
+        var MyArray = [];
 
         window.onload = function () {
 
@@ -25,8 +26,9 @@
                 document.getElementById('color2').style.background = "#000000"
             });
 
-
-            return eventId1;
+            MyArray = MyArray.concat(eventId1);
+            MyArray = MyArray.concat(eventId2);
+            return MyArray;
 
         };
 
@@ -63,7 +65,7 @@
 </div>
 <br>
 <br>
-<button onclick="Wix.removeEventListener(Wix.Events.KEY_UP, eventId1);Wix.removeEventListener(Wix.Events.KEY_UP, eventId2);">Remove Event Listener</button>
+<button onclick="Wix.removeEventListener(Wix.Events.KEY_UP, MyArray[0]);Wix.removeEventListener(Wix.Events.KEY_UP, MyArray[0]);">Remove Event Listener</button>
 <button onclick="keyPressEvent();">Key Press Event</button>
 <button onclick="Wix.removeEventListener(Wix.Events.KEY_UP, eventId3);">Remove Event Listener</button>
 
