@@ -25,14 +25,20 @@
                 document.getElementById('color2').style.background = "#000000"
             });
 
+
+            return eventId1;
+
+        };
+
+        function  keyPressEvent()
+        {
             eventId3=Wix.addEventListener(Wix.Events.KEY_PRESS, function () {
                 console.log('key press');
 
                 document.getElementById('color3').style.background = "#000000"
             });
-            //console.log('key press' + id);
-
-        };
+            return eventId3;
+        }
     </script>
 
 
@@ -57,7 +63,9 @@
 </div>
 <br>
 <br>
-<button onclick="Wix.removeEventListener(Wix.Events.KEY_UP, eventId1);Wix.removeEventListener(Wix.Events.KEY_UP, eventId2);"></button>
+<button onclick="Wix.removeEventListener(Wix.Events.KEY_UP, eventId1);Wix.removeEventListener(Wix.Events.KEY_UP, eventId2);">Remove Event Listener</button>
+<button onclick="keyPressEvent();">Key Press Event</button>
+<button onclick="Wix.removeEventListener(Wix.Events.KEY_UP, eventId3);">Remove Event Listener</button>
 
 </body>
 </html>
