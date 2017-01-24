@@ -13,7 +13,7 @@
         var MyArray = [];
 
         window.onload = function () {
-            Wix.setHeight(1000);
+            Wix.setHeight(700);
             console.log('loading');
             eventId1= Wix.addEventListener(Wix.Events.KEY_UP, function () {
                 console.log('key up');
@@ -67,7 +67,7 @@
 <br>
 <button onclick="Wix.removeEventListener(Wix.Events.KEY_UP, MyArray[0]);Wix.removeEventListener(Wix.Events.KEY_DOWN, MyArray[1]);">Remove Event Listener</button>
 <button onclick="keyPressEvent();">Key Press Event</button>
-<button onclick="Wix.removeEventListener(Wix.Events.KEY_UP, eventId3);">Remove Event Listener</button>
+<button onclick="Wix.removeEventListener(Wix.Events.KEY_PRESS, eventId3);">Remove Event Listener</button>
 
 </body>
 </html>
