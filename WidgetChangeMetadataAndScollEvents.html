@@ -18,6 +18,7 @@
             console.log('loading');
             eventId1= Wix.addEventListener(Wix.Events.SITE_METADATA_CHANGED, function (data) {
                 console.log(data);
+                document.getElementById('color1').innerHTML= data.title +'  '+ data.description;
 
             });
             eventId2=Wix.addEventListener(Wix.Events.SCROLL, function (data) {
