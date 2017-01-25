@@ -32,6 +32,11 @@
 
         };
 
+        function changeColor(elements){
+            document.getElementById(elements[0]).style.background = "#00ff00";
+            document.getElementById(elements[1]).style.background = "#00ff00";
+        }
+
 //        function  keyPressEvent()
 //        {
 //            eventId3=Wix.addEventListener(Wix.Events.KEY_PRESS, function () {
@@ -66,7 +71,7 @@
 <!--<br>-->
 <!--<br>-->
 <button onclick="Wix.removeEventListener(Wix.Events.KEY_UP, MyArray[0]);Wix.removeEventListener(Wix.Events.KEY_DOWN, MyArray[1]);">Remove Event Listener</button>
-<!--<button onclick="keyPressEvent();">Key Press Event</button>-->
+<button onclick="changeColor(MyArray);">Change Elements Color</button>
 <!--<button onclick="Wix.removeEventListener(Wix.Events.KEY_PRESS, eventId3);">Remove Event Listener</button>-->
 
 </body>
