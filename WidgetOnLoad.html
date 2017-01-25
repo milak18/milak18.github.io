@@ -11,6 +11,9 @@
         var eventId2;
         var eventId3;
         var MyArray = [];
+        var Elements = [];
+        Elements = Elements.concat('color1');
+        Elements = Elements.concat('color2');
 
         window.onload = function () {
             Wix.setHeight(300);
@@ -64,15 +67,12 @@
 </div>
 <br>
 <br>
-<!--<div style="background-color: #00ffff;" id="color3" >-->
-    <!--<br>-->
-    <!--<br>-->
-<!--</div>-->
-<!--<br>-->
-<!--<br>-->
+
 <button onclick="Wix.removeEventListener(Wix.Events.KEY_UP, MyArray[0]);Wix.removeEventListener(Wix.Events.KEY_DOWN, MyArray[1]);">Remove Event Listener</button>
-<button onclick="changeColor(MyArray);">Change Elements Color</button>
-<!--<button onclick="Wix.removeEventListener(Wix.Events.KEY_PRESS, eventId3);">Remove Event Listener</button>-->
+<br>
+<br>
+<button onclick="changeColor(Elements);">Change Elements Color</button>
+
 
 </body>
 </html>
