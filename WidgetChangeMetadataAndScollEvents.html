@@ -14,14 +14,14 @@
 
 
         window.onload = function () {
-            Wix.setHeight(300);
+           // Wix.setHeight(300);
             console.log('loading');
             eventId1= Wix.addEventListener(Wix.Events.SITE_METADATA_CHANGED, function (data) {
-                console.log('SITE_METADATA_CHANGED');
+                console.log(data);
 
             });
             eventId2=Wix.addEventListener(Wix.Events.SCROLL, function (data) {
-                console.log('SCROLL');
+                console.log(data);
 
             });
 
@@ -56,7 +56,7 @@
     <br>
     <br>
 </div>
-<button onclick="setPageMetadata();">Change Elements Color</button>
+<button onclick="setPageMetadata();">Set Page Metadata</button>
 <br>
 <br>
 
