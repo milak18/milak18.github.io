@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KeyPress</title>
+
+    <script type="text/javascript" src="https://static.parastorage.com/services/js-sdk/1.75.0/js/Wix.js"></script>
+
+
+    <script type="text/javascript">
+        var eventId1;
+        var eventId2;
+
+        var MyArray = [];
+
+
+        window.onload = function () {
+            Wix.setHeight(300);
+            console.log('loading');
+            eventId1= Wix.addEventListener(Wix.Events.SITE_METADATA_CHANGED, function (data) {
+                console.log('SITE_METADATA_CHANGED');
+
+            });
+            eventId2=Wix.addEventListener(Wix.Events.SCROLL, function (data) {
+                console.log('SCROLL');
+
+            });
+
+            MyArray = MyArray.concat(eventId1);
+            MyArray = MyArray.concat(eventId2);
+            return MyArray;
+
+        };
+
+        function setPageMetadata(){
+            Wix.setPageMetadata({
+                title: 'Page App Title | Internal Page Title',
+                description: 'new description',
+                overrideTitle: true
+            });
+
+        }
+
+    </script>
+
+
+</head>
+
+<body style="background-color: #0000ff;" id="body">
+<div style="background-color: #00ffff;" id="color1" >
+    <br>
+    <br>
+</div>
+<br>
+<br>
+<div style="background-color: #00ffff;" id="color2" >
+    <br>
+    <br>
+</div>
+<button onclick="setPageMetadata();">Change Elements Color</button>
+<br>
+<br>
+
+<button onclick="Wix.removeEventListener(Wix.Events.SITE_METADATA_CHANGED, MyArray[0]);Wix.removeEventListener(Wix.Events.SCROLL, MyArray[1]);">Remove Event Listener</button>
+<br>
+<br>
+
+</body>
+</html>
