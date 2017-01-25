@@ -33,10 +33,10 @@
 
         };
 
-        function setPageMetadata(){
+        function setPageMetadata(title,description){
             Wix.setPageMetadata({
-                title: 'Page|Title',
-                description: 'Description',
+                title: title,
+                description: description,
                 overrideTitle: true
             });
 
@@ -58,13 +58,15 @@
     <br>
     <br>
 </div>
-<button onclick="setPageMetadata();">Set Page Metadata</button>
+<button onclick="setPageMetadata('Page|Title','Description');">Set Page Metadata</button>
 <br>
 <br>
 
 <button onclick="Wix.removeEventListener(Wix.Events.SITE_METADATA_CHANGED, MyArray[0]);Wix.removeEventListener(Wix.Events.SCROLL, MyArray[1]);">Remove Event Listener</button>
 <br>
 <br>
-
+<button onclick="setPageMetadata('New Page|Title','New Description');">Set Page Metadata Additional Params</button>
+<br>
+<br>
 </body>
 </html>
