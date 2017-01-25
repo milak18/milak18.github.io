@@ -13,7 +13,7 @@
         var MyArray = [];
 
         window.onload = function () {
-            Wix.setHeight(700);
+            Wix.setHeight(500);
             console.log('loading');
             eventId1= Wix.addEventListener(Wix.Events.KEY_UP, function () {
                 console.log('key up');
@@ -32,15 +32,15 @@
 
         };
 
-        function  keyPressEvent()
-        {
-            eventId3=Wix.addEventListener(Wix.Events.KEY_PRESS, function () {
-                console.log('key press');
-
-                document.getElementById('color3').style.background = "#000000"
-            });
-            return eventId3;
-        }
+//        function  keyPressEvent()
+//        {
+//            eventId3=Wix.addEventListener(Wix.Events.KEY_PRESS, function () {
+//                console.log('key press');
+//
+//                document.getElementById('color3').style.background = "#000000"
+//            });
+//            return eventId3;
+//        }
     </script>
 
 
@@ -66,8 +66,8 @@
 <br>
 <br>
 <button onclick="Wix.removeEventListener(Wix.Events.KEY_UP, MyArray[0]);Wix.removeEventListener(Wix.Events.KEY_DOWN, MyArray[1]);">Remove Event Listener</button>
-<button onclick="keyPressEvent();">Key Press Event</button>
-<button onclick="Wix.removeEventListener(Wix.Events.KEY_PRESS, eventId3);">Remove Event Listener</button>
+<!--<button onclick="keyPressEvent();">Key Press Event</button>-->
+<!--<button onclick="Wix.removeEventListener(Wix.Events.KEY_PRESS, eventId3);">Remove Event Listener</button>-->
 
 </body>
 </html>
