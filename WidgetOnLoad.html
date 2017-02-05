@@ -40,15 +40,33 @@
             document.getElementById(elements[1]).style.background = "#00ff00";
         }
 
-//        function  keyPressEvent()
-//        {
-//            eventId3=Wix.addEventListener(Wix.Events.KEY_PRESS, function () {
-//                console.log('key press');
-//
-//                document.getElementById('color3').style.background = "#000000"
-//            });
-//            return eventId3;
-//        }
+        function postActivity() {
+
+            var receivedObject;
+
+            var activity = {
+                type: Wix.Activities.Type.CONTACT_CONTACT_FORM,
+                info: {
+                    "fields": [{"name": "email", "value": "email@email.com"}, {
+                        "name": "message",
+                        "value": "messageValue"
+                    }]
+                },
+                details: {additionalInfoUrl: null, summary: "testing tpa contact form"},
+                contactUpdate: {}
+            };
+
+            Wix.Activities.postActivity(activity, function (a) {
+                console.log(a);
+                receivedObject=a;
+            }, function (a) {
+                console.log(a);
+                receivedObject=a;
+            });
+
+
+        }
+
     </script>
 
 
@@ -72,7 +90,9 @@
 <br>
 <br>
 <button onclick="changeColor(Elements);">Change Elements Color</button>
-
+<br>
+<br>
+<button onclick="postActivity();">Post Activity</button>
 
 </body>
 </html>
