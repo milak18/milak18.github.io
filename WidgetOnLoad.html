@@ -58,14 +58,14 @@
 
             Wix.Activities.postActivity(activity, function (data) {
                 console.log(data);
-               // document.getElementById('color1').innerHTML = data.activityId +' '+ data.contactId;
+
 
                 document.getElementById('color1').setAttribute("activityId", data.activityId);
-             //  document.getElementById('color1')[3].setAttribute("contactId", data.contactId);
+                document.getElementById('color1').setAttribute("contactId", data.contactId);
             }, function (data) {
                 console.log(data);
-               // document.getElementById('color1')[2].setAttribute("activityId", data.activityId);
-                //document.getElementById('color1')[3].setAttribute("contactId", data.contactId);
+                document.getElementById('color1').setAttribute("activityId", data.activityId);
+                document.getElementById('color1').setAttribute("contactId", data.contactId);
             });
 
 
