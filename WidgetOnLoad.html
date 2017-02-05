@@ -56,12 +56,12 @@
                 contactUpdate: {}
             };
 
-            Wix.Activities.postActivity(activity, function (a) {
-                console.log(a);
-                receivedObject=a;
-            }, function (a) {
-                console.log(a);
-                receivedObject=a;
+            Wix.Activities.postActivity(activity, function (data) {
+                console.log(data);
+                document.getElementById('color1').innerHTML = data.activityId +' '+ data.contactId;
+            }, function (data) {
+                console.log(data);
+                document.getElementById('color1').innerHTML = data;
             });
 
 
