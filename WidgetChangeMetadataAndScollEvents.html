@@ -24,7 +24,8 @@
             });
             eventId2=Wix.addEventListener(Wix.Events.SCROLL, function (data) {
                 console.log(data);
-                document.getElementById('color2').innerHTML = data.scrollTop;
+              //  document.getElementById('color2').innerHTML = data.scrollTop;
+                document.getElementById('color2').setAttribute("scrollTop", data.scrollTop);
             });
 
             MyArray = MyArray.concat(eventId1);
