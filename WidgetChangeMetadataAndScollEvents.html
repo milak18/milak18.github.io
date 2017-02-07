@@ -23,8 +23,8 @@
 
             });
             eventId2=Wix.addEventListener(Wix.Events.SCROLL, function (data) {
-                console.log(data);
-              //  document.getElementById('color2').innerHTML = data.scrollTop;
+                console.log(data.scrollTop);
+                document.getElementById('color2').innerHTML = data.scrollTop;
                 document.getElementById('color2').setAttribute("scrollTop", data.scrollTop);
             });
 
