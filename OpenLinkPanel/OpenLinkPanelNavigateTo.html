@@ -73,6 +73,19 @@
 
     <!--</script>-->
 
+    <script>
+        function openLinkPanel()
+        {
+            Wix.Settings.openLinkPanel({link: {'type': 'EmailLink','recipient': 'example@gmail.com','subject': 'title'}},
+                    function(linkData) {
+                        console.log(linkData)
+                        document.getElementById('color1').setAttribute("recipient", linkData.recipient);
+                    },
+                    function(error){
+                        console.log(error)
+                    });
+        }
+    </script>
 
 </head>
 
@@ -90,7 +103,7 @@
 <br>
 <br>
 
-<button onclick="Wix.Settings.openLinkPanel({link: {'type': 'EmailLink','recipient': 'example@gmail.com','subject': 'title'}}, function(linkData) {console.log(linkData)}, function(error){console.log(error)});">Open Link Panel</button>
+<button onclick=openLinkPanel();>Open Link Panel</button>
 <br>
 <br>
 <button onclick="Wix.navigateTo({'type': 'PageLink','pageId': '#c1dmp'}, function(a) {console.log(a)});">Navigate to</button>
