@@ -48,6 +48,7 @@
                         console.log(error)
                     });
         }
+
         function openLinkPanelWebAddress()
         {
             Wix.Settings.openLinkPanel({type: "PageLink", pageId: "#c1dmp"},
@@ -56,6 +57,18 @@
                         document.getElementById('color1').setAttribute("target", linkData.target);
                         document.getElementById('color1').setAttribute("type", linkData.type);
                         document.getElementById('color1').setAttribute("url", linkData.url);
+                    },
+                    function(error){
+                        console.log(error)
+                    });
+        }
+        function openLinkPanelPhoneNumber()
+        {
+            Wix.Settings.openLinkPanel({type: "PageLink", pageId: "#c1dmp"},
+                    function(linkData) {
+                        console.log(linkData)
+                        document.getElementById('color1').setAttribute("phoneNumber", linkData.phoneNumber);
+                        document.getElementById('color1').setAttribute("type", linkData.type);
                     },
                     function(error){
                         console.log(error)
@@ -85,6 +98,9 @@
 <br>
 <br>
 <button onclick=openLinkPanelWebAddress();>OpenLinkPanel Web Address</button>
+<br>
+<br>
+<button onclick=openLinkPanelPhoneNumber();>OpenLinkPanel Web Address</button>
 <br>
 <br>
 <button onclick="Wix.navigateTo({type: 'EmailLink', recipient: 'example@gmail.com', subject: 'title'}, function(a) {console.log(a)});">Navigate to</button>
