@@ -6,75 +6,8 @@
     <script type="text/javascript" src="https://static.parastorage.com/services/js-sdk/1.81.0/js/Wix.js"></script>
 
 
-    <!--<script type="text/javascript">-->
-        <!--var eventId1;-->
-        <!--var eventId2;-->
-        <!--var eventId3;-->
-        <!--var MyArray = [];-->
-        <!--var Elements = [];-->
-        <!--Elements = Elements.concat('color1');-->
-        <!--Elements = Elements.concat('color2');-->
-
-        <!--window.onload = function () {-->
-            <!--Wix.setHeight(300);-->
-            <!--console.log('loading');-->
-            <!--eventId1= Wix.addEventListener(Wix.Events.KEY_UP, function () {-->
-                <!--console.log('key up');-->
-
-                <!--document.getElementById('color1').style.background = "#000000"-->
-            <!--});-->
-            <!--eventId2=Wix.addEventListener(Wix.Events.KEY_DOWN, function () {-->
-                <!--console.log('key down');-->
-
-                <!--document.getElementById('color2').style.background = "#000000"-->
-            <!--});-->
-
-            <!--MyArray = MyArray.concat(eventId1);-->
-            <!--MyArray = MyArray.concat(eventId2);-->
-            <!--return MyArray;-->
-
-        <!--};-->
-
-        <!--function changeColor(elements){-->
-            <!--document.getElementById(elements[0]).style.background = "#00ff00";-->
-            <!--document.getElementById(elements[1]).style.background = "#00ff00";-->
-        <!--}-->
-
-        <!--function postActivity() {-->
-
-            <!--var receivedObject;-->
-
-            <!--var activity = {-->
-                <!--type: Wix.Activities.Type.CONTACT_CONTACT_FORM,-->
-                <!--info: {-->
-                    <!--"fields": [{"name": "email", "value": "email@email.com"}, {-->
-                        <!--"name": "message",-->
-                        <!--"value": "messageValue"-->
-                    <!--}]-->
-                <!--},-->
-                <!--details: {additionalInfoUrl: null, summary: "testing tpa contact form"},-->
-                <!--contactUpdate: {}-->
-            <!--};-->
-
-            <!--Wix.Activities.postActivity(activity, function (data) {-->
-                <!--console.log(data);-->
-
-
-                <!--document.getElementById('color1').setAttribute("activityId", data.activityId);-->
-                <!--document.getElementById('color1').setAttribute("contactId", data.contactId);-->
-            <!--}, function (data) {-->
-                <!--console.log(data);-->
-                <!--document.getElementById('color1').setAttribute("activityId", data.activityId);-->
-                <!--document.getElementById('color1').setAttribute("contactId", data.contactId);-->
-            <!--});-->
-
-
-        <!--}-->
-
-    <!--</script>-->
-
     <script>
-        function openLinkPanel()
+        function openLinkPanelEmail()
         {
             Wix.Settings.openLinkPanel({link: {'type': 'EmailLink','recipient': 'example@gmail.com','subject': 'title'}},
                     function(linkData) {
@@ -87,6 +20,20 @@
                         console.log(error)
                     });
         }
+
+        function openLinkPanelPage()
+        {
+            Wix.Settings.openLinkPanel({type: "PageLink", pageId: "#c1dmp"},
+                    function(linkData) {
+                        console.log(linkData)
+                        document.getElementById('color1').setAttribute("pageId", linkData.pageId);
+                        document.getElementById('color1').setAttribute("type", linkData.type);
+                    },
+                    function(error){
+                        console.log(error)
+                    });
+        }
+
     </script>
 
 </head>
@@ -105,7 +52,11 @@
 <br>
 <br>
 
-<button onclick=openLinkPanel();>Open Link Panel</button>
+<button onclick=openLinkPanelEmail();>OpenLinkPanel Email</button>
+<br>
+<br>
+
+<button onclick=openLinkPanelPage();>OpenLinkPanel Page</button>
 <br>
 <br>
 <button onclick="Wix.navigateTo({type: 'EmailLink', recipient: 'example@gmail.com', subject: 'title'}, function(a) {console.log(a)});">Navigate to</button>
