@@ -34,6 +34,21 @@
                     });
         }
 
+        function openLinkPanelAnchor()
+        {
+            Wix.Settings.openLinkPanel({type: "PageLink", pageId: "#c1dmp"},
+                    function(linkData) {
+                        console.log(linkData)
+                        document.getElementById('color1').setAttribute("anchorDataId", linkData.anchorDataId);
+                        document.getElementById('color1').setAttribute("anchorName", linkData.anchorName);
+                        document.getElementById('color1').setAttribute("pageId", linkData.pageId);
+                        document.getElementById('color1').setAttribute("type", linkData.type);
+                    },
+                    function(error){
+                        console.log(error)
+                    });
+        }
+
     </script>
 
 </head>
@@ -57,6 +72,9 @@
 <br>
 
 <button onclick=openLinkPanelPage();>OpenLinkPanel Page</button>
+<br>
+<br>
+button onclick=openLinkPanelAnchor();>OpenLinkPanel Anchor</button>
 <br>
 <br>
 <button onclick="Wix.navigateTo({type: 'EmailLink', recipient: 'example@gmail.com', subject: 'title'}, function(a) {console.log(a)});">Navigate to</button>
