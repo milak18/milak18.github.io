@@ -74,6 +74,19 @@
                         console.log(error)
                     });
         }
+        function openLinkPanelDocument()
+        {
+            Wix.Settings.openLinkPanel({type: "PageLink", pageId: "#c1dmp"},
+                    function(linkData) {
+                        console.log(linkData)
+                        document.getElementById('color1').setAttribute("docId", linkData.docId);
+                        document.getElementById('color1').setAttribute("name", linkData.name);
+                        document.getElementById('color1').setAttribute("type", linkData.type);
+                    },
+                    function(error){
+                        console.log(error)
+                    });
+        }
 
     </script>
 
@@ -101,6 +114,9 @@
 <br>
 <br>
 <button onclick=openLinkPanelPhoneNumber();>OpenLinkPanel Phone number</button>
+<br>
+<br>
+<button onclick=openLinkPanelDocument();>OpenLinkPanel Document</button>
 <br>
 <br>
 <button onclick="Wix.navigateTo({type: 'EmailLink', recipient: 'example@gmail.com', subject: 'title'}, function(a) {console.log(a)});">Navigate to</button>
