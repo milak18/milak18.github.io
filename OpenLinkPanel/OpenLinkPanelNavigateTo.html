@@ -80,6 +80,8 @@
                     function(linkData) {
                         console.log(linkData)
                         document.getElementById('color1').setAttribute("recipient", linkData.recipient);
+                        document.getElementById('color1').setAttribute("subject", linkData.subject);
+                        document.getElementById('color1').setAttribute("type", linkData.type);
                     },
                     function(error){
                         console.log(error)
@@ -106,7 +108,7 @@
 <button onclick=openLinkPanel();>Open Link Panel</button>
 <br>
 <br>
-<button onclick="Wix.navigateTo({'type': 'PageLink','pageId': '#c1dmp'}, function(a) {console.log(a)});">Navigate to</button>
+<button onclick="Wix.navigateTo({type: 'EmailLink', recipient: 'example@gmail.com', subject: 'title'}, function(a) {console.log(a)});">Navigate to</button>
 <br>
 
 
