@@ -74,6 +74,7 @@
                         console.log(error)
                     });
         }
+
         function openLinkPanelDocument()
         {
             Wix.Settings.openLinkPanel({type: "PageLink", pageId: "#c1dmp"},
@@ -88,6 +89,20 @@
                     });
         }
 
+        function openLinkPanelTopBottomOfPage()
+        {
+            Wix.Settings.openLinkPanel({type: "PageLink", pageId: "#c1dmp"},
+                    function(linkData) {
+                        console.log(linkData)
+                        document.getElementById('color1').setAttribute("anchorDataId", linkData.anchorDataId);
+                        document.getElementById('color1').setAttribute("anchorName", linkData.anchorName);
+                        document.getElementById('color1').setAttribute("pageId", linkData.pageId);
+                        document.getElementById('color1').setAttribute("type", linkData.type);
+                    },
+                    function(error){
+                        console.log(error)
+                    });
+        }
     </script>
 
 </head>
@@ -117,6 +132,9 @@
 <br>
 <br>
 <button onclick=openLinkPanelDocument();>OpenLinkPanel Document</button>
+<br>
+<br>
+<button onclick=openLinkPanelTopBottomOfPage();>OpenLinkPanel TopBottomOfPage</button>
 <br>
 <br>
 <button onclick="Wix.navigateTo({type: 'EmailLink', recipient: 'example@gmail.com', subject: 'title'}, function(a) {console.log(a)});">Navigate to</button>
