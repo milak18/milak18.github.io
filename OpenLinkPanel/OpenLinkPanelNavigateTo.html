@@ -143,6 +143,27 @@
 <br>
 <button onclick="Wix.navigateTo({type: 'ExternalLink', target: '_blank', url: 'http://www.ynet.co.il'}, function(a) {console.log(a)});">Navigate to Web Address</button>
 <br>
+<br>
+<button onclick="Wix.navigateTo({type: 'EmailLink', 'recipient': 'example@gmail.com', subject: 'title'}, function(a) {console.log(a)});">Navigate to Email</button>
+<br>
+<br>
+<button onclick="Wix.navigateTo({type: 'AnchorLink', pageId: '#dx1xj', anchorDataId: '#dataItem-j1yx9k5h', anchorName: 'Anchor 1'}, function(a) {console.log(a)});">Navigate to Anchor</button>
+<br>
+<br>
+<button onclick="Wix.navigateTo({type: 'PhoneLink', phoneNumber: '12345'}, function(a) {console.log(a)});">Navigate to Phone</button>
+<br>
+<br>
+<button onclick="Wix.navigateTo({type: 'DocumentLink', docId: 'dc5dc3_ff024f6670db4a1aba40a6f48a30f5d5.docx', name: 'App Market SEO Spec - March 2014 (Final V3) (1) (6).docx'}, function(a) {console.log(a)});">Navigate to Document</button>
+<br>
+<br>
+<button onclick="Wix.navigateTo({type: 'AnchorLink', anchorDataId: 'SCROLL_TO_TOP', pageId: '#masterPage', anchorName: 'Top of Page'}, function(a) {console.log(a)});">Navigate to Top of Page</button>
+<br>
+<br>
+<button onclick="Wix.navigateTo({type: 'AnchorLink', anchorDataId: 'SCROLL_TO_BOTTOM', pageId: '#masterPage', anchorName: 'Bottom of Page'}, function(a) {console.log(a)});">Navigate to Bottom of Page</button>
+<br>
+<br>
+<button onclick="Wix.navigateTo({type: 'PageLink', pageId: '#g8ctb'}, function(a) {console.log(a)});">Navigate to LightBox</button>
+<br>
 
 </body>
 </html>
