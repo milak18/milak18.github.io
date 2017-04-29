@@ -7,6 +7,10 @@
 
 
     <script>
+        window.onload = function () {
+            Wix.setHeight(600);
+        }
+
         function openLinkPanelEmail()
         {
             Wix.Settings.openLinkPanel({link: {'type': 'EmailLink','recipient': 'example@gmail.com','subject': 'title'}},
