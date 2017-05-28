@@ -10,8 +10,8 @@
         {
             Wix.Editor.isApplicationInstalled(appId,
                     function(linkData) {
-                        console.log(linkData)
-                        document.getElementById('color1').setAttribute("isApplicationInstalled", linkData);
+                        console.log(data)
+                        document.getElementById('color1').setAttribute("isApplicationInstalled", data.value);
                     },
                     function(error){
                         console.log(error)
@@ -22,8 +22,8 @@
         {
             Wix.Settings.isApplicationInstalled(appId,
                     function(linkData) {
-                        console.log(linkData)
-                        document.getElementById('color1').setAttribute("isApplicationInstalled", linkData);
+                        console.log(data)
+                        document.getElementById('color1').setAttribute("isApplicationInstalled", data.value);
                     },
                     function(error){
                         console.log(error)
