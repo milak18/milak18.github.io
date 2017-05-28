@@ -4,19 +4,47 @@
     <title>Search For String in JSON</title>
     
     <script type="text/javascript" src="https://milak18.github.io/IsInstallAddApp/Wix.js"></script>
+    <script>
 
+        function isApplicationInstalledEditor(appId)
+        {
+            Wix.Editor.isApplicationInstalled(appId,
+                    function(linkData) {
+                        console.log(linkData)
+                        document.getElementById('color1').setAttribute("isApplicationInstalled", linkData);
+                    },
+                    function(error){
+                        console.log(error)
+                    });
+        }
 
+        function isApplicationInstalledSettings(appId)
+        {
+            Wix.Settings.isApplicationInstalled(appId,
+                    function(linkData) {
+                        console.log(linkData)
+                        document.getElementById('color1').setAttribute("isApplicationInstalled", linkData);
+                    },
+                    function(error){
+                        console.log(error)
+                    });
+        }
+    </script>
 </head>
 
 <body  style="border:3px solid red; background-color: #0000ff;">
+<div style="background-color: #00ffff;" id="color1" >
+    <br>
+    <br>
+</div>
 <br>
-<button onClick="Wix.Editor.isApplicationInstalled('1380b703-ce81-ff05-f115-39571d94dfcd',function(a){console.log(a)});">isApplicationInstalledEditor</button>
+<button onClick=isApplicationInstalled('1380b703-ce81-ff05-f115-39571d94dfcd')>isApplicationInstalledEditor</button>
 <br>
-<button onClick="Wix.Editor.isApplicationInstalled('1380b703-ce81-ff05-f115-39571d94d',function(a){console.log(a)});">isApplicationInstalledNotInstalled</button>
+<button onClick=isApplicationInstalled('1380b703-ce81-ff05-f115-39571d94d')>isApplicationInstalledNotInstalled</button>
 <br>
-<button onClick="Wix.Settings.isApplicationInstalled('1380b703-ce81-ff05-f115-39571d94dfcd',function(a){console.log(a)});">isApplicationInstalledSettings</button>
+<button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94dfcd')>isApplicationInstalledSettings</button>
 <br>
-<button onClick="Wix.Settings.isApplicationInstalled('1380b703-ce81-ff05-f115-39571d94d',function(a){console.log(a)});">isApplicationNotInstalledSettings</button>
+<button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94d')>isApplicationNotInstalledSettings</button>
 <br>
 <button onClick="Wix.Settings.addApplication('1375baa8-8eca-5659-ce9d-455b2009250d',{pageId:'c1dmp', shouldNavigate:false, showPageAddedPanel:false},function(a){console.log(a)});">addApplicationSettings</button>
 
