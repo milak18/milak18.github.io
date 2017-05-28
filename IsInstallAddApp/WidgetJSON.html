@@ -11,7 +11,7 @@
             Wix.Editor.isApplicationInstalled(appId,
                     function(data) {
                         console.log(data)
-                        document.getElementById('color1').setAttribute("isApplicationInstalled", data.value);
+                        document.getElementById('color1').setAttribute("isApplicationInstalled", data);
                     });
         }
 
@@ -20,7 +20,7 @@
             Wix.Settings.isApplicationInstalled(appId,
                     function(data) {
                         console.log(data)
-                        document.getElementById('color1').setAttribute("isApplicationInstalled", data.value);
+                        document.getElementById('color1').setAttribute("isApplicationInstalled", data);
                     });
         }
     </script>
