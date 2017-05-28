@@ -9,24 +9,18 @@
         function isApplicationInstalledEditor(appId)
         {
             Wix.Editor.isApplicationInstalled(appId,
-                    function(linkData) {
+                    function(data) {
                         console.log(data)
                         document.getElementById('color1').setAttribute("isApplicationInstalled", data.value);
-                    },
-                    function(error){
-                        console.log(error)
                     });
         }
 
         function isApplicationInstalledSettings(appId)
         {
             Wix.Settings.isApplicationInstalled(appId,
-                    function(linkData) {
+                    function(data) {
                         console.log(data)
                         document.getElementById('color1').setAttribute("isApplicationInstalled", data.value);
-                    },
-                    function(error){
-                        console.log(error)
                     });
         }
     </script>
