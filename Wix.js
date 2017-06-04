@@ -105,8 +105,11 @@
 	            Styles: Styles,
 	            Theme: Theme,
 	            Utils: Utils,
+	            Data: Data,
+	            Performance: Performance,
 	            WindowOrigin: WindowOrigin,
 	            WindowPlacement: WindowPlacement,
+
 	            openModal: Base.openModal,
 	            openPopup: Base.openPopup,
 	            setHeight: Base.setHeight,
@@ -115,6 +118,7 @@
 	            scrollBy: Base.scrollBy,
 	            getSiteInfo: Base.getSiteInfo,
 	            getSitePages: Base.getSitePages,
+	            getSiteMap: Base.getSiteMap,
 	            getBoundingRectAndOffsets: Base.getBoundingRectAndOffsets,
 	            removeEventListener: Base.removeEventListener,
 	            addEventListener: Base.addEventListener,
@@ -122,6 +126,7 @@
 	            requestLogin: Base.requestLogin,
 	            logOutCurrentMember: Base.logOutCurrentMember,
 	            currentMember: Base.currentMember,
+	            navigateTo: Base.navigateTo,
 	            navigateToPage: Base.navigateToPage,
 	            getCurrentPageId: Base.getCurrentPageId,
 	            pushState: Base.pushState,
@@ -133,12 +138,11 @@
 	            revalidateSession: Base.revalidateSession,
 	            getCurrentPageAnchors: Base.getCurrentPageAnchors,
 	            navigateToAnchor: Base.navigateToAnchor,
-	            Data: Data,
 	            getComponentInfo: Base.getComponentInfo,
 	            replaceSectionState: Base.replaceSectionState,
 	            setPageMetadata: Base.setPageMetadata,
 	            getStateUrl: Base.getStateUrl,
-	            Performance: Performance
+	            getAdsOnPage: Base.getAdsOnPage
 	        };
 	    };
 
@@ -464,6 +468,20 @@
 	    DEVICE_TYPE_CHANGED: 'DEVICE_TYPE_CHANGED',
 
 	    /**
+	     * Issued when the user hits a keyboard key down, the following keys will be reported: Arrows (Left, Right), Esc, Enter and Spacebar
+	     * @memberof Wix.Events
+	     * @since 1.76.0
+	     */
+	    KEY_DOWN: 'KEY_DOWN',
+
+	    /**
+	     * Issued when the user hits a keyboard key up, the following keys will be reported: Arrows (Left, Right), Esc, Enter and Spacebar
+	     * @memberof Wix.Events
+	     * @since 1.76.0
+	     */
+	    KEY_UP: 'KEY_UP',
+
+	    /**
 	     * Issued when the site is saved.
 	     * @memberof Wix.Events
 	     * @since 1.62.0
@@ -492,7 +510,21 @@
 	     *   key1: value1
 	     * }
 	     */
-	    PUBLIC_DATA_CHANGED: 'PUBLIC_DATA_CHANGED'
+	    PUBLIC_DATA_CHANGED: 'PUBLIC_DATA_CHANGED',
+
+	    /**
+	     * Issued when the page metadata (title, description) changes.
+	     * @memberof Wix.Events
+	     * @since 1.75.0
+	     * @example
+	     * {
+	     *   title: 'example title',
+	     *   description: 'example description'
+	     * }
+	     */
+	    SITE_METADATA_CHANGED: 'SITE_METADATA_CHANGED',
+
+	    QUICK_ACTION_TRIGGERED: 'QUICK_ACTION_TRIGGERED'
 	  };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -554,7 +586,6 @@
 
 	var MessageTypes = {
 	    REFRESH_APP: 'refreshApp',
-	    REFRESH_APP_BY_COMP_IDS: 'refreshAppByCompIds',
 	    APP_IS_ALIVE: 'appIsAlive',
 	    APP_STATE_CHANGED: 'appStateChanged',
 	    CLOSE_WINDOW: 'closeWindow',
@@ -566,7 +597,9 @@
 	    OPEN_MEDIA_DIALOG: 'openMediaDialog',
 	    OPEN_SITE_MEMBERS_SETTINGS_DIALOG: 'openSiteMembersSettingsDialog',
 	    OPEN_BILLING_PAGE: 'openBillingPage',
+	    SET_FULL_SCREEN_MOBILE: 'setFullScreenMobile',
 	    GET_SITE_PAGES: 'getSitePages',
+	    GET_SITE_MAP: 'getSiteMap',
 	    SET_PAGE_METADATA: 'setPageMetadata',
 	    GET_SITE_COLORS: 'getSiteColors',
 	    GET_USER_SESSION: 'getUserSession',
@@ -678,7 +711,11 @@
 	    APPLICATION_LOADED_STEP: 'applicationLoadingStep',
 	    SUPER_APPS_OPEN_MEDIA_DIALOG: 'superAppsOpenMediaDialog',
 	    IS_COMPONENT_INSTALLED: 'isComponentInstalled',
-	    GET_SITE_VIEW_URL: 'getSiteViewUrl'
+	    GET_SITE_VIEW_URL: 'getSiteViewUrl',
+	    OPEN_LINK_PANEL: 'openLinkPanel',
+	    NAVIGATE_TO: 'navigateTo',
+	    GET_ADS_ON_PAGE: 'getAdsOnPage',
+	    SET_MOBILE_ACTION_BAR_BUTTON: 'setMobileActionBarButton'
 	};
 
 	var callId = 1;
@@ -894,6 +931,28 @@
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
 	    'use strict';
 
+	    var isNull = function isNull(val) {
+	        return val === null;
+	    };
+
+	    var isUndefined = function isUndefined(val) {
+	        return val === undefined;
+	    };
+
+	    var isNotANumber = function isNotANumber(val) {
+	        return isNaN(val) || val !== val;
+	    }; // see MDN polyfill for isNaN for (val !== val)
+
+	    var mapValues = function mapValues(obj, func) {
+	        var res = {};
+	        if (isObject(obj)) {
+	            Object.keys(obj).forEach(function (k) {
+	                return res[k] = func(obj[k]);
+	            });
+	        }
+	        return res;
+	    };
+
 	    var isString = function isString(arg) {
 	        return typeof arg === "string";
 	    };
@@ -962,7 +1021,21 @@
 	        });
 	    };
 
+	    var pick = function pick(obj, keys) {
+	        var dest = {};
+	        keys.forEach(function (key) {
+	            var value = obj[key];
+	            if (value !== null && value !== undefined) {
+	                dest[key] = value;
+	            }
+	        });
+	        return dest;
+	    };
+
 	    return {
+	        isNull: isNull,
+	        isUndefined: isUndefined,
+	        isNaN: isNotANumber,
 	        isString: isString,
 	        isFunction: isFunction,
 	        isObject: isObject,
@@ -974,7 +1047,9 @@
 	        protocol: protocol,
 	        onDocumentReady: onDocumentReady,
 	        shallowCloneObject: shallowCloneObject,
-	        merge: merge
+	        merge: merge,
+	        pick: pick,
+	        mapValues: mapValues
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -1476,8 +1551,8 @@
 	        postMessage.sendMessage(postMessage.MessageTypes.GET_BILLING_PACKAGES, namespace, args, onComplete);
 	    };
 
-	    var getProducts = function getProducts(onSuccess, onError) {
-	        sharedAPI.getProducts(namespace, {}, onSuccess, onError);
+	    var getProducts = function getProducts(options, onSuccess, onError) {
+	        sharedAPI.getProducts(namespace, options, onSuccess, onError);
 	    };
 
 	    return {
@@ -1590,9 +1665,10 @@
 	         *
 	         * @function
 	         * @memberof Wix.Billing
-	         * @since 1.69.0
+	         * @since 1.76.0
+	         * @param {Object} [options] An object that can contain a 'currency' parameter which defines the currency of the returned products
 	         * @param {Function} onSuccess A callback function to receive the products.
-	         * @param {Function} onError A callback error function.
+	         * @param {Function} [onError] A callback error function.
 	         *
 	         * @example
 	         * var onError = function () {
@@ -1627,7 +1703,7 @@
 	         *  }]
 	         *
 	         * };
-	         * Wix.Billing.getProducts(onSuccess, onError);
+	         * Wix.Billing.getProducts({currency: 'USD'}, onSuccess, onError);
 	         */
 	        getProducts: getProducts
 	    };
@@ -1938,7 +2014,7 @@
 	        if (utils.isObject(options)) {
 	            if (options.premiumIntent) {
 	                if (!utils.isString(options.premiumIntent) || !utils.has(supportedPremiumIntents, options.premiumIntent)) {
-	                    reporter.reportSdkError('Unsupported premiumIntent - ' + options.premiumIntent + ' - should be one of Wix.Settings.PREMIUM_INTENTS');
+	                    reporter.reportSdkError('Unsupported premiumIntent - ' + options.premiumIntent + ' - should be one of Wix.Settings.PremiumIntent');
 	                    return;
 	                }
 	                args.premiumIntent = options.premiumIntent;
@@ -2063,9 +2139,13 @@
 	        postMessage.sendMessage(postMessage.MessageTypes.GET_CURRENT_PAGE_ANCHORS, namespace, {}, callback);
 	    };
 
-	    var getProducts = function getProducts(namespace, options, onSuccess, onError) {
+	    var getProductsImpl = function getProductsImpl(namespace, options, onSuccess, onError) {
 	        if (!utils.isObject(options)) {
 	            reporter.reportSdkError('Missing mandatory argument - options must be an object');
+	            return;
+	        }
+	        if (options && options.currency && !utils.isString(options.currency)) {
+	            reporter.reportSdkError('Invalid argument - currency must be of type string');
 	            return;
 	        }
 	        if (!utils.isFunction(onSuccess)) {
@@ -2093,7 +2173,20 @@
 	        if (options.appDefinitionId) {
 	            args.appDefinitionId = options.appDefinitionId;
 	        }
+	        if (options.currency) {
+	            args.currency = options.currency;
+	        }
 	        postMessage.sendMessage(postMessage.MessageTypes.GET_PRODUCTS, namespace, args, callback);
+	    };
+
+	    var getProducts = function getProducts(namespace, options, onSuccess, onError) {
+	        if (utils.isObject(options)) {
+	            getProductsImpl(namespace, options, onSuccess, onError);
+	        } else if (utils.isFunction(options)) {
+	            getProductsImpl(namespace, {}, options, onSuccess);
+	        } else {
+	            reporter.reportSdkError('Invalid argument - first parameter must be an object or a function');
+	        }
 	    };
 
 	    var getSiteInfo = function getSiteInfo(namespace, onSuccess) {
@@ -2202,6 +2295,15 @@
 	        postMessage.sendMessage(postMessage.MessageTypes.GET_SITE_PAGES, namespace, args, callback);
 	    };
 
+	    var getSiteMap = function getSiteMap(namespace, callback) {
+	        if (!utils.isFunction(callback)) {
+	            reporter.reportSdkError('Missing mandatory argument - callback must be a function');
+	            return;
+	        }
+
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_SITE_MAP, namespace, {}, callback);
+	    };
+
 	    var currentMember = function currentMember(namespace, onSuccess) {
 	        if (getViewMode() !== "site") {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor/preview mode. Supported view mode is: [site]');
@@ -2269,11 +2371,26 @@
 	        postMessage.sendMessage(postMessage.MessageTypes.GET_STATE_URL, namespace, { sectionId: sectionId, state: state }, callback);
 	    };
 
+	    var getCurrentPageId = function getCurrentPageId(namespace, callback) {
+	        if (!utils.isString(namespace)) {
+	            reporter.reportSdkError('Missing mandatory argument - namespace - should be of type String');
+	            return;
+	        }
+
+	        if (!utils.isFunction(callback)) {
+	            reporter.reportSdkError('Missing mandatory argument - callback - should be of type Function');
+	            return;
+	        }
+
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_CURRENT_PAGE_ID, namespace, null, callback);
+	    };
+
 	    return {
 	        resizeComponent: resizeComponent,
 	        validateParamsForOpenBillingPage: validateParamsForOpenBillingPage,
 	        openMediaDialog: openMediaDialog,
 	        revalidateSession: revalidateSession,
+	        getCurrentPageId: getCurrentPageId,
 	        getCurrentPageAnchors: getCurrentPageAnchors,
 	        openModal: openModal,
 	        getSiteInfo: getSiteInfo,
@@ -2286,6 +2403,7 @@
 	        setColorParam: setColorParam,
 	        getViewMode: getViewMode,
 	        getSitePages: getSitePages,
+	        getSiteMap: getSiteMap,
 	        currentMember: currentMember,
 	        getDeviceType: getDeviceType,
 	        getLocale: getLocale,
@@ -2589,7 +2707,21 @@
 	       * @constant
 	       * @since 1.69.0
 	       */
-	      MESSAGE_IM: 'Messaging/im'
+	      MESSAGE_IM: 'Messaging/im',
+
+	      /**
+	       * Indicates a new order placed in a restaurant
+	       * @constant
+	       * @since 1.77.0
+	       */
+	      RESTAURANTS_ORDER: 'restaurants/order',
+
+	      /**
+	       * Indicates a new RSVP to events created by Wix users
+	       * @constant
+	       * @since 1.77.0
+	       */
+	      EVENTS_RSVP: 'events/rsvp'
 
 	    },
 
@@ -2825,7 +2957,7 @@
 	    };
 
 	    var refreshAppByCompIds = function refreshAppByCompIds(compIds, queryParams) {
-	        postMessage.sendMessage(postMessage.MessageTypes.REFRESH_APP_BY_COMP_IDS, namespace, { queryParams: queryParams, compIds: compIds });
+	        postMessage.sendMessage(postMessage.MessageTypes.REFRESH_APP, namespace, { queryParams: queryParams, compIds: compIds });
 	    };
 
 	    var openBillingPage = function openBillingPage(options) {
@@ -2837,7 +2969,7 @@
 
 	    var appEngaged = function appEngaged(premiumIntent) {
 	        if (!utils.isString(premiumIntent) || !utils.has(this.PremiumIntent, premiumIntent)) {
-	            reporter.reportSdkError('Missing mandatory argument - premiumIntent - should be one of Wix.Settings.PREMIUM_INTENTS');
+	            reporter.reportSdkError('Missing mandatory argument - premiumIntent - should be one of Wix.Settings.PremiumIntent');
 	            return;
 	        }
 
@@ -2870,6 +3002,10 @@
 	        sharedAPI.getSitePages(namespace, options, callback);
 	    };
 
+	    var getSiteMap = function getSiteMap(callback) {
+	        sharedAPI.getSiteMap(namespace, callback);
+	    };
+
 	    var setWindowPlacement = function setWindowPlacement(compId, placement, verticalMargin, horizontalMargin) {
 	        if (!compId || !placement) {
 	            reporter.reportSdkError('Mandatory arguments - compId & placement must be specified');
@@ -2896,6 +3032,10 @@
 
 	    var openModal = function openModal(url, width, height, title, onClose, bareUI) {
 	        sharedAPI.openModal(namespace, url, width, height, title, onClose, bareUI);
+	    };
+
+	    var getCurrentPageId = function getCurrentPageId(callback) {
+	        sharedAPI.getCurrentPageId(namespace, callback);
 	    };
 
 	    var closeWindow = function closeWindow(message) {
@@ -3013,9 +3153,19 @@
 	            }
 	        };
 
+	        var margins;
+	        if (options && options.margins) {
+	            margins = options && options.margins;
+	            _.forIn(margins, function (value, key) {
+	                if (_.endsWith(margins[key], '%')) {
+	                    margins[key] = _.replace(margins[key], '%', 'vw');
+	                }
+	            });
+	        }
+
 	        var args = {
 	            stretch: shouldBeFullWidth,
-	            options: options
+	            margins: margins
 	        };
 
 	        postMessage.sendMessage(postMessage.MessageTypes.SET_FULL_WIDTH, namespace, args, callback);
@@ -3057,6 +3207,46 @@
 	        postMessage.sendMessage(postMessage.MessageTypes.IS_COMPONENT_INSTALLED, namespace, { componentId: componentId }, callback);
 	    };
 
+	    var openLinkPanelImpl = function openLinkPanelImpl(options, onSuccess, onCacnel) {
+	        if (!utils.isFunction(onSuccess)) {
+	            reporter.reportSdkError('Missing mandatory argument - onSuccess - should be of type Function');
+	            return;
+	        }
+	        if (onCacnel && !utils.isFunction(onCacnel)) {
+	            reporter.reportSdkError('Invalid argument - onCacnel - should be of type Function');
+	            return;
+	        }
+
+	        var callback = function callback(data) {
+	            if (data && data.onCacnel) {
+	                if (onCacnel) {
+	                    onCacnel.apply(this, arguments);
+	                }
+	            } else {
+	                if (onSuccess) {
+	                    onSuccess.apply(this, arguments);
+	                }
+	            }
+	        };
+
+	        var args = {};
+	        if (options.link) {
+	            args.link = options.link;
+	        }
+
+	        postMessage.sendMessage(postMessage.MessageTypes.OPEN_LINK_PANEL, namespace, args, callback);
+	    };
+
+	    var openLinkPanel = function openLinkPanel(options, onSuccess, onCacnel) {
+	        if (options && utils.isObject(options)) {
+	            openLinkPanelImpl(options, onSuccess, onCacnel);
+	        } else if (utils.isFunction(options)) {
+	            openLinkPanelImpl({}, options, onSuccess);
+	        } else {
+	            reporter.reportSdkError('Missing mandatory argument - first argument should be of type Object or Function');
+	        }
+	    };
+
 	    return {
 	        /**
 	         * @enum
@@ -3075,7 +3265,7 @@
 	        /**
 	         * @enum
 	         * @memberof Wix.Settings
-	         * @since 1.75.0
+	         * @since 1.78.0
 	         */
 	        PremiumIntent: {
 	            NEUTRAL: 'NEUTRAL',
@@ -3107,6 +3297,22 @@
 	         * });
 	         */
 	        getWindowPlacement: getWindowPlacement,
+
+	        /**
+	         * The getCurrentPageId method returns ID of the currently selected page in the editor
+	         *
+	         * @function
+	         * @memberof Wix.Settings
+	         * @since 1.83.0
+	         * @author yaroslavs@wix.com
+	         * @example
+	         *
+	         * // The following call will return the page id of the currently selected page in the editor.
+	         * Wix.Settings.getCurrentPageId(function (pageId) {
+	         *     // store the site pageId
+	         * });
+	         */
+	        getCurrentPageId: getCurrentPageId,
 
 	        /**
 	         * This method returns the URL leading to your BackOffice (AKA Business) application, in the Wix Dashboard.
@@ -3156,6 +3362,23 @@
 	        getSitePages: getSitePages,
 
 	        /**
+	         * The getSiteMap method is used to retrieve the site structure from the hosting Wix Platform. The site structure includes visible and hidden pages, sub pages, links and menu headers.
+	         * This method will eventually replace the getSitepages.
+	         *
+	         * @function
+	         * @memberof Wix.Settings
+	         * @since 1.81.0
+	         * @see Wix.getSiteMap
+	         *
+	         * @example
+	         *
+	         * Wix.Settings.getSiteMap(function(siteMap) {
+	         *    // do something with the site pages
+	         * });
+	         */
+	        getSiteMap: getSiteMap,
+
+	        /**
 	         * The getStyleParams method is used to retrieve the style parameters from the hosting Wix Platform. The parameters includes colors numbers, booleans.
 	         * @function
 	         * @memberof Wix.Settings
@@ -3175,7 +3398,7 @@
 	         * When called it will open the Wix billing system page in a modal window.
 	         * @function
 	         * @memberof Wix.Settings
-	         * @since 1.75.0
+	         * @since 1.79.0
 	         * @param {Object} options may contain: a 'premiumIntent' property with possible values: Wix.Settings.PremiumIntent to be sent to the billing page window
 	         * @example
 	         *
@@ -3187,7 +3410,7 @@
 	         * The Wix.Setting.appEngaged method allows to indicate if an app is "engaged" or "highly engaged" to give a better indication to BA funnel / package picker
 	         * @function
 	         * @memberof Wix.Settings
-	         * @since 1.75.0
+	         * @since 1.79.0
 	         * @param {Wix.Settings.PremiumIntent} premiumIntent the app's premium intent
 	         * @example
 	         *
@@ -3437,14 +3660,17 @@
 	         * Sets the widget/page components to full width/exit full width (true/false)
 	         * @function
 	         * @memberof Wix.Settings
-	         * @since 1.65.0
+	         * @since 1.81.0
 	         * @param {Boolean} fullWidth - Set true/false if to set the app as full width or not
-	         * @param {Object} options
+	         * @param {Object} options can contain margins, margins need to contain values for left and right.
+	         *                 The values can be defined with px, % (from screen width ) or nothing (default px)
 	         * @param {function} onSuccess
 	         * @param {function} onFailure
 	         * @example
 	         *
-	         * Wix.Settings.setFullWidth(true, {}, function() {..}, function() {...});
+	         * Wix.Settings.setFullWidth(true, {margins: {left:'100px',right:'200'}}, function() {..}, function() {...});
+	         * Wix.Settings.setFullWidth(true, {margins: {left:100,right:'200'}}, function() {..}, function() {...});
+	         * Wix.Settings.setFullWidth(true, {margins: {left:'20%',right:'200px'}}, function() {..}, function() {...});
 	         */
 	        setFullWidth: setFullWidth,
 
@@ -3503,7 +3729,29 @@
 	         *
 	         * Wix.Settings.isComponentInstalled("compId");
 	         */
-	        isComponentInstalled: isComponentInstalled
+	        isComponentInstalled: isComponentInstalled,
+
+	        /**
+	         * Opens the editor link selector panel
+	         *
+	         * @function
+	         * @memberOf Wix.Settings
+	         * @since 1.81.0
+	         * @param {object} [options] to open the panel with a previous selected link, a 'link' property with the returned object can be passed
+	         * @param {function} onSuccess called when the user clicks on the Done button, with an object containing the selected link data
+	         *   callback signature: function(linkData) {}
+	         * @param {function} [onCancel] called when the user clicked on the Cancel button
+	         * @example
+	         *
+	         * Wix.Settings.openLinkPanel({
+	         *  link: {
+	                  "type": "EmailLink",
+	                  "recipient": "example@gmail.com",
+	                  "subject": "title"
+	                }
+	         * }, function(linkData) {console.log(linkData)}, function(error){console.log(error))};
+	         */
+	        openLinkPanel: openLinkPanel
 	    };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -4164,8 +4412,8 @@
 	        return 'https://static.wixstatic.com/';
 	    };
 
-	    var getWixMedia = function getWixMedia() {
-	        return 'https://media.wix.com/';
+	    var getWixMedia = function getWixMedia(prefix) {
+	        return 'https://' + prefix + '.wixstatic.com/';
 	    };
 
 	    var getImageUrl = function getImageUrl(relativeUrl) {
@@ -4219,7 +4467,7 @@
 
 	        switch (audioType) {
 	            case AudioType.STANDARD:
-	                return getWixMedia() + 'mp3/' + relativeUrl;
+	                return getWixMedia('music') + 'mp3/' + relativeUrl;
 	            case AudioType.PREVIEW:
 	                return getWixStatic() + 'preview/' + relativeUrl;
 	            case AudioType.SHORT_PREVIEW:
@@ -4229,7 +4477,7 @@
 
 	    var getDocumentUrl = function getDocumentUrl(relativeUrl) {
 	        postMessage.sendMessage(postMessage.MessageTypes.GET_DOCUMENT_URL, namespace);
-	        return getWixMedia() + 'ugd/' + relativeUrl;
+	        return getWixMedia('docs') + 'ugd/' + relativeUrl;
 	    };
 
 	    var getSwfUrl = function getSwfUrl(relativeUrl) {
@@ -4314,7 +4562,7 @@
 	         * Constructs an absolute URL for a relative path to an audio file. By default, returns a URL to a standard audio file.
 	         * @function
 	         * @memberof Wix.Utils.Media
-	         * @since 1.45.0
+	         * @since 1.81.0
 	         * @param {String} relativeUri A relative URL to the target audio file.
 	         * @param {Wix.Utils.Media.AudioType} audioType the type of audio URL to build. Default is Wix.Media.AudioType.STANDARD.
 	         * @returns {String} An absolute URL pointing to the audio file hosted on Wix's static.
@@ -4328,7 +4576,7 @@
 	         * This method constructs a URL for a media item of type document.
 	         * @function
 	         * @memberof Wix.Utils.Media
-	         * @since 1.17.0
+	         * @since 1.81.0
 	         * @param {String} relativeUri Document item uri (relative to Wix media gallery).
 	         * @returns {String} A full URL pointing to the Wix static servers of a document media file with the default dimensions.
 	         * @example
@@ -4976,6 +5224,10 @@
 	        sharedAPI.getSitePages(namespace, options, callback);
 	    };
 
+	    var getSiteMap = function getSiteMap(callback) {
+	        sharedAPI.getSiteMap(namespace, callback);
+	    };
+
 	    var setPageMetadata = function setPageMetadata(options) {
 	        if (viewMode.getViewMode() !== 'site') {
 	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor/preview mode. Supported view mode is: [site]');
@@ -5054,7 +5306,7 @@
 	    };
 
 	    var getCurrentPageId = function getCurrentPageId(callback) {
-	        postMessage.sendMessage(postMessage.MessageTypes.GET_CURRENT_PAGE_ID, namespace, null, callback);
+	        sharedAPI.getCurrentPageId(namespace, callback);
 	    };
 
 	    var getComponentInfo = function getComponentInfo(callback) {
@@ -5063,6 +5315,27 @@
 	            return;
 	        }
 	        postMessage.sendMessage(postMessage.MessageTypes.GET_COMPONENT_INFO, namespace, null, callback);
+	    };
+
+	    var navigateTo = function navigateTo(linkData, onFailure) {
+	        if (viewMode.getViewMode() === 'editor') {
+	            reporter.reportSdkError('Invalid view mode. This function cannot be called in editor mode. Supported view modes are: [preview, site]');
+	            return;
+	        }
+	        if (!utils.isObject(linkData)) {
+	            reporter.reportSdkError('Missing mandatory argument - linkData of type Object');
+	            return;
+	        }
+	        if (onFailure && !utils.isFunction(onFailure)) {
+	            reporter.reportSdkError('Invalid argument - onFailure must be of type Function');
+	            return;
+	        }
+
+	        if (linkData.type === 'ExternalLink') {
+	            window.open(linkData.url, '_blank'); //done in sdk due to popup blockers
+	        }
+	        var args = { link: linkData };
+	        postMessage.sendMessage(postMessage.MessageTypes.NAVIGATE_TO, namespace, args, onFailure);
 	    };
 
 	    var navigateToPage = function navigateToPage(pageId, options, onFailure) {
@@ -5304,6 +5577,14 @@
 
 	    var getStateUrl = function getStateUrl(sectionId, state, callback) {
 	        sharedAPI.getStateUrl(namespace, sectionId, state, callback);
+	    };
+
+	    var getAdsOnPage = function getAdsOnPage(onSuccess) {
+	        if (!utils.isFunction(onSuccess)) {
+	            reporter.reportSdkError('Mandatory argument - onSuccess function must be specified');
+	            return;
+	        }
+	        postMessage.sendMessage(postMessage.MessageTypes.GET_ADS_ON_PAGE, namespace, undefined, onSuccess);
 	    };
 
 	    return {
@@ -5558,6 +5839,23 @@
 	        getSitePages: getSitePages,
 
 	        /**
+	         * The getSiteMap method is used to retrieve the site structure from the hosting Wix Platform. The site structure includes visible and hidden pages, sub pages, links and menu headers.
+	         * This method will eventually replace the getSitepages.
+	         * @function
+	         * @memberof Wix
+	         * @since 1.81.0
+	         * @param {Function} callback A callback function to receive the site pages.
+	         * @return {Array} Array containing an ordered set of the site pages.
+	         *
+	         * @example
+	         * Wix.getSiteMap(function(siteMap) {
+	         *    // do something with the site pages
+	         * });
+	         *
+	         */
+	        getSiteMap: getSiteMap,
+
+	        /**
 	         * Sets metadata for the page component’s internal pages. Search engines display this metadata – the page’s title and/or description – in search results.
 	         * @function
 	         * @memberof Wix
@@ -5730,6 +6028,24 @@
 	        currentMember: currentMember,
 
 	        /**
+	         * Navigate to link objects returned from Setting.openLinkPanel or Wix.getSiteMap sdk functions.
+	         *
+	         * @function
+	         * @memberof Wix
+	         * @since 1.81.0
+	         * @param {object} linkData An object returned from 'openLinkPanel' containing link data relevant for navigating.
+	         * @param {function} [onFailure] - onFailure message when an error in navigation occurs
+	         *
+	         * @example
+	         *
+	         * Wix.navigateTo({
+	         *  "type": "PageLink",
+	            "pageId": "#c1dmp"
+	            }, function() {...});
+	         */
+	        navigateTo: navigateTo,
+
+	        /**
 	         * Navigate to a specific page inside the editor/preview/site.
 	         * The function accepts a single argument, page id, which is retrieved by using the method Wix.getSitePages().
 	         *
@@ -5866,7 +6182,6 @@
 	         *      // do something with anchors
 	         * });
 	         */
-
 	        getCurrentPageAnchors: getCurrentPageAnchors,
 
 	        /**
@@ -5927,6 +6242,7 @@
 	         * Wix.replaceSectionState("app-state");
 	         */
 	        replaceSectionState: replaceSectionState,
+
 	        /**
 	         * Gets a URL for a given deep-linked state in a given sectionIdentifier. In the editor, gets the public URL for the address.
 	         *
@@ -5944,7 +6260,54 @@
 	         *      // do something with the URL for the state
 	         * });
 	         */
-	        getStateUrl: getStateUrl
+	        getStateUrl: getStateUrl,
+
+	        /**
+	         * The getAdsOnPage method will call the onSuccess callback with the width & height of the visible ads on the page.
+	         *
+	         * Available in viewer and preview view modes.
+	         * @function
+	         * @memberof Wix
+	         * @since 1.77.0
+	         * @param {Function} onSuccess - callback to be called with an object containing ads width & height
+	         *
+	         * @example
+	         *
+	         * Wix.getAdsOnPage(onSuccess);
+	         *
+	         * in case adds exist, the onSuccess callback will be called with an object like:
+	         * {
+	         *      top: {
+	         *          height: 26,
+	         *          width: 155
+	         *      },
+	         *      bottom: {
+	         *          height: 40,
+	         *          width: 684
+	         *      }
+	         * }
+	         */
+	        getAdsOnPage: getAdsOnPage,
+
+	        /**
+	         * Before showing sensitive information or making an action which requires a secure session,
+	         * an app should verify that a secure session exists.
+	         * Get a newly signed app instance by calling Wix.revalidateSession.
+	         * @function
+	         * @memberof Wix
+	         * @since 1.75.0
+	         * @param {Function} onSuccess Receives a newly signed and encoded app instance.
+	         * @param {Function} onFailure
+	         * @example
+	         *
+	         *
+	         * Wix.revalidateSession(function(instanceData){
+	         *  //handle success use-case
+	         * }, function(error){
+	         *    //Handle error use-case
+	         * });
+	         */
+	        revalidateSession: revalidateSession
 	    };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -6005,6 +6368,10 @@
 
 	  var getSitePages = function getSitePages(options, callback) {
 	    sharedAPI.getSitePages(namespace, options, callback);
+	  };
+
+	  var getSiteMap = function getSiteMap(callback) {
+	    sharedAPI.getSiteMap(namespace, callback);
 	  };
 
 	  var addEventListener = function addEventListener(eventName, callBack) {
@@ -6103,6 +6470,13 @@
 	     * @see Wix.getSitePages
 	     */
 	    getSitePages: getSitePages,
+
+	    /**
+	     * @memberof Wix.Worker
+	     * @since 1.81.0
+	     * @see Wix.getSiteMap
+	     */
+	    getSiteMap: getSiteMap,
 
 	    /**
 	     * @memberof Wix.Worker
@@ -7006,6 +7380,10 @@
 	        Settings.openBillingPage(options);
 	    };
 
+	    var appEngaged = function appEngaged(premiumIntent) {
+	        Settings.appEngaged(premiumIntent);
+	    };
+
 	    var openModal = function openModal(url, width, height, onClose) {
 	        Base.openModal(url, width, height, onClose);
 	    };
@@ -7061,6 +7439,14 @@
 	    };
 
 	    return {
+
+	        /**
+	         * @enum
+	         * @memberof Wix.Dashboard
+	         * @since 1.78.0
+	         */
+	        PremiumIntent: Settings.PremiumIntent,
+
 	        /**
 	         * This method requests the hosting Wix platform to change the iframe height inside the side dashboard (under the My Account tab in Wix.com). Works on the app or modal iframes.
 	         * @function
@@ -7104,8 +7490,7 @@
 	         * @function
 	         * @author lior.shefer@wix.com
 	         * @memberof Wix.Dashboard
-	         * @since 1.75.0
-	         * @param {Object} options may contain: a 'premiumIntent' property with possible values: Wix.Settings.PremiumIntent to be sent to the billing page window
+	         * @since 1.79.0
 	         * @see Wix.Settings.openBillingPage
 	         * @example
 	         *
@@ -7291,7 +7676,19 @@
 	         * };
 	         * Wix.Dashboard.getSiteViewUrl(onSuccess);
 	         */
-	        getSiteViewUrl: getSiteViewUrl
+	        getSiteViewUrl: getSiteViewUrl,
+
+	        /**
+	         * The Wix.Dashboard.appEngaged method allows to indicate if an app is "engaged" or "highly engaged" to give a better indication to BA funnel / package picker
+	         * @function
+	         * @memberof Wix.Dashboard
+	         * @since 1.79.0
+	         * @see Wix.Settings.appEngaged
+	         * @example
+	         *
+	         * Wix.Dashboard.appEngaged(Wix.Dashboard.PremiumIntent.FREE);
+	         */
+	        appEngaged: appEngaged
 	    };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
