@@ -32,15 +32,23 @@
     <br>
 </div>
 <br>
-<button onClick=isApplicationInstalledEditor('1380b703-ce81-ff05-f115-39571d94dfcd')>isApplicationInstalledEditor</button>
+<button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94dfcd')>isApplicationInstalledPositive</button>
 <br>
-<button onClick=isApplicationInstalledEditor('1380b703-ce81-ff05-f115-39571d94d')>isApplicationInstalledNotInstalled</button>
-<br>
-<button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94dfcd')>isApplicationInstalledSettings</button>
+<button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94d')>isApplicationInstalledSettingNegative</button>
 <br>
 <button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94d')>isApplicationNotInstalledSettings</button>
 <br>
-<button onClick="Wix.Settings.addApplication('1375baa8-8eca-5659-ce9d-455b2009250d',{pageId:'c1dmp', shouldNavigate:false, showPageAddedPanel:false},function(a){console.log(a)});">addApplicationSettings</button>
+<button onClick="Wix.Settings.addApplication('13bb5d67-1add-e770-a71f-001277e17c57',{pageId:'123', shouldNavigate:false, showPageAddedPanel:false},function(a){console.log(a)},function(a){console.log(a)});">addApplicationWidgetCurrentPage</button>
+<br>
+<button onClick="Wix.Settings.addApplication('13bb5d67-1add-e770-a71f-001277e17c57',{pageId:'bow4t', shouldNavigate:true, showPageAddedPanel:false},function(a){console.log(a)},function(a){console.log(a)});">addApplicationWidgetToAnotherPage</button>
+<br>
+<button onClick="Wix.Settings.addApplication('1397817e-3428-11c5-6751-79acf34f2f34',{pageId:'123', shouldNavigate:false, showPageAddedPanel:false},function(a){console.log(a)},function(a){console.log(a)});">addApplicationNonWixWidgetCurrentPage</button>
+<br>
+<button onClick="Wix.Settings.addApplication('135aad86-9125-6074-7346-29dc6a3c9bcf',{pageId:'123', shouldNavigate:false, showPageAddedPanel:false},function(a){console.log(a)},function(a){console.log(a)});">addApplicationPageWithoutNavigation</button>
+<br>
+<button onClick="Wix.Settings.addApplication('135aad86-9125-6074-7346-29dc6a3c9bcf',{pageId:'123', shouldNavigate:true, showPageAddedPanel:true},function(a){console.log(a)},function(a){console.log(a)});">addApplicationPageWithNavigation</button>
+<br>
+<button onClick="Wix.Settings.addApplication('13016589-a9eb-424a-8a69-46cb05ce0b2c',{pageId:'123', shouldNavigate:true, showPageAddedPanel:true},function(a){console.log(a)},function(a){console.log(a)});">addAlreadyInstalledApplication</button>
 
 </body>
 </html>
