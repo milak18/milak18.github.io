@@ -31,12 +31,12 @@
     <br>
     <br>
 </div>
-<br>
-<button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94dfcd')>isApplicationInstalledPositive</button>
-<br>
-<button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94d')>isApplicationInstalledSettingNegative</button>
-<br>
-<button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94d')>isApplicationNotInstalledSettings</button>
+<!--<br>-->
+<!--<button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94dfcd')>isApplicationInstalledPositive</button>-->
+<!--<br>-->
+<!--<button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94d')>isApplicationInstalledSettingNegative</button>-->
+<!--<br>-->
+<!--<button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94d')>isApplicationNotInstalledSettings</button>-->
 <br>
 <button onClick="Wix.Settings.addApplication('13bb5d67-1add-e770-a71f-001277e17c57',{pageId:'123', shouldNavigate:false, showPageAddedPanel:false},function(a){Wix.Data.Public.set('instanceId', a.instanceId, { scope: 'APP' }); console.log(a)},function(a){console.log(a)});">addApplicationWidgetCurrentPage</button>
 <br>
@@ -50,7 +50,7 @@
 <br>
 <button onClick="Wix.Settings.addApplication('13016589-a9eb-424a-8a69-46cb05ce0b2c',{pageId:'123', shouldNavigate:true, showPageAddedPanel:true},function(a){console.log(a)},function(a){console.log(a)});">addAlreadyInstalledApplication</button>
 <br>
-<button onClick="Wix.Data.Public.get('instanceId', { scope: 'APP' },function(d){document.getElementById('color1').setAttribute('instanceId', data.instanceId);console.log(d)},function(f){console.log(f)});">addAlreadyInstalledApplication</button>
+<button onClick="Wix.Data.Public.get('instanceId', { scope: 'APP' },function(d){document.getElementById('color1').setAttribute('instanceId', data.instanceId);console.log(d)},function(f){console.log(f)});">getPublicData</button>
 
 
 </body>
