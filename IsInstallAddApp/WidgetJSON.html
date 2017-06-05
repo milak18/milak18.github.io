@@ -38,7 +38,7 @@
 <br>
 <button onClick=isApplicationInstalledSettings('1380b703-ce81-ff05-f115-39571d94d')>isApplicationNotInstalledSettings</button>
 <br>
-<button onClick="Wix.Settings.addApplication('13bb5d67-1add-e770-a71f-001277e17c57',{pageId:'123', shouldNavigate:false, showPageAddedPanel:false},function(a){console.log(a)},function(a){console.log(a)});">addApplicationWidgetCurrentPage</button>
+<button onClick="Wix.Settings.addApplication('13bb5d67-1add-e770-a71f-001277e17c57',{pageId:'123', shouldNavigate:false, showPageAddedPanel:false},function(a){Wix.Data.Public.set('instanceId', a.instanceId, { scope: 'APP' }); console.log(a)},function(a){console.log(a)});">addApplicationWidgetCurrentPage</button>
 <br>
 <button onClick="Wix.Settings.addApplication('13bb5d67-1add-e770-a71f-001277e17c57',{pageId:'bow4t', shouldNavigate:true, showPageAddedPanel:false},function(a){console.log(a)},function(a){console.log(a)});">addApplicationWidgetToAnotherPage</button>
 <br>
@@ -49,6 +49,9 @@
 <button onClick="Wix.Settings.addApplication('135aad86-9125-6074-7346-29dc6a3c9bcf',{pageId:'123', shouldNavigate:true, showPageAddedPanel:true},function(a){console.log(a)},function(a){console.log(a)});">addApplicationPageWithNavigation</button>
 <br>
 <button onClick="Wix.Settings.addApplication('13016589-a9eb-424a-8a69-46cb05ce0b2c',{pageId:'123', shouldNavigate:true, showPageAddedPanel:true},function(a){console.log(a)},function(a){console.log(a)});">addAlreadyInstalledApplication</button>
+<br>
+<button onClick="Wix.Data.Public.get('instanceId', { scope: 'APP' },function(d){document.getElementById('color1').setAttribute('instanceId', data.instanceId);console.log(d)},function(f){console.log(f)});">addAlreadyInstalledApplication</button>
+
 
 </body>
 </html>
