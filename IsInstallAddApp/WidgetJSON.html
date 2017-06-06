@@ -12,11 +12,11 @@ a
         {
             Wix.Settings.addApplication(appId,{pageId:pageId, shouldNavigate:shouldNavigate, showPageAddedPanel:showPageAddedPanel},
                     function(data) {
-                        console.log(data)
+                        console.log(data);
                         document.getElementById('color1').setAttribute("instanceId", data.instanceId);
                     },
                     function(data) {
-                        console.log(data)
+                        console.log(data);
                         document.getElementById('color1').setAttribute("error", data.error);
                     }
             );
@@ -26,13 +26,13 @@ a
 
             Wix.Data.Public.set("instanceId", document.getElementById('color1').getAttribute("instanceId"), { scope: 'APP' },
                     function(d){
-                        console.log(d)
+                        console.log(d);
                     },
                     function(f){
-                        console.log(f)
+                        console.log(f);
                     });
         };
-        
+
     </script>
 </head>
 
