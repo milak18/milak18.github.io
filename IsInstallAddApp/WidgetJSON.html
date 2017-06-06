@@ -40,12 +40,12 @@
         function getInstanceIdFromPublicData()
         {
             Wix.Data.Public.get("instanceId" , { scope: 'APP' },
-                    function(d){
-                        console.log(d);
+                    function(data){
+                        console.log(data);
                         document.getElementById('color1').setAttribute("instanceId", data.instanceId);
                     },
-                    function(f){
-                        console.log(f);
+                    function(data){
+                        console.log(data);
                     });
         }
 
