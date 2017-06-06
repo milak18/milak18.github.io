@@ -22,16 +22,16 @@ a
             );
         }
 
-        window.close = function () {
-
-            Wix.Data.Public.set("instanceId", document.getElementById('color1').getAttribute("instanceId"), { scope: 'APP' },
-                    function(d){
-                        console.log(d);
-                    },
-                    function(f){
-                        console.log(f);
-                    });
-        };
+//        window.close = function () {
+//
+//            Wix.Data.Public.set("instanceId", document.getElementById('color1').getAttribute("instanceId"), { scope: 'APP' },
+//                    function(d){
+//                        console.log(d);
+//                    },
+//                    function(f){
+//                        console.log(f);
+//                    });
+//        };
 
     </script>
 </head>
@@ -43,17 +43,17 @@ a
 </div>
 
 <br>
-<button onClick=addApplication('13bb5d67-1add-e770-a71f-001277e17c57','123',false,false)>addApplicationWidgetCurrentPage</button>
+<button onClick="addApplication('13bb5d67-1add-e770-a71f-001277e17c57','123',false,false);">addApplicationWidgetCurrentPage</button>
 <br>
-<button onClick=addApplication('13bb5d67-1add-e770-a71f-001277e17c57','bow4t',true,false)>addApplicationWidgetToAnotherPage</button>
+<button onClick="addApplication('13bb5d67-1add-e770-a71f-001277e17c57','bow4t',true,false);">addApplicationWidgetToAnotherPage</button>
 <br>
-<button onClick=addApplication('1397817e-3428-11c5-6751-79acf34f2f34','123',false,false)>addApplicationNonWixWidgetCurrentPage</button>
+<button onClick="addApplication('1397817e-3428-11c5-6751-79acf34f2f34','123',false,false);">addApplicationNonWixWidgetCurrentPage</button>
 <br>
-<button onClick=addApplication('135aad86-9125-6074-7346-29dc6a3c9bcf','123',false,false)>addApplicationPageWithoutNavigation</button>
+<button onClick="addApplication('135aad86-9125-6074-7346-29dc6a3c9bcf','123',false,false);">addApplicationPageWithoutNavigation</button>
 <br>
-<button onClick=addApplication('135aad86-9125-6074-7346-29dc6a3c9bcf','123',true,true)>addApplicationPageWithNavigation</button>
+<button onClick="addApplication('135aad86-9125-6074-7346-29dc6a3c9bcf','123',true,true);">addApplicationPageWithNavigation</button>
 <br>
-<button onClick=addApplication('13016589-a9eb-424a-8a69-46cb05ce0b2c','123',true,true)>addAlreadyInstalledApplication</button>
+<button onClick="addApplication('13016589-a9eb-424a-8a69-46cb05ce0b2c','123',true,true);">addAlreadyInstalledApplication</button>
 
 
 </body>
