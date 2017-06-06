@@ -42,6 +42,7 @@
             Wix.Data.Public.get("instanceId" , { scope: 'APP' },
                     function(d){
                         console.log(d);
+                        document.getElementById('color1').setAttribute("instanceId", data.instanceId);
                     },
                     function(f){
                         console.log(f);
