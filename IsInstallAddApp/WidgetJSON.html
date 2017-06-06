@@ -15,7 +15,7 @@
                         console.log(data);
                         document.getElementById('color1').setAttribute("instanceId", data.instanceId);
 
-                        Wix.Data.Public.set("instanceId", document.getElementById('color1').getAttribute("instanceId"), { scope: 'APP' },
+                        Wix.Data.Public.set("instanceId",data.instanceId , { scope: 'APP' },
                                 function(d){
                                     console.log(d);
                                 },
@@ -26,7 +26,7 @@
                     function(data) {
                         console.log(data);
                         document.getElementById('color1').setAttribute("error", data.error);
-                        Wix.Data.Public.set("error", document.getElementById('color1').getAttribute("error"), { scope: 'APP' },
+                        Wix.Data.Public.set("error", data.error, { scope: 'APP' },
                                 function(d){
                                     console.log(d);
                                 },
