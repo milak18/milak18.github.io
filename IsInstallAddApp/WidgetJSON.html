@@ -47,6 +47,16 @@
                     function(data){
                         console.log(data);
                     });
+
+        }
+
+        function isApplicationInstalled(appId)
+        {
+            Wix.Settings.isApplicationInstalled(appId,
+                    function(data){
+                        console.log(data);
+                        document.getElementById('color1').setAttribute("isInstalled", data);
+                    })
         }
 
     </script>
@@ -72,6 +82,10 @@
 <button onClick="addApplication('13016589-a9eb-424a-8a69-46cb05ce0b2c','123',true,true);">addAlreadyInstalledApplication</button>
 <br>
 <button onClick="getInstanceIdFromPublicData();">getInstanceIdFromPublicData</button>
+<br>
+<button onClick="isApplicationInstalled('1380b703-ce81-ff05-f115-39571d94dfcd');">isApplicationInstalledPositive</button>
+<br>
+<button onClick="isApplicationInstalled('1380b703-ce81-ff05-f115-39571d94d');">isApplicationInstalledNegative</button>
 
 </body>
 </html>
