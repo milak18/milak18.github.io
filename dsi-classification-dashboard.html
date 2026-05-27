@@ -15,340 +15,83 @@
     max-width: 1200px;
     margin: 0 auto;
   }
-
-  /* Header */
-  .page-header {
-    margin-bottom: 8px;
-  }
-  .page-header h1 {
-    font-size: 28px;
-    font-weight: 700;
-    color: #1a1a2e;
-  }
-  .header-meta {
-    font-size: 14px;
-    color: #666;
-    margin-top: 4px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
+  .page-header { margin-bottom: 8px; }
+  .page-header h1 { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+  .header-meta { font-size: 14px; color: #666; margin-top: 4px; display: flex; gap: 8px; align-items: center; }
   .header-meta .sep { color: #ccc; }
   .header-meta strong { color: #333; font-weight: 600; }
-  .divider {
-    border: none;
-    border-top: 2px solid #e5e5e5;
-    margin: 16px 0 24px;
-  }
-
-  /* KPI Cards */
-  .kpi-row {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-  .kpi-card {
-    flex: 1;
-    padding: 16px 20px;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-    background: #fafafa;
-  }
-  .kpi-card .kpi-label {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #888;
-  }
-  .kpi-card .kpi-value {
-    font-size: 36px;
-    font-weight: 700;
-    margin-top: 2px;
-  }
-  .kpi-card .kpi-sub {
-    font-size: 12px;
-    color: #999;
-    margin-top: 2px;
-  }
+  .divider { border: none; border-top: 2px solid #e5e5e5; margin: 16px 0 24px; }
+  .kpi-row { display: flex; gap: 16px; margin-bottom: 28px; }
+  .kpi-card { flex: 1; padding: 16px 20px; border: 1px solid #e5e5e5; border-radius: 8px; background: #fafafa; }
+  .kpi-card .kpi-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #888; }
+  .kpi-card .kpi-value { font-size: 36px; font-weight: 700; margin-top: 2px; }
+  .kpi-card .kpi-sub { font-size: 12px; color: #999; margin-top: 2px; }
   .kpi-blue .kpi-value { color: #2563eb; }
   .kpi-green .kpi-value { color: #16a34a; }
   .kpi-amber .kpi-value { color: #d97706; }
   .kpi-red .kpi-value { color: #dc2626; }
-
-  /* Accordion sections */
-  .section {
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-    margin-bottom: 12px;
-    overflow: hidden;
-  }
-  .section-header {
-    display: flex;
-    align-items: center;
-    padding: 14px 20px;
-    background: #fafafa;
-    cursor: pointer;
-    user-select: none;
-    gap: 12px;
-    border-bottom: 1px solid transparent;
-    transition: background 0.15s;
-  }
+  .section { border: 1px solid #e5e5e5; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+  .section-header { display: flex; align-items: center; padding: 14px 20px; background: #fafafa; cursor: pointer; user-select: none; gap: 12px; border-bottom: 1px solid transparent; transition: background 0.15s; }
   .section-header:hover { background: #f0f0f0; }
   .section.open .section-header { border-bottom: 1px solid #e5e5e5; }
-  .section-arrow {
-    font-size: 12px;
-    color: #888;
-    transition: transform 0.2s;
-    width: 16px;
-    text-align: center;
-    flex-shrink: 0;
-  }
+  .section-arrow { font-size: 12px; color: #888; transition: transform 0.2s; width: 16px; text-align: center; flex-shrink: 0; }
   .section.open .section-arrow { transform: rotate(90deg); }
-  .section-num {
-    font-size: 14px;
-    font-weight: 700;
-    color: #2563eb;
-    width: 24px;
-    flex-shrink: 0;
-  }
-  .section-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: #1a1a2e;
-    flex: 1;
-  }
-  .section-badge {
-    font-size: 13px;
-    font-weight: 500;
-    padding: 2px 12px;
-    border-radius: 12px;
-    white-space: nowrap;
-  }
+  .section-num { font-size: 14px; font-weight: 700; color: #2563eb; width: 24px; flex-shrink: 0; }
+  .section-title { font-size: 15px; font-weight: 600; color: #1a1a2e; flex: 1; }
+  .section-badge { font-size: 13px; font-weight: 500; padding: 2px 12px; border-radius: 12px; white-space: nowrap; }
   .badge-count { background: #e8f0fe; color: #2563eb; }
   .badge-pass { background: #dcfce7; color: #16a34a; }
-  .badge-fail { background: #fef2f2; color: #dc2626; }
   .badge-open { background: #fef9c3; color: #a16207; }
-
-  .section-body {
-    display: none;
-    padding: 0;
-  }
+  .section-body { display: none; padding: 0; }
   .section.open .section-body { display: block; }
-
-  /* Tables */
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-  .data-table th {
-    text-align: left;
-    padding: 10px 16px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #888;
-    background: #fafafa;
-    border-bottom: 1px solid #e5e5e5;
-  }
-  .data-table td {
-    padding: 10px 16px;
-    border-bottom: 1px solid #f0f0f0;
-    vertical-align: middle;
-  }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th { text-align: left; padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; background: #fafafa; border-bottom: 1px solid #e5e5e5; }
+  .data-table td { padding: 10px 16px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
   .data-table tbody tr:hover td { background: #f8f9ff; }
   .data-table tbody tr:last-child td { border-bottom: none; }
-
-  /* Ticket key link */
-  .ticket-link {
-    color: #2563eb;
-    text-decoration: none;
-    font-weight: 600;
-    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-    font-size: 12px;
-  }
+  .ticket-link { color: #2563eb; text-decoration: none; font-weight: 600; font-family: 'SF Mono', 'Fira Code', Consolas, monospace; font-size: 12px; }
   .ticket-link:hover { text-decoration: underline; }
-
-  /* Status badges */
-  .status {
-    display: inline-block;
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
+  .status { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; }
   .status-closed { background: #dcfce7; color: #16a34a; }
   .status-rnd { background: #fef9c3; color: #a16207; }
   .status-ready { background: #e8f0fe; color: #2563eb; }
   .status-indev { background: #f3e8ff; color: #7c3aed; }
   .status-cc { background: #fff3e0; color: #c2410c; }
   .status-3rd { background: #fef2f2; color: #dc2626; }
-
-  /* Priority */
+  .status-review { background: #f1f5f9; color: #475569; }
   .priority { display: flex; align-items: center; gap: 6px; font-size: 13px; }
   .priority-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .dot-critical { background: #dc2626; }
   .dot-high { background: #ea580c; }
   .dot-medium { background: #d97706; }
   .dot-low { background: #16a34a; }
-
-  /* Label tags */
-  .label-tag {
-    display: inline-block;
-    padding: 1px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 500;
-    margin: 1px 2px;
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid #e2e8f0;
-    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  }
-
-  /* Distribution bar in section */
-  .dist-bar-wrap {
-    padding: 16px 20px;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  .dist-row {
-    display: grid;
-    grid-template-columns: 190px 1fr 44px;
-    align-items: center;
-    gap: 12px;
-    padding: 5px 0;
-  }
-  .dist-label {
-    font-size: 13px;
-    font-weight: 500;
-    text-align: right;
-    color: #444;
-  }
-  .dist-track {
-    height: 22px;
-    background: #f1f5f9;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .dist-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s ease;
-  }
-  .dist-count {
-    font-size: 13px;
-    font-weight: 600;
-    color: #555;
-    text-align: right;
-  }
-
-  /* Heatmap */
-  .heatmap {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-  }
-  .heatmap th {
-    padding: 8px 10px;
-    text-align: center;
-    font-weight: 600;
-    color: #888;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    border-bottom: 2px solid #e5e5e5;
-    background: #fafafa;
-  }
-  .heatmap td {
-    padding: 8px 10px;
-    text-align: center;
-    border-bottom: 1px solid #f0f0f0;
-    font-weight: 500;
-  }
-  .heatmap .row-label {
-    text-align: right;
-    padding-right: 14px;
-    font-weight: 600;
-    color: #333;
-    white-space: nowrap;
-    background: #fafafa;
-  }
+  .label-tag { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; margin: 1px 2px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-family: 'SF Mono', 'Fira Code', Consolas, monospace; }
+  .dist-bar-wrap { padding: 16px 20px; border-bottom: 1px solid #f0f0f0; }
+  .dist-row { display: grid; grid-template-columns: 190px 1fr 44px; align-items: center; gap: 12px; padding: 5px 0; }
+  .dist-label { font-size: 13px; font-weight: 500; text-align: right; color: #444; }
+  .dist-track { height: 22px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+  .dist-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+  .dist-count { font-size: 13px; font-weight: 600; color: #555; text-align: right; }
+  .jira-links { padding: 16px 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .jira-link-btn { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; color: #2563eb; text-decoration: none; background: #fff; transition: background 0.15s, border-color 0.15s; }
+  .jira-link-btn:hover { background: #f0f5ff; border-color: #2563eb; }
+  .heatmap { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .heatmap th { padding: 8px 10px; text-align: center; font-weight: 600; color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 2px solid #e5e5e5; background: #fafafa; }
+  .heatmap td { padding: 8px 10px; text-align: center; border-bottom: 1px solid #f0f0f0; font-weight: 500; }
+  .heatmap .row-label { text-align: right; padding-right: 14px; font-weight: 600; color: #333; white-space: nowrap; background: #fafafa; }
   .heatmap .total-col { font-weight: 700; color: #1a1a2e; }
   .heat-0 { color: #ddd; }
   .heat-1 { color: #16a34a; background: #f0fdf4; }
   .heat-2 { color: #2563eb; background: #eff6ff; }
   .heat-3 { color: #d97706; background: #fffbeb; }
   .heat-4 { color: #dc2626; background: #fef2f2; font-weight: 700; }
-
-  /* Filter controls */
-  .filter-row {
-    display: flex;
-    gap: 12px;
-    padding: 16px 20px;
-    background: #fafafa;
-    border-bottom: 1px solid #e5e5e5;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .filter-row label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-  }
-  .filter-row select, .filter-row input {
-    background: #fff;
-    border: 1px solid #ddd;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    color: #333;
-  }
-  .filter-row select:focus, .filter-row input:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
-  }
-
-  /* Footer */
-  .page-footer {
-    margin-top: 32px;
-    padding-top: 16px;
-    border-top: 1px solid #e5e5e5;
-    font-size: 12px;
-    color: #999;
-    display: flex;
-    justify-content: space-between;
-  }
+  .filter-row { display: flex; gap: 12px; padding: 16px 20px; background: #fafafa; border-bottom: 1px solid #e5e5e5; flex-wrap: wrap; align-items: center; }
+  .filter-row label { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.3px; }
+  .filter-row select, .filter-row input { background: #fff; border: 1px solid #ddd; padding: 6px 12px; border-radius: 6px; font-size: 13px; color: #333; }
+  .filter-row select:focus, .filter-row input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+  .page-footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e5e5; font-size: 12px; color: #999; display: flex; justify-content: space-between; }
   .page-footer a { color: #2563eb; text-decoration: none; }
   .page-footer a:hover { text-decoration: underline; }
-
-  /* Jira links section */
-  .jira-links {
-    padding: 16px 20px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .jira-link-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 12px;
-    color: #2563eb;
-    text-decoration: none;
-    background: #fff;
-    transition: background 0.15s, border-color 0.15s;
-  }
-  .jira-link-btn:hover { background: #f0f5ff; border-color: #2563eb; }
-
   @media (max-width: 768px) {
     body { padding: 16px; }
     .kpi-row { flex-wrap: wrap; }
@@ -358,255 +101,148 @@
 </style>
 </head>
 <body>
-
 <div class="page-header">
   <h1>DSI Sub-Area Classification — Dashboard</h1>
   <div class="header-meta">
-    <strong>Projects:</strong> DSI, PSI
+    <strong>Project:</strong> DSI
     <span class="sep">|</span>
-    <strong>Source:</strong> Filter 64045
+    <strong>Source:</strong> <a href="https://wix.atlassian.net/issues/?filter=64045" target="_blank" style="color:#2563eb;text-decoration:none">Filter 64045</a>
     <span class="sep">|</span>
     <strong>Snapshot:</strong> <span id="timestamp"></span>
   </div>
 </div>
 <hr class="divider">
-
-<!-- KPI Cards -->
 <div class="kpi-row">
   <div class="kpi-card kpi-blue">
     <div class="kpi-label">Total Classified</div>
-    <div class="kpi-value">80</div>
+    <div class="kpi-value">68</div>
     <div class="kpi-sub">across 16 sub-areas</div>
   </div>
   <div class="kpi-card kpi-green">
     <div class="kpi-label">Closed</div>
-    <div class="kpi-value">65</div>
-    <div class="kpi-sub">81% resolution rate</div>
+    <div class="kpi-value">52</div>
+    <div class="kpi-sub">76% resolution rate</div>
   </div>
   <div class="kpi-card kpi-amber">
     <div class="kpi-label">Open / In Progress</div>
-    <div class="kpi-value">15</div>
+    <div class="kpi-value">16</div>
     <div class="kpi-sub">RND Review, Ready for Dev, etc.</div>
   </div>
   <div class="kpi-card kpi-red">
     <div class="kpi-label">Critical + High</div>
-    <div class="kpi-value">31</div>
-    <div class="kpi-sub">39% of total tickets</div>
+    <div class="kpi-value">27</div>
+    <div class="kpi-sub">40% of total tickets</div>
   </div>
 </div>
-
-<!-- Sections -->
 <div id="sections"></div>
-
-<!-- Footer -->
 <div class="page-footer">
   <span>Generated by <strong>dsi-label-classifier</strong> skill | Premium QA | Domains Team</span>
   <span><a href="https://wix.atlassian.net/issues/?filter=64096" target="_blank">View All in Jira (filter 64096)</a></span>
 </div>
-
 <script>
-const JIRA = 'https://wix.atlassian.net/browse/';
-const FILTER_BASE = 'https://wix.atlassian.net/issues/?filter=';
-
-const LABEL_COLORS = {
-  'GenericError':'#dc2626','Renewal_Extension':'#d97706','Display_UI':'#7c3aed',
-  'Domain_Assignment_Connect':'#2563eb','Transfer_In':'#0891b2','Contact_Info_WHOIS':'#059669',
-  'DNS_NS_Zone':'#4f46e5','ccTLD_Specific':'#c2410c','Domain_Purchase_Registration':'#0d9488',
-  'Roles_Permissions':'#9333ea','SSL_HTTPS':'#e11d48','Redemption':'#b91c1c',
-  'Transfer_Out':'#1d4ed8','Registrar_Migration':'#6d28d9','Domain_Pricing':'#ca8a04',
-  'Subdomain_Multilingual':'#16a34a','Email_Forwarding':'#ea580c','Domain_Deletion_Parking':'#64748b'
+const JIRA='https://wix.atlassian.net/browse/';
+const FILTER_BASE='https://wix.atlassian.net/issues/?filter=';
+const LABEL_COLORS={"GenericError":"#dc2626","Renewal_Extension":"#d97706","Display_UI":"#7c3aed","Domain_Assignment_Connect":"#2563eb","Transfer_In":"#0891b2","Contact_Info_WHOIS":"#059669","DNS_NS_Zone":"#4f46e5","ccTLD_Specific":"#c2410c","Domain_Purchase_Registration":"#0d9488","Roles_Permissions":"#9333ea","SSL_HTTPS":"#e11d48","Redemption":"#b91c1c","Transfer_Out":"#1d4ed8","Registrar_Migration":"#6d28d9","Domain_Pricing":"#ca8a04","Subdomain_Multilingual":"#16a34a","Email_Forwarding":"#ea580c","Domain_Deletion_Parking":"#64748b"};
+const FILTER_IDS={"Domain_Assignment_Connect":64078,"DNS_NS_Zone":64079,"Renewal_Extension":64080,"Domain_Purchase_Registration":64081,"Transfer_In":64082,"Transfer_Out":64083,"Registrar_Migration":64084,"Contact_Info_WHOIS":64085,"Redemption":64086,"SSL_HTTPS":64087,"Display_UI":64088,"Email_Forwarding":64089,"Subdomain_Multilingual":64090,"ccTLD_Specific":64091,"Domain_Deletion_Parking":64092,"Roles_Permissions":64093,"Domain_Pricing":64094,"GenericError":64095};
+const LABEL_DESC={"GenericError":"Generic/unhelpful error messages","Renewal_Extension":"Domain renewal, extension, auto-renew","Display_UI":"UI issues, banners, error messages","Domain_Assignment_Connect":"Assigning/connecting domains to sites","Transfer_In":"Transferring domains to Wix","Contact_Info_WHOIS":"Contact info, WHOIS, privacy, verification","DNS_NS_Zone":"DNS records, nameservers, zone files","ccTLD_Specific":"Country-code TLD issues (.ch, .de, .uk)","Domain_Purchase_Registration":"Buying/registering new domains","Roles_Permissions":"Access control, ownership, contributors","SSL_HTTPS":"SSL certificates, HTTPS errors","Redemption":"Domain redemption after expiry","Transfer_Out":"Transferring domains away from Wix","Registrar_Migration":"Internal registrar transfers","Domain_Pricing":"Pricing discrepancies, incorrect charges","Subdomain_Multilingual":"Subdomains, multilingual, IDN/punycode"};
+const STATUS_MAP={"Closed":"status-closed","RND Review":"status-rnd","Ready for Dev":"status-ready","In Dev":"status-indev","CC Update Users":"status-cc","3rd Party Block":"status-3rd","CC Review":"status-review"};
+const PDOT={"Critical":"dot-critical","High":"dot-high","Medium":"dot-medium","Low":"dot-low"};
+const DATA={
+  labelCounts:{"Renewal_Extension": 16, "Display_UI": 13, "Domain_Assignment_Connect": 12, "Transfer_In": 9, "GenericError": 9, "Contact_Info_WHOIS": 9, "DNS_NS_Zone": 8, "ccTLD_Specific": 8, "Domain_Purchase_Registration": 8, "Roles_Permissions": 5, "SSL_HTTPS": 4, "Redemption": 4, "Transfer_Out": 3, "Registrar_Migration": 3, "Domain_Pricing": 2, "Subdomain_Multilingual": 1},
+  statusCounts:{"Closed": 52, "RND Review": 7, "CC Update Users": 3, "Ready for Dev": 3, "In Dev": 1, "3rd Party Block": 1, "CC Review": 1},
+  priorityCounts:{"Medium": 37, "High": 21, "Critical": 6, "Low": 4},
+  labelStatus:{"Renewal_Extension": {"RND Review": 2, "In Dev": 1, "3rd Party Block": 1, "Closed": 11, "Ready for Dev": 1}, "Display_UI": {"RND Review": 2, "Closed": 8, "CC Update Users": 1, "3rd Party Block": 1, "Ready for Dev": 1}, "Domain_Assignment_Connect": {"Ready for Dev": 1, "RND Review": 1, "Closed": 9, "CC Update Users": 1}, "Transfer_In": {"RND Review": 1, "Closed": 8}, "GenericError": {"Closed": 8, "3rd Party Block": 1}, "Contact_Info_WHOIS": {"Closed": 7, "CC Update Users": 1, "Ready for Dev": 1}, "DNS_NS_Zone": {"RND Review": 1, "Closed": 7}, "ccTLD_Specific": {"RND Review": 1, "Closed": 7}, "Domain_Purchase_Registration": {"Closed": 7, "RND Review": 1}, "Roles_Permissions": {"Closed": 5}, "SSL_HTTPS": {"Closed": 3, "RND Review": 1}, "Redemption": {"Closed": 3, "RND Review": 1}, "Transfer_Out": {"CC Update Users": 1, "Closed": 2}, "Registrar_Migration": {"Closed": 2, "In Dev": 1}, "Domain_Pricing": {"Closed": 2}, "Subdomain_Multilingual": {"Closed": 1}},
+  tickets:[{"key": "DSI-918", "summary": "Domain Transfer-In Fails When DNS Zone Contains Invalid Character", "labels": ["DNS_NS_Zone", "Transfer_In"], "status": "RND Review", "priority": "Medium", "created": "2026-05-22"}, {"key": "DSI-917", "summary": "SSL Certificate Not Generated After 48+ Hours, Domain Status is Stuck in \"Propagation\"", "labels": ["DNS_NS_Zone", "SSL_HTTPS"], "status": "Closed", "priority": "High", "created": "2026-05-20"}, {"key": "DSI-916", "summary": "Domain Redemption Fee Paid but Domain Not Redeemed Due to Status Mismatch", "labels": ["Redemption"], "status": "Closed", "priority": "High", "created": "2026-05-19"}, {"key": "DSI-915", "summary": "Domain Appears Transferred Away but Remains Active Without Transfer Confirmation", "labels": ["Transfer_Out"], "status": "CC Update Users", "priority": "Medium", "created": "2026-05-19"}, {"key": "DSI-914", "summary": "Extend Domain Option Appears for Com.Au Domains Outside 90-Day Renewal Period (Extension Fails)", "labels": ["Renewal_Extension", "ccTLD_Specific"], "status": "RND Review", "priority": "Medium", "created": "2026-05-19"}, {"key": "DSI-912", "summary": "External Domain Connection Stuck on 'Finding Your Provider' for Domain in Another Account (Not Permi", "labels": ["Domain_Assignment_Connect"], "status": "Ready for Dev", "priority": "Medium", "created": "2026-05-18"}, {"key": "DSI-909", "summary": "Redemption Banner Still Appears After Redemption Fee Payment", "labels": ["Display_UI", "Redemption"], "status": "RND Review", "priority": "Medium", "created": "2026-05-12"}, {"key": "DSI-908", "summary": ".Com.Br Registration Fails Due To CPF Or CNPJ Validation", "labels": ["Domain_Purchase_Registration", "ccTLD_Specific"], "status": "Closed", "priority": "High", "created": "2026-05-11"}, {"key": "DSI-906", "summary": "Duplicate Domain Purchase Allowed While Previous Registration Is Still Pending", "labels": ["Domain_Purchase_Registration"], "status": "RND Review", "priority": "Medium", "created": "2026-05-08"}, {"key": "DSI-905", "summary": "Domain Status Not Updated Despite Propagation And Active SSL Certificate", "labels": ["Display_UI", "Domain_Assignment_Connect", "SSL_HTTPS"], "status": "RND Review", "priority": "Low", "created": "2026-05-07"}, {"key": "DSI-904", "summary": "Premium Domain Transfer To Wix Shows Generic Error Message", "labels": ["GenericError", "Transfer_In"], "status": "Closed", "priority": "Low", "created": "2026-05-06"}, {"key": "DSI-903", "summary": ".Com.Br Registration Fails Despite CPF / CNPJ Being Entered At Checkout", "labels": ["Domain_Purchase_Registration", "ccTLD_Specific"], "status": "Closed", "priority": "Medium", "created": "2026-05-06"}, {"key": "DSI-902", "summary": "Domain Not Visible In Recipient Account After Transfer Between Wix Accounts", "labels": ["Roles_Permissions"], "status": "Closed", "priority": "High", "created": "2026-05-05"}, {"key": "DSI-901", "summary": "Domain Records Were Not Fully Restored After Verification", "labels": ["Contact_Info_WHOIS", "DNS_NS_Zone"], "status": "Closed", "priority": "High", "created": "2026-05-01"}, {"key": "DSI-899", "summary": "Banner for Suspended Domain Pending Verification is Missing from Domains Page | Web.com", "labels": ["Contact_Info_WHOIS", "Display_UI", "Registrar_Migration"], "status": "Closed", "priority": "Medium", "created": "2026-04-27"}, {"key": "DSI-898", "summary": "Domain EPP Code Delivered To Wrong Email Address", "labels": ["Roles_Permissions", "Transfer_Out"], "status": "Closed", "priority": "Medium", "created": "2026-04-23"}, {"key": "DSI-896", "summary": "Domain Renewal Not Applied After Failed Internal Transfer", "labels": ["Registrar_Migration", "Renewal_Extension"], "status": "In Dev", "priority": "Medium", "created": "2026-04-22"}, {"key": "DSI-894", "summary": "Domain Reassign And Unassign Options Missing For Eligible Owner", "labels": ["Domain_Assignment_Connect", "Roles_Permissions"], "status": "Closed", "priority": "High", "created": "2026-04-15"}, {"key": "DSI-893", "summary": "Generic Error Appears When Adding TXT Record With More Than 50 Values", "labels": ["DNS_NS_Zone", "GenericError"], "status": "Closed", "priority": "Critical", "created": "2026-04-15"}, {"key": "DSI-892", "summary": "Connected Domain Displays Stale \"Site Will Be Live\" Message With Past Date", "labels": ["Display_UI", "Domain_Assignment_Connect"], "status": "CC Update Users", "priority": "Medium", "created": "2026-04-10"}, {"key": "DSI-891", "summary": "Premium Site Treated as Non-Premium During Domain Connection", "labels": ["Domain_Assignment_Connect"], "status": "Closed", "priority": "High", "created": "2026-04-08"}, {"key": "DSI-890", "summary": "Banner for Suspended Domain Pending Verification is Missing from Domains Page (After DSI-627)", "labels": ["Contact_Info_WHOIS", "Display_UI"], "status": "Closed", "priority": "Medium", "created": "2026-04-07"}, {"key": "DSI-907", "summary": "Domain EOP Date Reverted After Renewal and Triggered Duplicate Charge", "labels": ["Renewal_Extension"], "status": "RND Review", "priority": "Medium", "created": "2026-04-07"}, {"key": "DSI-889", "summary": "SSL Failed to Renew | ERR_CERT_DATE_INVALID (After DSI-370)", "labels": ["SSL_HTTPS"], "status": "Closed", "priority": "High", "created": "2026-04-07"}, {"key": "DSI-887", "summary": "Domain Remains Deactivated After Successful Verification", "labels": ["Contact_Info_WHOIS"], "status": "Closed", "priority": "Medium", "created": "2026-04-02"}, {"key": "DSI-886", "summary": "Technical Error Blocks Additional Domain Purchase | ExcessiveDomainPurchaseError", "labels": ["Domain_Purchase_Registration"], "status": "Closed", "priority": "High", "created": "2026-03-27"}, {"key": "DSI-885", "summary": "[Generic Error] Unable to Renew / Extend Expired Domain That was Auctioned Away", "labels": ["Display_UI", "GenericError", "Renewal_Extension"], "status": "3rd Party Block", "priority": "Critical", "created": "2026-03-26"}, {"key": "DSI-884", "summary": "Domain Contact Information Cannot Be Verified Or Updated", "labels": ["Contact_Info_WHOIS"], "status": "CC Update Users", "priority": "High", "created": "2026-03-26"}, {"key": "DSI-881", "summary": "Unable to Renew / Extend Domain | domainPurchaseNoSessionSetContract (After DSI-713)", "labels": ["Renewal_Extension"], "status": "Closed", "priority": "Critical", "created": "2026-03-25"}, {"key": "DSI-878", "summary": "Postal Code Length Validation Causes Domain Order Refund | InvalidPostalCodeSixDigitsError", "labels": ["Contact_Info_WHOIS", "Domain_Purchase_Registration"], "status": "Closed", "priority": "High", "created": "2026-03-24"}, {"key": "DSI-877", "summary": "Domain Renewal Status Out Of Sync Between SBS And Tucows", "labels": ["Renewal_Extension"], "status": "Ready for Dev", "priority": "Medium", "created": "2026-03-23"}, {"key": "DSI-876", "summary": "Connect Domain Text Is Not Clickable in Turkish Accounts", "labels": ["Display_UI", "Domain_Assignment_Connect"], "status": "Closed", "priority": "Medium", "created": "2026-03-20"}, {"key": "DSI-875", "summary": "Verified Domain Still Shows Confirm Contact Information Banner", "labels": ["Contact_Info_WHOIS", "Display_UI"], "status": "Ready for Dev", "priority": "Low", "created": "2026-03-19"}, {"key": "DSI-874", "summary": "Add MX Records Option Is Missing in Polish Accounts", "labels": ["DNS_NS_Zone", "Display_UI"], "status": "Closed", "priority": "High", "created": "2026-03-18"}, {"key": "DSI-873", "summary": "Connect Domain Text Is Not Clickable for .nl Domains in Dutch Accounts", "labels": ["Display_UI", "Domain_Assignment_Connect", "ccTLD_Specific"], "status": "Closed", "priority": "Medium", "created": "2026-03-18"}, {"key": "DSI-872", "summary": "Unable to Transfer Domain Away | Domain Registrar Lock update has failed", "labels": ["Transfer_Out"], "status": "Closed", "priority": "Medium", "created": "2026-03-17"}, {"key": "DSI-871", "summary": "Generic Error During Domain Re-Assign | DOMAINS_PERMISSION_DENIED", "labels": ["Domain_Assignment_Connect", "GenericError", "Roles_Permissions"], "status": "Closed", "priority": "Critical", "created": "2026-03-17"}, {"key": "DSI-870", "summary": "Domains Were Not Delivered to User Accounts | Related to specs.premium.domains.DynamicGetDomain", "labels": ["Domain_Purchase_Registration"], "status": "Closed", "priority": "High", "created": "2026-03-16"}, {"key": "DSI-869", "summary": "Subdomain Setup Does Not Show Primary Domain Ownership Link in Certain Languages", "labels": ["Display_UI", "Subdomain_Multilingual"], "status": "Closed", "priority": "Medium", "created": "2026-03-16"}, {"key": "DSI-868", "summary": "Billing Account Autofill Allows Domain Purchase With Kosovo Country Code", "labels": ["Domain_Purchase_Registration"], "status": "Closed", "priority": "Medium", "created": "2026-03-16"}, {"key": "DSI-920", "summary": "[AI Assistant Platform] [Find a Domain - BM] Optimization - User incorrectly types the domain they o", "labels": [], "status": "RND Review", "priority": "Low", "created": "2026-03-13"}, {"key": "DSI-866", "summary": "Domain Renewal Cancelled and Refunded Due to Failed Internal Registrar Transfer", "labels": ["Registrar_Migration", "Renewal_Extension"], "status": "Closed", "priority": "Medium", "created": "2026-03-12"}, {"key": "DSI-867", "summary": "Services Weren't Transferred During Premium Site Transfer | Pending in SBS | NoSuchElementException", "labels": [], "status": "Closed", "priority": "Medium", "created": "2026-03-10"}, {"key": "DSI-865", "summary": "[Wix AI Platform] [Domain Connection & DNS Assistant] Error in Tool GetDomainsDnsPropagationStatus", "labels": [], "status": "Closed", "priority": "Medium", "created": "2026-03-09"}, {"key": "DSI-911", "summary": "[AI Assistant Platform] [Find a Domain - BM] Widget Button Not Working", "labels": [], "status": "CC Review", "priority": "Medium", "created": "2026-03-09"}, {"key": "DSI-863", "summary": "Generic Error Prevents Domain Transfer Due To Contact Information Mismatch", "labels": ["Contact_Info_WHOIS", "GenericError", "Transfer_In"], "status": "Closed", "priority": "Medium", "created": "2026-03-05"}, {"key": "DSI-862", "summary": "SSL Certificate Generation Failed For Domain Connected Via Pointing | ERR_CONNECTION_TIMED_OUT", "labels": ["Domain_Assignment_Connect", "SSL_HTTPS"], "status": "Closed", "priority": "High", "created": "2026-03-03"}, {"key": "DSI-860", "summary": "Incorrect Total Price Calculated For Single Year Domain Renewal", "labels": ["Domain_Pricing", "Renewal_Extension"], "status": "Closed", "priority": "Medium", "created": "2026-02-27"}, {"key": "DSI-859", "summary": "Transferred In Domain Stuck In Previous Site Owner's Account", "labels": ["Transfer_In"], "status": "Closed", "priority": "High", "created": "2026-02-24"}, {"key": "DSI-858", "summary": "Owner Unable to Assign Domain to Site", "labels": ["Domain_Assignment_Connect", "Roles_Permissions"], "status": "Closed", "priority": "Medium", "created": "2026-02-23"}, {"key": "DSI-857", "summary": "Incorrect Contact Information Displayed When Extending Domain With Public Privacy", "labels": ["Contact_Info_WHOIS", "Renewal_Extension"], "status": "Closed", "priority": "Medium", "created": "2026-02-19"}, {"key": "DSI-856", "summary": "Generic Error Message When Assigning Domain Connected via Pointing to Vibe Site", "labels": ["Domain_Assignment_Connect", "GenericError"], "status": "Closed", "priority": "Critical", "created": "2026-02-19"}, {"key": "DSI-864", "summary": "Unable To Disable Domain Auto-Renewal | domainDoesNotExist", "labels": [], "status": "Closed", "priority": "Medium", "created": "2026-02-18"}, {"key": "DSI-855", "summary": "[Generic Error] Unable to Transfer Premium Domain to Wix | ERROR_CODE_-1419", "labels": ["GenericError", "Transfer_In"], "status": "Closed", "priority": "High", "created": "2026-02-16"}, {"key": "DSI-854", "summary": "Wrong Banner about Expired Domain Persists After Paid Renewal", "labels": ["Display_UI", "Renewal_Extension"], "status": "Closed", "priority": "High", "created": "2026-02-16"}, {"key": "DSI-853", "summary": ".ch domains can start transfer-in flow via \"Transfer domain to Wix\" button despite transferSupport =", "labels": ["Transfer_In", "ccTLD_Specific"], "status": "Closed", "priority": "Medium", "created": "2026-02-12"}, {"key": "DSI-851", "summary": "Domain Not Restored After Paying Redemption Fee", "labels": ["Redemption"], "status": "Closed", "priority": "High", "created": "2026-02-11"}, {"key": "DSI-849", "summary": "Domain Has Extra Wix NS Records", "labels": ["DNS_NS_Zone"], "status": "Closed", "priority": "High", "created": "2026-02-09"}, {"key": "DSI-848", "summary": "[GENERIC ERROR] Wrong Error Message When Trying to Get Feedback (DNS records issue)", "labels": ["DNS_NS_Zone", "Display_UI", "GenericError"], "status": "Closed", "priority": "Critical", "created": "2026-02-03"}, {"key": "DSI-846", "summary": "Adding ccTLD Fails With Incorrect \"Not Available\" Message | DOMAINS_UNSUPPORTED_TLD", "labels": ["Domain_Purchase_Registration", "ccTLD_Specific"], "status": "Closed", "priority": "Medium", "created": "2026-01-27"}, {"key": "DSI-845", "summary": "Domain Renewal Extension Fails With Non\u2011Specific Error", "labels": ["GenericError", "Renewal_Extension"], "status": "Closed", "priority": "High", "created": "2026-01-27"}, {"key": "DSI-844", "summary": "Domain Transfer To Wix Fails Due To Incorrect Domain Availability Detection", "labels": ["Transfer_In"], "status": "Closed", "priority": "Medium", "created": "2026-01-21"}, {"key": "DSI-843", "summary": "User Charged Renewal Fee & Redemption Fee", "labels": ["Domain_Pricing", "Redemption", "Renewal_Extension"], "status": "Closed", "priority": "Medium", "created": "2026-01-19"}, {"key": "DSI-841", "summary": "Domain Incorrectly Flagged As Pointing Away From Wix which Breaks Secondary Domain Redirects", "labels": ["DNS_NS_Zone", "Domain_Assignment_Connect"], "status": "Closed", "priority": "Medium", "created": "2026-01-14"}, {"key": "DSI-840", "summary": "1-Year Extension Wasn't Applied to .CH Domain During Transfer to Wix", "labels": ["Renewal_Extension", "Transfer_In", "ccTLD_Specific"], "status": "Closed", "priority": "High", "created": "2026-01-14"}, {"key": "DSI-838", "summary": "Unable to Disable Auto-renewal for Domain", "labels": ["Renewal_Extension"], "status": "Closed", "priority": "Medium", "created": "2026-01-12"}, {"key": "DSI-839", "summary": ".CH Domain Is Not Extended After Transfer to Wix", "labels": ["Renewal_Extension", "Transfer_In", "ccTLD_Specific"], "status": "Closed", "priority": "Medium", "created": "2026-01-12"}, {"key": "DSI-837", "summary": "Domain Renewal Auto\u2011Refunded And Cancelled Before Expiry | Object Does Not Exist", "labels": ["Renewal_Extension"], "status": "Closed", "priority": "Medium", "created": "2026-01-09"}]
 };
+document.getElementById('timestamp').textContent=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+const container=document.getElementById('sections');
+const labelEntries=Object.entries(DATA.labelCounts);
+const maxCount=labelEntries[0]?labelEntries[0][1]:1;
+const allStatuses=Object.keys(DATA.statusCounts);
 
-const FILTER_IDS = {
-  'Domain_Assignment_Connect':64078,'DNS_NS_Zone':64079,'Renewal_Extension':64080,
-  'Domain_Purchase_Registration':64081,'Transfer_In':64082,'Transfer_Out':64083,
-  'Registrar_Migration':64084,'Contact_Info_WHOIS':64085,'Redemption':64086,
-  'SSL_HTTPS':64087,'Display_UI':64088,'Email_Forwarding':64089,
-  'Subdomain_Multilingual':64090,'ccTLD_Specific':64091,'Domain_Deletion_Parking':64092,
-  'Roles_Permissions':64093,'Domain_Pricing':64094,'GenericError':64095
-};
+function createSection(num,title,badgeText,badgeClass,openDefault){
+  const s=document.createElement('div');
+  s.className='section'+(openDefault?' open':'');
+  s.innerHTML=`<div class="section-header" onclick="this.parentElement.classList.toggle('open')"><span class="section-arrow">&#9654;</span><span class="section-num">${num}</span><span class="section-title">${title}</span><span class="section-badge ${badgeClass}">${badgeText}</span></div><div class="section-body"></div>`;
+  return s;
+}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function statusHtml(s){const c=STATUS_MAP[s]||'status-review';return `<span class="status ${c}">${s}</span>`;}
+function prioHtml(p){const c=PDOT[p]||'';return `<span class="priority"><span class="priority-dot ${c}"></span>${p}</span>`;}
 
-const LABEL_DESCRIPTIONS = {
-  'GenericError':'Generic/unhelpful error messages',
-  'Renewal_Extension':'Domain renewal, extension, auto-renew',
-  'Display_UI':'UI issues, banners, error messages',
-  'Domain_Assignment_Connect':'Assigning/connecting domains to sites',
-  'Transfer_In':'Transferring domains to Wix',
-  'Contact_Info_WHOIS':'Contact info, WHOIS, privacy, verification',
-  'DNS_NS_Zone':'DNS records, nameservers, zone files',
-  'ccTLD_Specific':'Country-code TLD issues (.ch, .de, .uk)',
-  'Domain_Purchase_Registration':'Buying/registering new domains',
-  'Roles_Permissions':'Access control, ownership, contributors',
-  'SSL_HTTPS':'SSL certificates, HTTPS errors',
-  'Redemption':'Domain redemption after expiry',
-  'Transfer_Out':'Transferring domains away from Wix',
-  'Registrar_Migration':'Internal registrar transfers',
-  'Domain_Pricing':'Pricing discrepancies, incorrect charges',
-  'Subdomain_Multilingual':'Subdomains, multilingual, IDN/punycode',
-  'Email_Forwarding':'Email forwarding, mail routing',
-  'Domain_Deletion_Parking':'Domain deletion or parking'
-};
-
-const STATUS_MAP = {'Closed':'status-closed','RND Review':'status-rnd','Ready for Dev':'status-ready','In Dev':'status-indev','CC Update Users':'status-cc','3rd Party Block':'status-3rd'};
-const PRIORITY_DOT = {'Critical':'dot-critical','High':'dot-high','Medium':'dot-medium','Low':'dot-low'};
-
-const DATA = {
-  labelCounts: {"GenericError":26,"Renewal_Extension":16,"Display_UI":13,"Domain_Assignment_Connect":12,"Transfer_In":9,"Contact_Info_WHOIS":9,"DNS_NS_Zone":8,"ccTLD_Specific":8,"Domain_Purchase_Registration":8,"Roles_Permissions":5,"SSL_HTTPS":4,"Redemption":4,"Transfer_Out":3,"Registrar_Migration":3,"Domain_Pricing":2,"Subdomain_Multilingual":1},
-  statusCounts: {"Closed":65,"RND Review":7,"CC Update Users":3,"Ready for Dev":3,"In Dev":1,"3rd Party Block":1},
-  labelStatus: {"GenericError":{"RND Review":1,"Closed":24,"3rd Party Block":1},"Renewal_Extension":{"RND Review":2,"In Dev":1,"3rd Party Block":1,"Closed":11,"Ready for Dev":1},"Display_UI":{"RND Review":2,"Closed":8,"CC Update Users":1,"3rd Party Block":1,"Ready for Dev":1},"Domain_Assignment_Connect":{"Ready for Dev":1,"RND Review":1,"Closed":9,"CC Update Users":1},"Transfer_In":{"RND Review":1,"Closed":8},"Contact_Info_WHOIS":{"Closed":7,"CC Update Users":1,"Ready for Dev":1},"DNS_NS_Zone":{"RND Review":1,"Closed":7},"ccTLD_Specific":{"RND Review":1,"Closed":7},"Domain_Purchase_Registration":{"Closed":7,"RND Review":1},"Roles_Permissions":{"Closed":5},"SSL_HTTPS":{"Closed":3,"RND Review":1},"Redemption":{"Closed":3,"RND Review":1},"Transfer_Out":{"CC Update Users":1,"Closed":2},"Registrar_Migration":{"Closed":2,"In Dev":1},"Domain_Pricing":{"Closed":2},"Subdomain_Multilingual":{"Closed":1}},
-  tickets: [{"key":"DSI-918","summary":"Domain Transfer-In Fails When DNS Zone Contains Invalid Character","labels":["DNS_NS_Zone","Transfer_In"],"status":"RND Review","priority":"Medium","created":"2026-05-22"},{"key":"DSI-917","summary":"SSL Certificate Not Generated After 48+ Hours, Domain Status is Stuck in \"Propagation\"","labels":["DNS_NS_Zone","SSL_HTTPS"],"status":"Closed","priority":"High","created":"2026-05-20"},{"key":"DSI-916","summary":"Domain Redemption Fee Paid but Domain Not Redeemed Due to Status Mismatch","labels":["Redemption"],"status":"Closed","priority":"High","created":"2026-05-19"},{"key":"DSI-915","summary":"Domain Appears Transferred Away but Remains Active Without Transfer Confirmation","labels":["Transfer_Out"],"status":"CC Update Users","priority":"Medium","created":"2026-05-19"},{"key":"DSI-914","summary":"Extend Domain Option Appears for Com.Au Domains Outside 90-Day Renewal Period","labels":["Renewal_Extension","ccTLD_Specific"],"status":"RND Review","priority":"Medium","created":"2026-05-19"},{"key":"PSI-27041","summary":"Mailbox Setup Shows Generic Error for Unsupported Region","labels":["GenericError"],"status":"RND Review","priority":"Medium","created":"2026-05-18"},{"key":"DSI-912","summary":"External Domain Connection Stuck on 'Finding Your Provider' for Domain in Another Account","labels":["Domain_Assignment_Connect"],"status":"Ready for Dev","priority":"Medium","created":"2026-05-18"},{"key":"DSI-909","summary":"Redemption Banner Still Appears After Redemption Fee Payment","labels":["Display_UI","Redemption"],"status":"RND Review","priority":"Medium","created":"2026-05-12"},{"key":"DSI-908","summary":".Com.Br Registration Fails Due To CPF Or CNPJ Validation","labels":["Domain_Purchase_Registration","ccTLD_Specific"],"status":"Closed","priority":"High","created":"2026-05-11"},{"key":"DSI-906","summary":"Duplicate Domain Purchase Allowed While Previous Registration Is Still Pending","labels":["Domain_Purchase_Registration"],"status":"RND Review","priority":"Medium","created":"2026-05-08"},{"key":"DSI-905","summary":"Domain Status Not Updated Despite Propagation And Active SSL Certificate","labels":["Display_UI","Domain_Assignment_Connect","SSL_HTTPS"],"status":"RND Review","priority":"Low","created":"2026-05-07"},{"key":"DSI-904","summary":"Premium Domain Transfer To Wix Shows Generic Error Message","labels":["GenericError","Transfer_In"],"status":"Closed","priority":"Low","created":"2026-05-06"},{"key":"DSI-903","summary":".Com.Br Registration Fails Despite CPF / CNPJ Being Entered At Checkout","labels":["Domain_Purchase_Registration","ccTLD_Specific"],"status":"Closed","priority":"Medium","created":"2026-05-06"},{"key":"DSI-902","summary":"Domain Not Visible In Recipient Account After Transfer Between Wix Accounts","labels":["Roles_Permissions"],"status":"Closed","priority":"High","created":"2026-05-05"},{"key":"DSI-901","summary":"Domain Records Were Not Fully Restored After Verification","labels":["Contact_Info_WHOIS","DNS_NS_Zone"],"status":"Closed","priority":"High","created":"2026-05-01"},{"key":"DSI-899","summary":"Banner for Suspended Domain Pending Verification is Missing from Domains Page | Web.com","labels":["Contact_Info_WHOIS","Display_UI","Registrar_Migration"],"status":"Closed","priority":"Medium","created":"2026-04-27"},{"key":"DSI-898","summary":"Domain EPP Code Delivered To Wrong Email Address","labels":["Roles_Permissions","Transfer_Out"],"status":"Closed","priority":"Medium","created":"2026-04-23"},{"key":"DSI-896","summary":"Domain Renewal Not Applied After Failed Internal Transfer","labels":["Registrar_Migration","Renewal_Extension"],"status":"In Dev","priority":"Medium","created":"2026-04-22"},{"key":"DSI-894","summary":"Domain Reassign And Unassign Options Missing For Eligible Owner","labels":["Domain_Assignment_Connect","Roles_Permissions"],"status":"Closed","priority":"High","created":"2026-04-15"},{"key":"DSI-893","summary":"Generic Error Appears When Adding TXT Record With More Than 50 Values","labels":["DNS_NS_Zone","GenericError"],"status":"Closed","priority":"Critical","created":"2026-04-15"},{"key":"DSI-892","summary":"Connected Domain Displays Stale \"Site Will Be Live\" Message With Past Date","labels":["Display_UI","Domain_Assignment_Connect"],"status":"CC Update Users","priority":"Medium","created":"2026-04-10"},{"key":"DSI-891","summary":"Premium Site Treated as Non-Premium During Domain Connection","labels":["Domain_Assignment_Connect"],"status":"Closed","priority":"High","created":"2026-04-08"},{"key":"DSI-890","summary":"Banner for Suspended Domain Pending Verification is Missing from Domains Page","labels":["Contact_Info_WHOIS","Display_UI"],"status":"Closed","priority":"Medium","created":"2026-04-07"},{"key":"DSI-907","summary":"Domain EOP Date Reverted After Renewal and Triggered Duplicate Charge","labels":["Renewal_Extension"],"status":"RND Review","priority":"Medium","created":"2026-04-07"},{"key":"DSI-889","summary":"SSL Failed to Renew | ERR_CERT_DATE_INVALID","labels":["SSL_HTTPS"],"status":"Closed","priority":"High","created":"2026-04-07"},{"key":"DSI-887","summary":"Domain Remains Deactivated After Successful Verification","labels":["Contact_Info_WHOIS"],"status":"Closed","priority":"Medium","created":"2026-04-02"},{"key":"DSI-886","summary":"Technical Error Blocks Additional Domain Purchase | ExcessiveDomainPurchaseError","labels":["Domain_Purchase_Registration"],"status":"Closed","priority":"High","created":"2026-03-27"},{"key":"DSI-885","summary":"[Generic Error] Unable to Renew / Extend Expired Domain That was Auctioned Away","labels":["Display_UI","GenericError","Renewal_Extension"],"status":"3rd Party Block","priority":"Critical","created":"2026-03-26"},{"key":"DSI-884","summary":"Domain Contact Information Cannot Be Verified Or Updated","labels":["Contact_Info_WHOIS"],"status":"CC Update Users","priority":"High","created":"2026-03-26"},{"key":"PSI-26993","summary":"Unsupported Character In Mailbox Setup Form Triggers Generic Error","labels":["GenericError"],"status":"Closed","priority":"Medium","created":"2026-03-25"},{"key":"DSI-881","summary":"Unable to Renew / Extend Domain | domainPurchaseNoSessionSetContract","labels":["Renewal_Extension"],"status":"Closed","priority":"Critical","created":"2026-03-25"},{"key":"DSI-878","summary":"Postal Code Length Validation Causes Domain Order Refund | InvalidPostalCodeSixDigitsError","labels":["Contact_Info_WHOIS","Domain_Purchase_Registration"],"status":"Closed","priority":"High","created":"2026-03-24"},{"key":"DSI-877","summary":"Domain Renewal Status Out Of Sync Between SBS And Tucows","labels":["Renewal_Extension"],"status":"Ready for Dev","priority":"Medium","created":"2026-03-23"},{"key":"DSI-876","summary":"Connect Domain Text Is Not Clickable in Turkish Accounts","labels":["Display_UI","Domain_Assignment_Connect"],"status":"Closed","priority":"Medium","created":"2026-03-20"},{"key":"PSI-26986","summary":"Mailbox Checkout Returns Generic Error for Users in Unsupported Regions","labels":["GenericError"],"status":"Closed","priority":"Medium","created":"2026-03-20"},{"key":"DSI-875","summary":"Verified Domain Still Shows Confirm Contact Information Banner","labels":["Contact_Info_WHOIS","Display_UI"],"status":"Ready for Dev","priority":"Low","created":"2026-03-19"},{"key":"DSI-874","summary":"Add MX Records Option Is Missing in Polish Accounts","labels":["DNS_NS_Zone","Display_UI"],"status":"Closed","priority":"High","created":"2026-03-18"},{"key":"DSI-873","summary":"Connect Domain Text Is Not Clickable for .nl Domains in Dutch Accounts","labels":["Display_UI","Domain_Assignment_Connect","ccTLD_Specific"],"status":"Closed","priority":"Medium","created":"2026-03-18"},{"key":"DSI-872","summary":"Unable to Transfer Domain Away | Domain Registrar Lock update has failed","labels":["Transfer_Out"],"status":"Closed","priority":"Medium","created":"2026-03-17"},{"key":"DSI-871","summary":"Generic Error During Domain Re-Assign | DOMAINS_PERMISSION_DENIED","labels":["Domain_Assignment_Connect","GenericError","Roles_Permissions"],"status":"Closed","priority":"Critical","created":"2026-03-17"},{"key":"DSI-870","summary":"Domains Were Not Delivered to User Accounts","labels":["Domain_Purchase_Registration"],"status":"Closed","priority":"High","created":"2026-03-16"},{"key":"DSI-869","summary":"Subdomain Setup Does Not Show Primary Domain Ownership Link in Certain Languages","labels":["Display_UI","Subdomain_Multilingual"],"status":"Closed","priority":"Medium","created":"2026-03-16"},{"key":"DSI-868","summary":"Billing Account Autofill Allows Domain Purchase With Kosovo Country Code","labels":["Domain_Purchase_Registration"],"status":"Closed","priority":"Medium","created":"2026-03-16"},{"key":"DSI-866","summary":"Domain Renewal Cancelled and Refunded Due to Failed Internal Registrar Transfer","labels":["Registrar_Migration","Renewal_Extension"],"status":"Closed","priority":"Medium","created":"2026-03-12"},{"key":"DSI-863","summary":"Generic Error Prevents Domain Transfer Due To Contact Information Mismatch","labels":["Contact_Info_WHOIS","GenericError","Transfer_In"],"status":"Closed","priority":"Medium","created":"2026-03-05"},{"key":"DSI-862","summary":"SSL Certificate Generation Failed For Domain Connected Via Pointing","labels":["Domain_Assignment_Connect","SSL_HTTPS"],"status":"Closed","priority":"High","created":"2026-03-03"},{"key":"DSI-860","summary":"Incorrect Total Price Calculated For Single Year Domain Renewal","labels":["Domain_Pricing","Renewal_Extension"],"status":"Closed","priority":"Medium","created":"2026-02-27"},{"key":"DSI-859","summary":"Transferred In Domain Stuck In Previous Site Owner's Account","labels":["Transfer_In"],"status":"Closed","priority":"High","created":"2026-02-24"},{"key":"DSI-858","summary":"Owner Unable to Assign Domain to Site","labels":["Domain_Assignment_Connect","Roles_Permissions"],"status":"Closed","priority":"Medium","created":"2026-02-23"},{"key":"PSI-26963","summary":"Generic Error When Purchasing New Mailbox | TakeoverInProgress","labels":["GenericError"],"status":"Closed","priority":"Medium","created":"2026-02-20"},{"key":"PSI-26962","summary":"Generic Error When Site Owner Tries To Purchase Mailbox For Domain Owned By Contributor","labels":["GenericError"],"status":"Closed","priority":"Medium","created":"2026-02-20"},{"key":"DSI-857","summary":"Incorrect Contact Information Displayed When Extending Domain With Public Privacy","labels":["Contact_Info_WHOIS","Renewal_Extension"],"status":"Closed","priority":"Medium","created":"2026-02-19"},{"key":"DSI-856","summary":"Generic Error Message When Assigning Domain Connected via Pointing to Vibe Site","labels":["Domain_Assignment_Connect","GenericError"],"status":"Closed","priority":"Critical","created":"2026-02-19"},{"key":"DSI-855","summary":"[Generic Error] Unable to Transfer Premium Domain to Wix | ERROR_CODE_-1419","labels":["GenericError","Transfer_In"],"status":"Closed","priority":"High","created":"2026-02-16"},{"key":"DSI-854","summary":"Wrong Banner about Expired Domain Persists After Paid Renewal","labels":["Display_UI","Renewal_Extension"],"status":"Closed","priority":"High","created":"2026-02-16"},{"key":"DSI-853","summary":".ch domains can start transfer-in flow despite transfer not supported","labels":["Transfer_In","ccTLD_Specific"],"status":"Closed","priority":"Medium","created":"2026-02-12"},{"key":"DSI-851","summary":"Domain Not Restored After Paying Redemption Fee","labels":["Redemption"],"status":"Closed","priority":"High","created":"2026-02-11"},{"key":"DSI-849","summary":"Domain Has Extra Wix NS Records","labels":["DNS_NS_Zone"],"status":"Closed","priority":"High","created":"2026-02-09"},{"key":"DSI-848","summary":"[GENERIC ERROR] Wrong Error Message When Trying to Get Feedback (DNS records issue)","labels":["DNS_NS_Zone","Display_UI","GenericError"],"status":"Closed","priority":"Critical","created":"2026-02-03"},{"key":"PSI-26936","summary":"Generic Error - Site Ownership Transfer Start Blocked By Pending SBS Invoice","labels":["GenericError"],"status":"Closed","priority":"Medium","created":"2026-01-30"},{"key":"DSI-846","summary":"Adding ccTLD Fails With Incorrect \"Not Available\" Message","labels":["Domain_Purchase_Registration","ccTLD_Specific"],"status":"Closed","priority":"Medium","created":"2026-01-27"},{"key":"DSI-845","summary":"Domain Renewal Extension Fails With Non-Specific Error","labels":["GenericError","Renewal_Extension"],"status":"Closed","priority":"High","created":"2026-01-27"},{"key":"DSI-844","summary":"Domain Transfer To Wix Fails Due To Incorrect Domain Availability Detection","labels":["Transfer_In"],"status":"Closed","priority":"Medium","created":"2026-01-21"},{"key":"DSI-843","summary":"User Charged Renewal Fee & Redemption Fee","labels":["Domain_Pricing","Redemption","Renewal_Extension"],"status":"Closed","priority":"Medium","created":"2026-01-19"},{"key":"DSI-841","summary":"Domain Incorrectly Flagged As Pointing Away From Wix","labels":["DNS_NS_Zone","Domain_Assignment_Connect"],"status":"Closed","priority":"Medium","created":"2026-01-14"},{"key":"DSI-840","summary":"1-Year Extension Wasn't Applied to .CH Domain During Transfer to Wix","labels":["Renewal_Extension","Transfer_In","ccTLD_Specific"],"status":"Closed","priority":"High","created":"2026-01-14"},{"key":"DSI-838","summary":"Unable to Disable Auto-renewal for Domain","labels":["Renewal_Extension"],"status":"Closed","priority":"Medium","created":"2026-01-12"},{"key":"DSI-839","summary":".CH Domain Is Not Extended After Transfer to Wix","labels":["Renewal_Extension","Transfer_In","ccTLD_Specific"],"status":"Closed","priority":"Medium","created":"2026-01-12"},{"key":"DSI-837","summary":"Domain Renewal Auto-Refunded And Cancelled Before Expiry","labels":["Renewal_Extension"],"status":"Closed","priority":"Medium","created":"2026-01-09"},{"key":"PSI-26938","summary":"Users unable to cancel One Time Payment subscription type","labels":["GenericError"],"status":"Closed","priority":"Low","created":"2025-11-20"},{"key":"PSI-26875","summary":"Generic Error When Purchasing Business Email | TEAM_CUSTOMER_EXISTS","labels":["GenericError"],"status":"Closed","priority":"Medium","created":"2025-11-14"},{"key":"DSI-811","summary":"Cannot Remove or Assign Subdomain in Co-Owner's Account","labels":["GenericError"],"status":"Closed","priority":"Medium","created":"2025-11-11"},{"key":"PSI-26782","summary":"Mailbox Renewal Blocked When Associated Domain Becomes Inactive","labels":["GenericError"],"status":"Closed","priority":"High","created":"2025-08-07"},{"key":"DSI-747","summary":"User cannot transfer Premium domain to Wix - technical error message displayed","labels":["GenericError"],"status":"Closed","priority":"Medium","created":"2025-08-03"},{"key":"PSI-26766","summary":"Wrong Error Message when Purchasing Existing / Migrated Mailbox","labels":["GenericError"],"status":"Closed","priority":"Medium","created":"2025-07-17"},{"key":"PSI-26973","summary":"Generic Error When Enterprise Contributor Activates Premium Plan For Sites They Don't Own","labels":["GenericError"],"status":"Closed","priority":"Critical","created":"2025-06-20"},{"key":"PSI-26735","summary":"Users Encounter Generic Error When Renaming Mailbox Due to Existing User or Alias Conflict","labels":["GenericError"],"status":"Closed","priority":"Critical","created":"2025-06-11"},{"key":"PSI-26730","summary":"Team Account Admin Unable to Update Payment Method on Collaborated Site","labels":["GenericError"],"status":"Closed","priority":"Medium","created":"2025-06-09"},{"key":"PSI-26728","summary":"Users Encounter 'Technical Error' When Setting Up Google Workspace Admin User","labels":["GenericError"],"status":"Closed","priority":"High","created":"2025-06-07"},{"key":"PSI-26701","summary":"Unclear Mailbox Flow for Migrated / Existing Mailbox from my-mailboxes-site-level","labels":["GenericError"],"status":"Closed","priority":"Medium","created":"2025-05-30"}]
-};
-
-document.getElementById('timestamp').textContent = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
-
-// Build sections
-const container = document.getElementById('sections');
-const labelEntries = Object.entries(DATA.labelCounts);
-const maxCount = labelEntries[0][1];
-const allStatuses = Object.keys(DATA.statusCounts);
-
-// Section 1: Distribution Overview
-let sec1 = createSection(1, 'Sub-Area Distribution', `${labelEntries.length} labels`, 'badge-count', true);
-let distHtml = '<div class="dist-bar-wrap">';
-labelEntries.forEach(([label, count], i) => {
-  const pct = (count / maxCount * 100).toFixed(1);
-  const color = LABEL_COLORS[label] || '#888';
-  distHtml += `<div class="dist-row">
-    <span class="dist-label">${label.replace(/_/g, ' ')}</span>
-    <div class="dist-track"><div class="dist-fill" style="width:${pct}%;background:${color}"></div></div>
-    <span class="dist-count">${count}</span>
-  </div>`;
+// Section 1: Distribution
+const sec1=createSection(1,'Sub-Area Distribution',labelEntries.length+' labels','badge-count',true);
+let d1='<div class="dist-bar-wrap">';
+labelEntries.forEach(([l,c],i)=>{
+  const pct=(c/maxCount*100).toFixed(1);
+  const color=LABEL_COLORS[l]||'#888';
+  d1+=`<div class="dist-row"><span class="dist-label">${l.replace(/_/g,' ')}</span><div class="dist-track"><div class="dist-fill" style="width:${pct}%;background:${color}"></div></div><span class="dist-count">${c}</span></div>`;
 });
-distHtml += '</div>';
-distHtml += '<div class="jira-links">';
-labelEntries.forEach(([label]) => {
-  const fid = FILTER_IDS[label];
-  if (fid) distHtml += `<a class="jira-link-btn" href="${FILTER_BASE}${fid}" target="_blank">${label.replace(/_/g,' ')}</a>`;
-});
-distHtml += '</div>';
-sec1.querySelector('.section-body').innerHTML = distHtml;
+d1+='</div><div class="jira-links">';
+labelEntries.forEach(([l])=>{const f=FILTER_IDS[l];if(f)d1+=`<a class="jira-link-btn" href="${FILTER_BASE}${f}" target="_blank">${l.replace(/_/g,' ')}</a>`;});
+d1+='</div>';
+sec1.querySelector('.section-body').innerHTML=d1;
 container.appendChild(sec1);
 
-// Section 2: Status Heatmap
-let sec2 = createSection(2, 'Sub-Area vs Status Heatmap', `${labelEntries.length} x ${allStatuses.length}`, 'badge-count');
-let hmHtml = '<div style="padding:16px 20px;overflow-x:auto"><table class="heatmap"><thead><tr><th></th>';
-allStatuses.forEach(s => hmHtml += `<th>${s}</th>`);
-hmHtml += '<th>Total</th></tr></thead><tbody>';
-labelEntries.forEach(([label]) => {
-  const row = DATA.labelStatus[label] || {};
-  const total = Object.values(row).reduce((a,b)=>a+b,0);
-  hmHtml += `<tr><td class="row-label">${label.replace(/_/g,' ')}</td>`;
-  allStatuses.forEach(s => {
-    const v = row[s] || 0;
-    const cls = v===0?'heat-0':v<=2?'heat-1':v<=5?'heat-2':v<=10?'heat-3':'heat-4';
-    hmHtml += `<td class="${cls}">${v||'-'}</td>`;
-  });
-  hmHtml += `<td class="total-col">${total}</td></tr>`;
+// Section 2: Heatmap
+const sec2=createSection(2,'Sub-Area vs Status Heatmap',labelEntries.length+'x'+allStatuses.length,'badge-count');
+let hm='<div style="padding:16px 20px;overflow-x:auto"><table class="heatmap"><thead><tr><th></th>';
+allStatuses.forEach(s=>hm+=`<th>${s}</th>`);
+hm+='<th>Total</th></tr></thead><tbody>';
+labelEntries.forEach(([l])=>{
+  const row=DATA.labelStatus[l]||{};
+  const tot=Object.values(row).reduce((a,b)=>a+b,0);
+  hm+=`<tr><td class="row-label">${l.replace(/_/g,' ')}</td>`;
+  allStatuses.forEach(s=>{const v=row[s]||0;const cls=v===0?'heat-0':v<=2?'heat-1':v<=5?'heat-2':v<=10?'heat-3':'heat-4';hm+=`<td class="${cls}">${v||'-'}</td>`;});
+  hm+=`<td class="total-col">${tot}</td></tr>`;
 });
-hmHtml += '</tbody></table></div>';
-sec2.querySelector('.section-body').innerHTML = hmHtml;
+hm+='</tbody></table></div>';
+sec2.querySelector('.section-body').innerHTML=hm;
 container.appendChild(sec2);
 
-// Sections 3–18: One per sub-area label
-labelEntries.forEach(([label, count], idx) => {
-  const tickets = DATA.tickets.filter(t => t.labels.includes(label));
-  const closed = tickets.filter(t => t.status === 'Closed').length;
-  const open = count - closed;
-  const secNum = idx + 3;
-
-  const badgeText = `${closed}/${count} closed`;
-  const badgeClass = open === 0 ? 'badge-pass' : 'badge-open';
-
-  const sec = createSection(secNum, label.replace(/_/g, ' '), badgeText, badgeClass);
-
-  let desc = LABEL_DESCRIPTIONS[label] || '';
-  let bodyHtml = `<div style="padding:12px 20px 0;font-size:13px;color:#666">${desc}</div>`;
-  bodyHtml += '<table class="data-table"><thead><tr>';
-  bodyHtml += '<th style="width:90px">Key</th><th>Summary</th><th style="width:100px">Status</th><th style="width:90px">Priority</th><th style="width:90px">Created</th>';
-  bodyHtml += '</tr></thead><tbody>';
-  tickets.forEach(t => {
-    const sCls = STATUS_MAP[t.status] || 'status-closed';
-    const pCls = PRIORITY_DOT[t.priority] || '';
-    bodyHtml += `<tr>
-      <td><a class="ticket-link" href="${JIRA}${t.key}" target="_blank">${t.key}</a></td>
-      <td>${escHtml(t.summary)}</td>
-      <td><span class="status ${sCls}">${t.status}</span></td>
-      <td><span class="priority"><span class="priority-dot ${pCls}"></span>${t.priority}</span></td>
-      <td style="color:#888;white-space:nowrap">${t.created}</td>
-    </tr>`;
-  });
-  bodyHtml += '</tbody></table>';
-
-  sec.querySelector('.section-body').innerHTML = bodyHtml;
+// Per-label sections
+labelEntries.forEach(([label,count],idx)=>{
+  const tix=DATA.tickets.filter(t=>t.labels.includes(label));
+  const cl=tix.filter(t=>t.status==='Closed').length;
+  const op=count-cl;
+  const sec=createSection(idx+3,label.replace(/_/g,' '),cl+'/'+count+' closed',op===0?'badge-pass':'badge-open');
+  let b=`<div style="padding:12px 20px 0;font-size:13px;color:#666">${LABEL_DESC[label]||''}</div>`;
+  b+='<table class="data-table"><thead><tr><th style="width:90px">Key</th><th>Summary</th><th style="width:100px">Status</th><th style="width:90px">Priority</th><th style="width:90px">Created</th></tr></thead><tbody>';
+  tix.forEach(t=>{b+=`<tr><td><a class="ticket-link" href="${JIRA}${t.key}" target="_blank">${t.key}</a></td><td>${escHtml(t.summary)}</td><td>${statusHtml(t.status)}</td><td>${prioHtml(t.priority)}</td><td style="color:#888;white-space:nowrap">${t.created}</td></tr>`;});
+  b+='</tbody></table>';
+  sec.querySelector('.section-body').innerHTML=b;
   container.appendChild(sec);
 });
 
-// Section: All Tickets (with filters)
-const allSec = createSection(labelEntries.length + 3, 'All Classified Tickets', `${DATA.tickets.length} total`, 'badge-count');
-let allBody = `<div class="filter-row">
-  <label>Label:</label><select id="fLabel"><option value="">All</option></select>
-  <label>Status:</label><select id="fStatus"><option value="">All</option></select>
-  <label>Priority:</label><select id="fPriority"><option value="">All</option></select>
-  <label>Search:</label><input type="text" id="fSearch" placeholder="key or summary..." style="width:180px">
-</div>`;
-allBody += '<table class="data-table"><thead><tr><th style="width:90px">Key</th><th>Summary</th><th>Labels</th><th style="width:100px">Status</th><th style="width:90px">Priority</th><th style="width:90px">Created</th></tr></thead><tbody id="allBody"></tbody></table>';
-allSec.querySelector('.section-body').innerHTML = allBody;
+// All Tickets section
+const allSec=createSection(labelEntries.length+3,'All Tickets',DATA.tickets.length+' total','badge-count');
+let ab=`<div class="filter-row"><label>Label:</label><select id="fL"><option value="">All</option></select><label>Status:</label><select id="fS"><option value="">All</option></select><label>Priority:</label><select id="fP"><option value="">All</option></select><label>Search:</label><input type="text" id="fQ" placeholder="key or summary..." style="width:180px"></div>`;
+ab+='<table class="data-table"><thead><tr><th style="width:90px">Key</th><th>Summary</th><th>Labels</th><th style="width:100px">Status</th><th style="width:90px">Priority</th><th style="width:90px">Created</th></tr></thead><tbody id="aB"></tbody></table>';
+allSec.querySelector('.section-body').innerHTML=ab;
 container.appendChild(allSec);
 
-// Populate filter dropdowns
-const uLabels = [...new Set(DATA.tickets.flatMap(t=>t.labels))].sort();
-uLabels.forEach(l => document.getElementById('fLabel').innerHTML += `<option value="${l}">${l}</option>`);
-allStatuses.forEach(s => document.getElementById('fStatus').innerHTML += `<option value="${s}">${s}</option>`);
-['Critical','High','Medium','Low'].forEach(p => document.getElementById('fPriority').innerHTML += `<option value="${p}">${p}</option>`);
+const uL=[...new Set(DATA.tickets.flatMap(t=>t.labels))].sort();
+uL.forEach(l=>document.getElementById('fL').innerHTML+=`<option value="${l}">${l}</option>`);
+allStatuses.forEach(s=>document.getElementById('fS').innerHTML+=`<option value="${s}">${s}</option>`);
+['Critical','High','Medium','Low'].forEach(p=>document.getElementById('fP').innerHTML+=`<option value="${p}">${p}</option>`);
 
-function renderAll() {
-  const fl = document.getElementById('fLabel').value;
-  const fs = document.getElementById('fStatus').value;
-  const fp = document.getElementById('fPriority').value;
-  const fq = document.getElementById('fSearch').value.toLowerCase();
-  const filtered = DATA.tickets.filter(t => {
-    if (fl && !t.labels.includes(fl)) return false;
-    if (fs && t.status !== fs) return false;
-    if (fp && t.priority !== fp) return false;
-    if (fq && !t.key.toLowerCase().includes(fq) && !t.summary.toLowerCase().includes(fq)) return false;
+function renderAll(){
+  const fl=document.getElementById('fL').value;
+  const fs=document.getElementById('fS').value;
+  const fp=document.getElementById('fP').value;
+  const fq=document.getElementById('fQ').value.toLowerCase();
+  const filtered=DATA.tickets.filter(t=>{
+    if(fl&&!t.labels.includes(fl))return false;
+    if(fs&&t.status!==fs)return false;
+    if(fp&&t.priority!==fp)return false;
+    if(fq&&!t.key.toLowerCase().includes(fq)&&!t.summary.toLowerCase().includes(fq))return false;
     return true;
   });
-  document.getElementById('allBody').innerHTML = filtered.map(t => {
-    const sCls = STATUS_MAP[t.status] || 'status-closed';
-    const pCls = PRIORITY_DOT[t.priority] || '';
-    return `<tr>
-      <td><a class="ticket-link" href="${JIRA}${t.key}" target="_blank">${t.key}</a></td>
-      <td>${escHtml(t.summary)}</td>
-      <td>${t.labels.map(l=>`<span class="label-tag">${l}</span>`).join('')}</td>
-      <td><span class="status ${sCls}">${t.status}</span></td>
-      <td><span class="priority"><span class="priority-dot ${pCls}"></span>${t.priority}</span></td>
-      <td style="color:#888;white-space:nowrap">${t.created}</td>
-    </tr>`;
-  }).join('');
+  document.getElementById('aB').innerHTML=filtered.map(t=>`<tr><td><a class="ticket-link" href="${JIRA}${t.key}" target="_blank">${t.key}</a></td><td>${escHtml(t.summary)}</td><td>${t.labels.map(l=>`<span class="label-tag">${l}</span>`).join('')}</td><td>${statusHtml(t.status)}</td><td>${prioHtml(t.priority)}</td><td style="color:#888;white-space:nowrap">${t.created}</td></tr>`).join('');
 }
-['fLabel','fStatus','fPriority'].forEach(id => document.getElementById(id).addEventListener('change', renderAll));
-document.getElementById('fSearch').addEventListener('input', renderAll);
+['fL','fS','fP'].forEach(id=>document.getElementById(id).addEventListener('change',renderAll));
+document.getElementById('fQ').addEventListener('input',renderAll);
 renderAll();
-
-// Helpers
-function createSection(num, title, badgeText, badgeClass, openByDefault) {
-  const sec = document.createElement('div');
-  sec.className = 'section' + (openByDefault ? ' open' : '');
-  sec.innerHTML = `
-    <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
-      <span class="section-arrow">&#9654;</span>
-      <span class="section-num">${num}</span>
-      <span class="section-title">${title}</span>
-      <span class="section-badge ${badgeClass}">${badgeText}</span>
-    </div>
-    <div class="section-body"></div>
-  `;
-  return sec;
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
 </script>
 </body>
 </html>
